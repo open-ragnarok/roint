@@ -41,3 +41,11 @@ void set_roint_free_func(roint_free_func x) {
 	else
 		_xfree = x;
 }
+
+roint_alloc_func get_roint_malloc_func() {
+    return(_xalloc);
+}
+
+roint_free_func get_roint_free_func() {
+    return(_xfree);
+}

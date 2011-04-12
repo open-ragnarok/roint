@@ -40,6 +40,9 @@ typedef void (*roint_free_func)(void*);
 // Pass NULL to return to the default function.
 void set_roint_malloc_func(roint_alloc_func);
 void set_roint_free_func(roint_free_func);
+    
+roint_alloc_func get_roint_malloc_func();
+roint_free_func get_roint_free_func();
 
 #ifdef __cplusplus
 }
