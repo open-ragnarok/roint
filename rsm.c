@@ -37,7 +37,7 @@
 #include <string.h>
 #include <stdio.h>
 
-struct RORsm *rsm_load(const char *data, unsigned int length) {
+struct RORsm *rsm_load(const unsigned char *data, unsigned int length) {
 	struct RORsm *ret;
 	struct _memloader *loader;
 

@@ -24,11 +24,16 @@
 #ifndef __ROINT_H
 #define __ROINT_H
 
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif 
 
-typedef void* (*roint_alloc_func)(unsigned int);
+#ifdef __APPLE__    
+typedef void* (*roint_alloc_func)(size_t);
+#else
+#endif
 typedef void (*roint_free_func)(void*);
 
 // Set a custom malloc function to use troughout ROInt engine.

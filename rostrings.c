@@ -70,7 +70,12 @@ unsigned short *ustringFromEUCKR(const char *s) {
 	unsigned short aux[512];
 	unsigned char c;
 	unsigned short s_euc, s_utf;
-	unsigned int i, len, k;
+	unsigned int i, k;
+#ifdef __APPLE__
+    size_t len;
+#else
+    unsigned int len;
+#endif
 	unsigned short *ret;
 
 	len = strlen(s);

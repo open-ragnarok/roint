@@ -1,6 +1,28 @@
 #ifndef __ROINT_GRF_H
 #define __ROINT_GRF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct ROGrf;
+struct ROGrfFile;
+    
+struct ROGrf *grf_open(const char *fn);
+void grf_close(struct ROGrf *grf);
+unsigned int grf_filecount(const struct ROGrf* grf);
+    
+/**
+  * Retrieves data from the GRF file and stores in the data pointer.
+  * Returns 0 on success.
+  */
+int grf_getdata(struct ROGrfFile *file);
+void grf_freedata(struct ROGrfFile *file);
+
+#ifdef __cplusplus
+}
+#endif 
+
 #include "roint.h"
 #include <stdio.h>
 
@@ -8,7 +30,6 @@
 extern "C" {
 #endif 
 
-struct ROGrf;
 
 struct ROGrfFile {
     char *fileName;
@@ -37,17 +58,6 @@ struct ROGrf {
 	FILE *fp;
 	struct ROGrfFile *files;
 };
-
-struct ROGrf *grf_open(const char *fn);
-void grf_close(struct ROGrf *grf);
-unsigned int grf_filecount(const struct ROGrf* grf);
-
-/**
- * Retrieves data from the GRF file and stores in the data pointer.
- * Returns 0 on success.
- */
-int grf_getdata(struct ROGrfFile *file);
-void grf_freedata(struct ROGrfFile *file);
 
 #ifdef __cplusplus
 }

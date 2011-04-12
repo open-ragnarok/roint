@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 struct _memloader {
 	const unsigned char *data;
@@ -54,8 +55,8 @@ struct _memloader *loader_init(const unsigned char *ptr, unsigned long size) {
 }
 
 void loader_free(struct _memloader *loader) {
-	if (loader != NULL);
-	_xfree(loader);
+	if (loader != NULL)
+        _xfree(loader);
 }
 
 unsigned long loader_tell(const struct _memloader *loader) {
@@ -76,14 +77,14 @@ int loader_seek(struct _memloader *loader, long pos, int origin) {
 			loader->offset = pos;
 			break;
 		case SEEK_CUR:
-			if (loader->offset + pos >= loader->size || loader->offset + pos < 0)
+			if (loader->offset + pos >= loader->size || (int)(pos + loader->offset) < 0)
 				return(1);
 			loader->offset += pos;
 			break;
 		case SEEK_END:
 			if (pos > 0)
 				return(1);
-			if (loader->offset + pos < 0)
+			if ((int)(pos + loader->offset) < 0)
 				return(1);
 
 			loader->offset += pos;
