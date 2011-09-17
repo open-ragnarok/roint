@@ -30,10 +30,7 @@
 extern "C" {
 #endif 
 
-#ifdef __APPLE__    
 typedef void* (*roint_alloc_func)(size_t);
-#else
-#endif
 typedef void (*roint_free_func)(void*);
 
 // Set a custom malloc function to use troughout ROInt engine.
