@@ -21,10 +21,10 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#ifndef __ROINT_MEMORY_H
+#define __ROINT_MEMORY_H
 
-#include <stdlib.h>
+#include <stddef.h> // size_t
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,7 +45,4 @@ roint_free_func get_roint_free_func();
 }
 #endif 
 
-#include "grf.h"
-#include "rsm.h"
-
-#endif /* __ROINT_H */
+#endif /* __ROINT_MEMORY_H */
