@@ -1,66 +1,29 @@
-#ifndef __ROINT_GRF_H
-#define __ROINT_GRF_H
+/*
+    ------------------------------------------------------------------------------------
+    LICENSE:
+    ------------------------------------------------------------------------------------
+    This file is part of The Open Ragnarok Project
+    Copyright 2007 - 2011 The Open Ragnarok Team
+    For the latest information visit http://www.open-ragnarok.org
+    ------------------------------------------------------------------------------------
+    This program is free software; you can redistribute it and/or modify it under
+    the terms of the GNU Lesser General Public License as published by the Free Software
+    Foundation; either version 2 of the License, or (at your option) any later
+    version.
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+    This program is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
 
-struct ROGrf;
-struct ROGrfFile;
-    
-struct ROGrf *grf_open(const char *fn);
-void grf_close(struct ROGrf *grf);
-unsigned int grf_filecount(const struct ROGrf* grf);
-    
-/**
-  * Retrieves data from the GRF file and stores in the data pointer.
-  * Returns 0 on success.
-  */
-int grf_getdata(struct ROGrfFile *file);
-void grf_freedata(struct ROGrfFile *file);
+    You should have received a copy of the GNU Lesser General Public License along with
+    this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+    Place - Suite 330, Boston, MA 02111-1307, USA, or go to
+    http://www.gnu.org/copyleft/lesser.txt.
+    ------------------------------------------------------------------------------------
+*/
+#ifndef __ROINT_INTERNAL_GRF_H
+#define __ROINT_INTERNAL_GRF_H
 
-#ifdef __cplusplus
-}
-#endif 
+#include "roint/grf.h"
 
-#include "roint.h"
-#include <stdio.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
-
-
-struct ROGrfFile {
-    char *fileName;
-    int compressedLength;
-    int compressedLengthAligned;
-    int uncompressedLength;
-    
-    char flags;
-    int offset;
-    int cycle; // for DES Decoding purposes
-
-	struct ROGrf *grf;
-
-	unsigned char *data;
-};
-
-struct ROGrf {
-	struct {
-	    char signature[16];
-		unsigned char allowencryption[14];
-	    unsigned int filetableoffset;
-		unsigned int number1, number2;
-		unsigned int version;
-	} header;
-
-	FILE *fp;
-	struct ROGrfFile *files;
-};
-
-#ifdef __cplusplus
-}
-#endif 
-
-#endif /* __ROINT_GRF_H */
+#endif /* __ROINT_INTERNAL_GRF_H */
