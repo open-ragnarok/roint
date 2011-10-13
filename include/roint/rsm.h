@@ -24,6 +24,9 @@
 #ifndef __ROINT_RSM_H
 #define __ROINT_RSM_H
 
+#ifndef WITHOUT_ROINT_CONFIG
+#	include "roint/config.h"
+#endif
 struct ROGrfFile; // forward declaration
 
 #ifdef __cplusplus
@@ -119,11 +122,11 @@ struct RORsm {
 };
     
 // Loads the rsm from a given memory pointer using up to the given length
-struct RORsm *rsm_load(const unsigned char *data, unsigned int len);
+ROINT_DLLAPI struct RORsm *rsm_load(const unsigned char *data, unsigned int len);
 // Loads the rsm from the ROGrf structure file. -- This is only a wrapper to the rsm_load() function
-struct RORsm *rsm_loadFromGrf(struct ROGrfFile*);
+ROINT_DLLAPI struct RORsm *rsm_loadFromGrf(struct ROGrfFile*);
 // Frees everything inside the RORsm structure allocated by us (including the rsm itself!)
-void rsm_unload(struct RORsm*);
+ROINT_DLLAPI void rsm_unload(struct RORsm*);
 
 #ifdef __cplusplus
 }

@@ -21,31 +21,22 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_MEMORY_H
-#define __ROINT_MEMORY_H
+#ifndef __ROINT_CONFIG_H
+#define __ROINT_CONFIG_H
 
-#ifndef WITHOUT_ROINT_CONFIG
-#	include "roint/config.h"
+// dynamic library
+#cmakedefine ROINT_DLL
+
+
+#if defined(_MSC_VER) && defined(ROINT_DLL)
+#	ifdef ROINT_INTERNAL
+#		define ROINT_DLLAPI  __declspec( dllexport )
+#	else
+#		define ROINT_DLLAPI  __declspec( dllimport )
+#	endif
+#else
+#	define ROINT_DLLAPI
 #endif
-#include <stddef.h> // size_t
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
 
-typedef void* (*roint_alloc_func)(size_t);
-typedef void (*roint_free_func)(void*);
-
-// Set a custom malloc function to use troughout ROInt engine.
-// Pass NULL to return to the default function.
-ROINT_DLLAPI void set_roint_malloc_func(roint_alloc_func);
-ROINT_DLLAPI void set_roint_free_func(roint_free_func);
-    
-ROINT_DLLAPI roint_alloc_func get_roint_malloc_func();
-ROINT_DLLAPI roint_free_func get_roint_free_func();
-
-#ifdef __cplusplus
-}
-#endif 
-
-#endif /* __ROINT_MEMORY_H */
+#endif /* __ROINT_CONFIG_H */
