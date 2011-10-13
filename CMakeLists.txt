@@ -1,77 +1,72 @@
+if( CMAKE_BUILD_TYPE STREQUAL "" )
+	set( CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE )
+endif()
+
 set( CMAKE_LEGACY_CYGWIN_WIN32 0 )
 cmake_minimum_required( VERSION 2.8.3 )
-if( NOT DEFINED ROINT_NO_PROJECT )
-	project( roint C )
-endif( NOT DEFINED ROINT_NO_PROJECT )
-enable_language( C )
+project( roint C )
 if( CYGWIN )
 	unset( WIN32 )
 endif( CYGWIN )
 
 
-# 
-# zlib (for roint)
-# 
-message( STATUS "Looking for zlib" )
-find_package( ZLIB )
-if( ZLIB_FOUND )
-	set( HAVE_zlib ON  CACHE INTERNAL "" )
-	message( STATUS "Looking for zlib - found" )
-else( ZLIB_FOUND )
-	message( STATUS "Looking for zlib - not found" )
-	unset( HAVE_zlib CACHE )
-endif( ZLIB_FOUND )
-
-
-# 
-# roint
-# 
-if( HAVE_zlib )
-	option( BUILD_ROINT "build roint library" ON )
-	set( BUILD_ROINT_TYPE "STATIC" CACHE STRING "build type: SHARED (dll/so) or STATIC (lib/a)" )
-	set_property( CACHE BUILD_ROINT_TYPE  PROPERTY STRINGS "SHARED" "STATIC" )
-endif( HAVE_zlib )
-if( BUILD_ROINT )
-message( STATUS "Creating target roint" )
-message( STATUS "Library type: ${BUILD_ROINT_TYPE}" )
-
-set( ROINT_HEADERS
-	"${CMAKE_CURRENT_SOURCE_DIR}/cp949.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/des.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/grf.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/internal.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/memloader.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/roint.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rostrings.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rsm.h"
+# variables
+set( ROINT_LIBTYPE "SHARED" CACHE STRING "library type: SHARED (dll/so) or STATIC (lib/a)" )
+set_property( CACHE ROINT_LIBTYPE  PROPERTY STRINGS "SHARED" "STATIC" )
+if( MSVC )
+	option( ROINT_USE_STATIC_RUNTIME_LIBRARY "link to the static runtime library" ON )
+endif( MSVC )
+file( GLOB ROINT_PUBLIC_HEADERS
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/roint/*.h"
 	)
-set( ROINT_SOURCES
-	"${CMAKE_CURRENT_SOURCE_DIR}/des.c"
-	"${CMAKE_CURRENT_SOURCE_DIR}/grf.c"
-	"${CMAKE_CURRENT_SOURCE_DIR}/memloader.c"
-	"${CMAKE_CURRENT_SOURCE_DIR}/roint.c"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rostrings.c"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rsm.c"
+file( GLOB ROINT_PRIVATE_HEADERS
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+	)
+file( GLOB ROINT_SOURCES
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.c"
+	)
+find_package( ZLIB REQUIRED ) # dependency
+if( ROINT_LIBTYPE STREQUAL "SHARED" )
+	set( ROINT_DLL 1 )
+else()
+	set( ROINT_DLL )
+endif()
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/include/roint/config.h"
 	)
 
-set( LIBRARIES ${LINK_LIBRARIES}  )
-set( INCLUDE_DIRS ${INCLUDE_DIRECTORIES} ${ZLIB_INCLUDE_DIR} )
-set( DEFINITIONS "${COMPILE_DEFINITIONS}" )
-set( SOURCE_FILES ${ROINT_HEADERS} ${ROINT_SOURCES} )
-if( BUILD_ROINT_TYPE STREQUAL SHARED )
-	set( DEFINITIONS "${DEFINITIONS} -DROINT_DLL" CACHE INTERNAL "" )
-endif( BUILD_ROINT_TYPE STREQUAL SHARED )
-include_directories( ${INCLUDE_DIRS} )
-add_library( roint ${BUILD_ROINT_TYPE} ${SOURCE_FILES} )
-target_link_libraries( roint ${LIBRARIES} )
-set_target_properties( roint PROPERTIES COMPILE_FLAGS "${DEFINITIONS}" )
+# target
+if( MSVC )
+	add_definitions( -D_CRT_SECURE_NO_WARNINGS )
+	add_definitions( -D_CRT_SECURE_NO_DEPRECATE )
+	add_definitions( -D_CRT_NONSTDC_NO_DEPRECATE )
+	foreach( _VAR IN ITEMS
+		CMAKE_C_FLAGS  CMAKE_C_FLAGS_DEBUG  CMAKE_C_FLAGS_RELEASE
+		CMAKE_C_FLAGS_MINSIZEREL  CMAKE_C_FLAGS_RELWITHDEBINFO
+		)
+		get_property( _STR CACHE ${_VAR} PROPERTY VALUE )
+		if( ROINT_USE_STATIC_RUNTIME_LIBRARY )
+			string( REPLACE "/MD" "/MT" _STR "${_STR}" )
+		else( ROINT_USE_STATIC_RUNTIME_LIBRARY )
+			string( REPLACE "/MT" "/MD" _STR "${_STR}" )
+		endif( ROINT_USE_STATIC_RUNTIME_LIBRARY )
+		set_property( CACHE ${_VAR} PROPERTY VALUE "${_STR}" )
+	endforeach()
+endif( MSVC )
+add_definitions( -DROINT_INTERNAL )
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_BINARY_DIR}/include" ${ZLIB_INCLUDE_DIRS} )
+add_library( roint ${ROINT_LIBTYPE} ${ROINT_SOURCES} ${ROINT_PRIVATE_HEADERS} ${ROINT_PUBLIC_HEADERS} )
+target_link_libraries( roint ${ZLIB_LIBRARIES} )
 
-set( HAVE_roint ON  CACHE INTERNAL "" )
-message( STATUS "Creating target roint - done" )
-else( BUILD_ROINT )
-message( STATUS "Skipping target roint (requires zlib)" )
-unset( HAVE_roint CACHE )
-if( NOT DEFINED ROINT_NO_PROJECT )
-	message( FATAL_ERROR "nothing to build" )
-endif( NOT DEFINED ROINT_NO_PROJECT )
-endif( BUILD_ROINT )
+
+# install
+install( TARGETS roint
+	RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
+	LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
+	ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
+	)
+install( DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
+	DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
+	)
