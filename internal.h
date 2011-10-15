@@ -21,8 +21,12 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
+#ifndef __ROINT_INTERNAL_H
+#define __ROINT_INTERNAL_H
 
 #include "roint.h"
 
 extern roint_alloc_func _xalloc;
 extern roint_free_func _xfree;
+
+#endif /* __ROINT_INTERNAL_H */

@@ -21,8 +21,8 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_MEMLOADER_H
-#define __ROINT_MEMLOADER_H
+#ifndef __ROINT_INTERNAL_MEMLOADER_H
+#define __ROINT_INTERNAL_MEMLOADER_H
 
 // For ROInt internal use only
 
@@ -36,4 +36,4 @@ unsigned long loader_tell(const struct _memloader *loader);
 int loader_seek(struct _memloader *loader, long pos, int origin);
 
 
-#endif /* __ROINT_MEMLOADER_H */
+#endif /* __ROINT_INTERNAL_MEMLOADER_H */

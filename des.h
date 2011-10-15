@@ -21,8 +21,8 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_DES_H
-#define __ROINT_DES_H
+#ifndef __ROINT_INTERNAL_DES_H
+#define __ROINT_INTERNAL_DES_H
 
 #include <stdlib.h>
 
@@ -31,4 +31,4 @@ void BitConvert(unsigned char* Src, char* BitSwapTable);
 static void BitConvert4(unsigned char* Src);
 void des_decode(unsigned char* buf, size_t len, int cycle);
 
-#endif /* __ROINT_DES_H */
+#endif /* __ROINT_INTERNAL_DES_H */
