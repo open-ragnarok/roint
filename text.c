@@ -193,31 +193,31 @@ size_t roint_encode_utf8(const unsigned int unicode_c, char *utf8) {
 	}
 	else if (unicode_c >= 0x10000) {// 4-byte utf8
 		if (utf8 != NULL) {
-			utf8[0] = (char)((unicode_c>>18)      + 0xF0);
-			utf8[1] = (char)((unicode_c>>12)&0x3F + 0x80);
-			utf8[2] = (char)((unicode_c>>6 )&0x3F + 0x80);
-			utf8[3] = (char)( unicode_c     &0x3F + 0x80);
+			utf8[0] = (char)(((unicode_c>>18)&0x7 ) + 0xF0);
+			utf8[1] = (char)(((unicode_c>>12)&0x3F) + 0x80);
+			utf8[2] = (char)(((unicode_c>>6 )&0x3F) + 0x80);
+			utf8[3] = (char)(( unicode_c     &0x3F) + 0x80);
 		}
 		return(4);
 	}
 	else if (unicode_c >= 0x800) {// 3-byte utf8
 		if (utf8 != NULL) {
-			utf8[0] = (char)((unicode_c>>12)      + 0xE0);
-			utf8[1] = (char)((unicode_c>>6 )&0x3F + 0x80);
-			utf8[2] = (char)( unicode_c     &0x3F + 0x80);
+			utf8[0] = (char)(((unicode_c>>12)&0xF ) + 0xE0);
+			utf8[1] = (char)(((unicode_c>>6 )&0x3F) + 0x80);
+			utf8[2] = (char)(( unicode_c     &0x3F) + 0x80);
 		}
 		return(3);
 	}
 	else if (unicode_c >= 0x80) {// 2-byte utf8
 		if (utf8 != NULL) {
-			utf8[0] = (char)((unicode_c>>6)      + 0xC0);
-			utf8[1] = (char)( unicode_c    &0x3F + 0x80);
+			utf8[0] = (char)(((unicode_c>>6)&0x1F) + 0xC0);
+			utf8[1] = (char)(( unicode_c    &0x3F) + 0x80);
 		}
 		return(2);
 	}
 	else {// 1-byte utf8
 		if (utf8 != NULL)
-			utf8[0] = (char)(unicode_c);
+			utf8[0] = (char)(unicode_c&0x7F);
 		return(1);
 	}
 }
@@ -227,7 +227,7 @@ size_t roint_encode_utf8(const unsigned int unicode_c, char *utf8) {
 size_t roint_decode_utf8(const char *utf8, unsigned int *unicode_c) {
 	if ((utf8[0]&0x80) == 0) {// 1-byte utf8
 		if (unicode_c != NULL)
-			*unicode_c = (unsigned int)(utf8[0]&0xFF);
+			*unicode_c = (unsigned int)(utf8[0]&0x7F);
 		return(1);
 	}
 	else if ((utf8[0]&0xE0) == 0xC0) {// 2-byte utf8
@@ -253,7 +253,7 @@ size_t roint_decode_utf8(const char *utf8, unsigned int *unicode_c) {
 		if ((utf8[1]&0x80) == 0 || (utf8[2]&0x80) == 0 || (utf8[3]&0x80) == 0)
 			return(0);// invalid
 		if (unicode_c != NULL) {
-			*unicode_c  = (unsigned int)((utf8[0]&0x1F)<<18);
+			*unicode_c  = (unsigned int)((utf8[0]&0x7 )<<18);
 			*unicode_c |= (unsigned int)((utf8[1]&0x3F)<<12);
 			*unicode_c |= (unsigned int)((utf8[2]&0x3F)<<6 );
 			*unicode_c |= (unsigned int)( utf8[3]&0x3F     );
@@ -318,7 +318,7 @@ char *roint_string_unicode_to_utf8(const unsigned int *unicode) {
 	utf8 = (char*)_xalloc(sizeof(char) * (utf8_len+1));
 	utf8_len = 0;
 	for (i = 0; unicode[i] != 0; i++) {
-		len += roint_encode_utf8(unicode[i], utf8 + utf8_len);
+		len = roint_encode_utf8(unicode[i], utf8 + utf8_len);
 		utf8_len += len;
 	}
 	utf8[utf8_len] = 0;
@@ -383,7 +383,7 @@ char *roint_string_utf8_to_cp949(const char *utf8) {
 	// calculate and validate
 	cp949_len = 0;
 	for (i = 0; utf8[i] != 0; ) {
-		in = roint_decode_utf8(utf8, &unicode_c);
+		in = roint_decode_utf8(utf8 + i, &unicode_c);
 		if (in == 0)
 			return(NULL);// invalid
 		cp949_c = roint_convert_unicode_to_cp949(unicode_c);
@@ -400,7 +400,7 @@ char *roint_string_utf8_to_cp949(const char *utf8) {
 	cp949 = (char*)_xalloc(sizeof(char) * (cp949_len+1));
 	cp949_len = 0;
 	for (i = 0; utf8[i] != 0; ) {
-		in = roint_decode_utf8(utf8, &unicode_c);
+		in = roint_decode_utf8(utf8 + i, &unicode_c);
 		cp949_c = roint_convert_unicode_to_cp949(unicode_c);
 		out = roint_encode_cp949(cp949_c, cp949 + cp949_len);
 		i += in;
@@ -421,10 +421,10 @@ size_t roint_encode_utf16(const unsigned int unicode_c, unsigned short *utf16) {
 	if (unicode_c >= 0x110000) {// invalid
 		return(0);
 	}
-	else if (unicode_c >= 0x400) {// 2-short utf16
+	else if (unicode_c > 0xFFFF || (unicode_c >= 0xD800 && unicode_c <= 0xDFFF) ) {// 2-short utf16
 		if (utf16 != NULL) {
-			utf16[0] = (unsigned short)((unicode_c>>10)       + 0xD800);
-			utf16[1] = (unsigned short)( unicode_c     &0x3FF + 0xDC00);
+			utf16[0] = (unsigned short)(((unicode_c>>10)&0x3FF) + 0xD800);
+			utf16[1] = (unsigned short)(( unicode_c     &0x3FF) + 0xDC00);
 		}
 		return(2);
 	}
@@ -509,7 +509,7 @@ unsigned short *roint_string_unicode_to_utf16(const unsigned int *unicode) {
 	utf16 = (unsigned short*)_xalloc(sizeof(unsigned short) * (utf16_len+1));
 	utf16_len = 0;
 	for (i = 0; unicode[i] != 0; i++) {
-		len += roint_encode_utf16(unicode[i], utf16 + utf16_len);
+		len = roint_encode_utf16(unicode[i], utf16 + utf16_len);
 		utf16_len += len;
 	}
 	utf16[utf16_len] = 0;
@@ -574,7 +574,7 @@ char *roint_string_utf16_to_cp949(const unsigned short *utf16) {
 	// calculate and validate
 	cp949_len = 0;
 	for (i = 0; utf16[i] != 0; ) {
-		in = roint_decode_utf16(utf16, &unicode_c);
+		in = roint_decode_utf16(utf16 + i, &unicode_c);
 		if (in == 0)
 			return(NULL);// invalid
 		cp949_c = roint_convert_unicode_to_cp949(unicode_c);
@@ -591,7 +591,7 @@ char *roint_string_utf16_to_cp949(const unsigned short *utf16) {
 	cp949 = (char*)_xalloc(sizeof(char) * (cp949_len+1));
 	cp949_len = 0;
 	for (i = 0; utf16[i] != 0; ) {
-		in = roint_decode_utf16(utf16, &unicode_c);
+		in = roint_decode_utf16(utf16 + i, &unicode_c);
 		cp949_c = roint_convert_unicode_to_cp949(unicode_c);
 		out = roint_encode_cp949(cp949_c, cp949 + cp949_len);
 		i += in;
