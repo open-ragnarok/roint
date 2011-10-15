@@ -23,7 +23,6 @@
 */
 #include "roint.h"
 #include "rsm.h"
-#include "rostrings.h"
 
 #ifdef OPENRO_INTERNAL
 #	include "internal.h"

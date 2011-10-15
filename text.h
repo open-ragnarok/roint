@@ -21,13 +21,9 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#ifndef __ROINT_INTERNAL_TEXT_H
+#define __ROINT_INTERNAL_TEXT_H
 
-#include "roint/memory.h"
 #include "roint/text.h"
 
-#include "roint/grf.h"
-#include "roint/rsm.h"
-
-#endif /* __ROINT_H */
+#endif /* __ROINT_INTERNAL_TEXT_H */
