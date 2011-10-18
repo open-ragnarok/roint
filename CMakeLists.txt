@@ -64,7 +64,7 @@ if( MSVC )
 endif( MSVC )
 add_definitions( -DROINT_INTERNAL )
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_BINARY_DIR}/include" ${ZLIB_INCLUDE_DIRS} )
-source_group( public FILES ${ROINT_PUBLIC_HEADERS} )
+source_group( roint FILES ${ROINT_PUBLIC_HEADERS} )
 add_library( roint ${ROINT_LIBTYPE} ${ROINT_SOURCES} ${ROINT_PRIVATE_HEADERS} ${ROINT_PUBLIC_HEADERS} )
 target_link_libraries( roint ${ZLIB_LIBRARIES} )
 
