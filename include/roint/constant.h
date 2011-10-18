@@ -21,14 +21,32 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#ifndef __ROINT_CONSTANT_H
+#define __ROINT_CONSTANT_H
 
-#include "roint/constant.h"
-#include "roint/memory.h"
-#include "roint/text.h"
+#ifndef WITHOUT_ROINT_CONFIG
+#	include "roint/config.h"
+#endif
+#include <stddef.h> // size_t
 
-#include "roint/grf.h"
-#include "roint/rsm.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif /* __ROINT_H */
+/// number of constants
+ROINT_DLLAPI size_t roint_constant_count(void);
+
+/// get constant name by index (NULL on error)
+ROINT_DLLAPI const char *roint_constant_name(size_t idx);
+
+/// get constant value by index (NULL on error)
+ROINT_DLLAPI const char *roint_constant_value(size_t idx);
+
+/// get constant value by name (NULL on error)
+ROINT_DLLAPI const char *roint_constant_name2value(const char *name);
+
+#ifdef __cplusplus
+}
+#endif 
+
+#endif /* __ROINT_CONSTANT_H */
