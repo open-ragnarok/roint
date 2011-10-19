@@ -40,6 +40,7 @@ struct _memloader {
 
 	unsigned long offset;
 	const unsigned char *ptr;
+	int error;
 };
 
 struct _memloader *loader_init(const unsigned char *ptr, unsigned long size) {
@@ -50,6 +51,7 @@ struct _memloader *loader_init(const unsigned char *ptr, unsigned long size) {
 
 	ret->offset = 0;
 	ret->ptr = ptr;
+	ret->error = 0;
 
 	return(ret);
 }
@@ -63,34 +65,61 @@ unsigned long loader_tell(const struct _memloader *loader) {
 	return(loader->offset);
 }
 
-void loader_read(void *dest, unsigned int size, unsigned int count, struct _memloader *loader) {
-	memcpy(dest, loader->ptr, size * count);
-	loader->ptr += size * count;
-	loader->offset += size * count;
+int loader_read(void *dest, unsigned long size, unsigned int count, struct _memloader *loader) {
+	unsigned long remaining = loader->size - loader->offset;
+	unsigned long wanted = size * count;
+	if (wanted <= remaining) {
+		memcpy(dest, loader->ptr, wanted);
+		loader->ptr += wanted;
+		loader->offset += wanted;
+		loader->error = 0;
+	}
+	else {
+		unsigned long complete = (remaining / size) * size;
+		if (complete > 0)
+			memcpy(dest, loader->ptr, complete);
+		memset((unsigned char*)dest + complete, 0, wanted - complete);
+		loader->ptr = loader->data + loader->size;
+		loader->offset = loader->size;
+		loader->error = 1;
+	}
+	return(loader->error);
 }
 
 int loader_seek(struct _memloader *loader, long pos, int origin) {
+	loader->error = 0;
 	switch(origin){
 		case SEEK_SET:
-			if (pos >= (long)loader->size)
-				return(1);
+			if (pos < 0 || (unsigned long)pos >= loader->size) {
+				loader->error = 1;
+				break;
+			}
 			loader->offset = pos;
 			break;
 		case SEEK_CUR:
-			if (loader->offset + pos >= loader->size || (int)(pos + loader->offset) < 0)
-				return(1);
+			if ((pos >= 0 && pos + loader->offset >= loader->size) || (pos < 0 && (long)(pos + loader->offset) < 0)) {
+				loader->error = 1;
+				break;
+			}
 			loader->offset += pos;
 			break;
 		case SEEK_END:
-			if (pos > 0)
-				return(1);
-			if ((int)(pos + loader->offset) < 0)
-				return(1);
-
-			loader->offset += pos;
+			if (pos > 0 || (long)(pos + loader->size) < 0) {
+				loader->error = 1;
+				break;
+			}
+			loader->offset = pos + loader->size;
+			break;
+		default:
+			loader->error = 1;
+			break;
 	}
 
 	loader->ptr = loader->data + loader->offset;
 
-	return(0);
+	return(loader->error);
+}
+
+int loader_error(struct _memloader *loader) {
+	return(loader->error);
 }

@@ -31,9 +31,22 @@ struct _memloader;
 struct _memloader *loader_init(const unsigned char *ptr, unsigned long size);
 void loader_free(struct _memloader *loader);
 
-void loader_read(void *dest, unsigned int size, unsigned int count, struct _memloader *loader);
+/// Read 'count' elements of size 'size' into 'dest'. (updates error indicator)
+/// If not enough data, zero out incomplete elements.
+/// Returns 0 on success.
+int loader_read(void *dest, unsigned long size, unsigned int count, struct _memloader *loader);
+
+/// Get position indicator.
 unsigned long loader_tell(const struct _memloader *loader);
+
+/// Set position indicator. (updates error indicator)
+/// pos : offset from origin
+/// origin : SEEK_SET or SEEK_CUR or SEEK_END
+/// Returns 0 on success.
 int loader_seek(struct _memloader *loader, long pos, int origin);
+
+/// Returns error indicator. (0 for success)
+int loader_error(struct _memloader *loader);
 
 
 #endif /* __ROINT_INTERNAL_MEMLOADER_H */
