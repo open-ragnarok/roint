@@ -199,6 +199,12 @@ struct RORsm *rsm_load(const unsigned char *data, unsigned int length) {
 		ret->nodes = NULL;
 	}
 
+	if (loader_error(loader)) {
+		// data was missing
+		fprintf(stderr, "RSM is incomplete or invalid\n");
+		rsm_unload(ret);
+		ret = NULL;
+	}
 	loader_free(loader);
 
 	return(ret);
