@@ -21,15 +21,45 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#ifndef __ROINT_PAL_H
+#define __ROINT_PAL_H
 
-#include "roint/constant.h"
-#include "roint/memory.h"
-#include "roint/text.h"
+#ifndef WITHOUT_ROINT_CONFIG
+#	include "roint/config.h"
+#endif
+struct ROGrfFile; // forward declaration
 
-#include "roint/grf.h"
-#include "roint/pal.h"
-#include "roint/rsm.h"
+#ifdef __cplusplus
+extern "C" {
+#endif 
 
-#endif /* __ROINT_H */
+
+#pragma pack(push,1)
+/// Palette entry.
+/// Represents a color with red, green and blue components.
+struct ROPalColor {
+	unsigned char r, g, b, reserved;
+};
+
+/// Palette.
+/// Contains an array of 256 palette entries.
+/// The first index is sometimes considered invisible.
+struct ROPal {
+	struct ROPalColor pal[256];
+};
+#pragma pack(pop)
+
+
+// Loads the pal from a given memory pointer using up to the given length
+ROINT_DLLAPI struct ROPal *pal_load(const unsigned char *data, unsigned int len);
+// Loads the pal from the ROGrf structure file. -- This is only a wrapper to the pal_load() function
+ROINT_DLLAPI struct ROPal *pal_loadFromGrf(struct ROGrfFile*);
+// Frees everything inside the ROPal structure allocated by us (including the pal itself!)
+ROINT_DLLAPI void pal_unload(struct ROPal*);
+
+
+#ifdef __cplusplus
+}
+#endif 
+
+#endif /* __ROINT_PAL_H */

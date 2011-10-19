@@ -21,15 +21,41 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#include "internal.h"
+#include <string.h> // memcpy
 
-#include "roint/constant.h"
-#include "roint/memory.h"
-#include "roint/text.h"
+struct ROPal *pal_load(const unsigned char *data, unsigned int length) {
+	struct ROPal *ret;
 
-#include "roint/grf.h"
-#include "roint/pal.h"
-#include "roint/rsm.h"
+	if (length < sizeof(struct ROPalColor)*256)
+		return(NULL);// not enough data
 
-#endif /* __ROINT_H */
+	ret = (struct ROPal*)_xalloc(sizeof(struct ROPal));
+	memcpy(&ret->pal, data, sizeof(struct ROPalColor)*256);
+
+	return(ret);
+}
+
+struct ROPal *pal_loadFromGrf(struct ROGrfFile *file) {
+	struct ROPal *ret;
+	if (file->data == NULL) {
+		grf_getdata(file);
+		if (file->data != NULL) {
+			ret = pal_load(file->data, file->uncompressedLength);
+		}
+		_xfree(file->data);
+		file->data = NULL;
+	}
+	else {
+		ret = pal_load(file->data, file->uncompressedLength);
+	}
+
+	return(ret);
+}
+
+void pal_unload(struct ROPal* pal) {
+	if (pal == NULL)
+		return;
+
+	_xfree(pal);
+}
