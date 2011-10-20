@@ -21,16 +21,47 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#ifndef __ROINT_RGZ_H
+#define __ROINT_RGZ_H
 
-#include "roint/constant.h"
-#include "roint/memory.h"
-#include "roint/text.h"
+#ifndef WITHOUT_ROINT_CONFIG
+#	include "roint/config.h"
+#endif
 
-#include "roint/grf.h"
-#include "roint/pal.h"
-#include "roint/rgz.h"
-#include "roint/rsm.h"
+#ifdef __cplusplus
+extern "C" {
+#endif 
 
-#endif /* __ROINT_H */
+
+/// Rgz entry.
+/// Everything after the end entry is ignored.
+struct RORgzEntry {
+	unsigned char type; //< entry type : 'f' for file, 'd' for directory, 'e' for end entry
+	char path[256]; //< path (NUL-terminated, "end" in end entry)
+
+	// file entries:
+	unsigned int datalength;
+	unsigned char *data;
+};
+
+/// Rgz archive.
+/// Archive format similar to tar.gz.
+struct RORgz {
+	unsigned int entrycount;
+	struct RORgzEntry *entries;
+};
+
+
+// Loads the rgz from a given memory pointer using up to the given length
+ROINT_DLLAPI struct RORgz *rgz_load(const unsigned char *data, unsigned int length);
+// Loads the rgz from a file. -- This is only a wrapper to the rgz_load() function
+ROINT_DLLAPI struct RORgz *rgz_loadFromFile(const char *fn);
+// Frees everything inside the RORgz structure allocated by us (including the rgz itself!)
+ROINT_DLLAPI void rgz_unload(struct RORgz *rgz);
+
+
+#ifdef __cplusplus
+}
+#endif 
+
+#endif /* __ROINT_RGZ_H */
