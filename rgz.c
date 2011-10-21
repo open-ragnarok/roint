@@ -22,6 +22,7 @@
     ------------------------------------------------------------------------------------
 */
 #include "internal.h"
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,22 +42,22 @@ void _zfree_func(voidpf opaque, voidpf address) {
 void _zerror(int err) {
 	switch(err) {
 		case Z_MEM_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_MEM_ERROR\n");
+			_xlog("Error uncompressing data Z_MEM_ERROR\n");
 			break;
 		case Z_BUF_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_BUF_ERROR\n");
+			_xlog("Error uncompressing data Z_BUF_ERROR\n");
 			break;
 		case Z_STREAM_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_STREAM_ERROR\n");
+			_xlog("Error uncompressing data Z_STREAM_ERROR\n");
 			break;
 		case Z_DATA_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_DATA_ERROR\n");
+			_xlog("Error uncompressing data Z_DATA_ERROR\n");
 			break;
 		case Z_STREAM_END:
-			fprintf(stderr, "Error uncompressing data Z_STREAM_END\n");
+			_xlog("Error uncompressing data Z_STREAM_END\n");
 			break;
 		default:
-			fprintf(stderr, "Unknown error when uncompressing data: %d\n", err);
+			_xlog("Unknown error when uncompressing data: %d\n", err);
 			break;
 	}
 }
@@ -80,7 +81,7 @@ struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length) {
 	unsigned int entrylimit;
 
 	if (data == NULL || length == 0) {
-		fprintf(stderr, "No input data for RGZ\n");
+		_xlog("No input data for RGZ\n");
 		return(NULL);
 	}
 
@@ -147,7 +148,7 @@ struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length) {
 			break; // ignore rest of data
 		}
 		else {
-			fprintf(stderr, "Unknown entry type '%c' (%s)\n", entry->type, entry->path);
+			_xlog("Unknown entry type '%c' (%s)\n", entry->type, entry->path);
 			rgz_unload(ret);
 			ret = NULL;
 			break;
@@ -176,14 +177,14 @@ struct RORgz *rgz_loadFromFile(const char *fn) {
 
 	fp = fopen(fn, "rb");
 	if (fp == NULL) {
-		fprintf(stderr, "Cannot open file %s\n", fn);
+		_xlog("Cannot open file %s\n", fn);
 		return(NULL);
 	}
 
 	fseek(fp, 0, SEEK_END);
 	length = ftell(fp);
 	if (length == -1) {
-		perror(fn);
+		_xlog("%s : %s\n", fn, strerror(errno));
 		fclose(fp);
 		return(NULL);
 	}
@@ -193,7 +194,7 @@ struct RORgz *rgz_loadFromFile(const char *fn) {
 	clearerr(fp);
 	fread(data, (unsigned int)length, 1, fp);
 	if (ferror(fp)) {
-		perror(fn);
+		_xlog("%s : %s\n", fn, strerror(errno));
 		_xfree(data);
 		fclose(fp);
 		return(NULL);

@@ -26,6 +26,7 @@
 #ifdef OPENRO_INTERNAL
 #	include "internal.h"
 #else
+#	define _xlog printf
 #	define _xalloc malloc
 #	define _xfree free
 #endif

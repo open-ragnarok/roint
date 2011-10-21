@@ -27,6 +27,7 @@
 #ifdef OPENRO_INTERNAL
 #	include "internal.h"
 #else
+#	define _xlog printf
 #	define _xalloc malloc
 #	define _xfree free
 #endif
@@ -47,13 +48,13 @@ struct RORsm *rsm_load(const unsigned char *data, unsigned int length) {
 	loader_read(&ret->version, 2, 1, loader);
 
 	if (strncmp("GRSM", ret->magic, 4) != 0) {
-		fprintf(stderr, "Invalid RSM header: '%c%c%c%c'\n", ret->magic[0], ret->magic[1], ret->magic[2], ret->magic[3]);
+		_xlog("Invalid RSM header: '%c%c%c%c'\n", ret->magic[0], ret->magic[1], ret->magic[2], ret->magic[3]);
 		_xfree(ret);
 		loader_free(loader);
 		return(NULL);
 	}
 
-	printf("RSM Version: %u.%u\n", (unsigned int)ret->v.major, (unsigned int)ret->v.minor);
+	_xlog("RSM Version: %u.%u\n", (unsigned int)ret->v.major, (unsigned int)ret->v.minor);
 
 	loader_read(&ret->anim_length, sizeof(int), 1, loader);
 	loader_read(&ret->shade_type, sizeof(int), 1, loader);
@@ -201,7 +202,7 @@ struct RORsm *rsm_load(const unsigned char *data, unsigned int length) {
 
 	if (loader_error(loader)) {
 		// data was missing
-		fprintf(stderr, "RSM is incomplete or invalid\n");
+		_xlog("RSM is incomplete or invalid\n");
 		rsm_unload(ret);
 		ret = NULL;
 	}

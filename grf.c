@@ -29,6 +29,7 @@
 #ifdef OPENRO_INTERNAL
 #	include "internal.h"
 #else
+#	define _xlog printf
 #	define _xalloc malloc
 #	define _xfree free
 #endif
@@ -59,7 +60,7 @@ struct ROGrf *grf_open(const char *fn) {
 
 	fp = fopen(fn, "rb");
 	if (fp == NULL) {
-		fprintf(stderr, "Cannot open file %s\n", fn);
+		_xlog("Cannot open file %s\n", fn);
 		return(NULL);
 	}
 
@@ -90,7 +91,7 @@ struct ROGrf *grf_open(const char *fn) {
 	uncompress(headerBody, &ul, headerCompressedBody, compressedLength);
 	
 	if (ul == 0) {
-		fprintf(stderr, "Cannot uncompress FileTableHeader\n");
+		_xlog("Cannot uncompress FileTableHeader\n");
 		grf_close(ret);
 		return(NULL);
 	}
@@ -211,19 +212,19 @@ int grf_getdata(struct ROGrfFile *file) {
 
 		switch(r) {
 			case Z_MEM_ERROR:
-				fprintf(stderr, "Error uncompressing data Z_MEM_ERROR");
+				_xlog("Error uncompressing data Z_MEM_ERROR\n");
 				break;
 			case Z_BUF_ERROR:
-				fprintf(stderr, "Error uncompressing data Z_BUF_ERROR");
+				_xlog("Error uncompressing data Z_BUF_ERROR\n");
 				break;
 			case Z_STREAM_ERROR:
-				fprintf(stderr, "Error uncompressing data Z_STREAM_ERROR");
+				_xlog("Error uncompressing data Z_STREAM_ERROR\n");
 				break;
 			case Z_DATA_ERROR:
-				fprintf(stderr, "Error uncompressing data Z_DATA_ERROR");
+				_xlog("Error uncompressing data Z_DATA_ERROR\n");
 				break;
 			default:
-				fprintf(stderr, "Unknown error when uncompressing data: %d", r);
+				_xlog("Unknown error when uncompressing data: %d\n", r);
 		}
 		return(1);
 	}

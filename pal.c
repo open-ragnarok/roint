@@ -28,6 +28,7 @@ struct ROPal *pal_loadFromData(const unsigned char *data, unsigned int length) {
 	struct ROPal *ret;
 
 	if (length < sizeof(struct ROPal)) {
+		_xlog("not enough data for PAL\n");
 		return(NULL);
 	}
 
