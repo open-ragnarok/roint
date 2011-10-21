@@ -24,30 +24,31 @@
 #include "internal.h"
 #include <string.h> // memcpy
 
-struct ROPal *pal_load(const unsigned char *data, unsigned int length) {
+struct ROPal *pal_loadFromData(const unsigned char *data, unsigned int length) {
 	struct ROPal *ret;
 
-	if (length < sizeof(struct ROPalColor)*256)
-		return(NULL);// not enough data
+	if (length < sizeof(struct ROPal)) {
+		return(NULL);
+	}
 
 	ret = (struct ROPal*)_xalloc(sizeof(struct ROPal));
-	memcpy(&ret->pal, data, sizeof(struct ROPalColor)*256);
+	memcpy(ret, data, sizeof(struct ROPal));
 
 	return(ret);
 }
 
 struct ROPal *pal_loadFromGrf(struct ROGrfFile *file) {
-	struct ROPal *ret;
+	struct ROPal *ret = NULL;
 	if (file->data == NULL) {
 		grf_getdata(file);
 		if (file->data != NULL) {
-			ret = pal_load(file->data, file->uncompressedLength);
+			ret = pal_loadFromData(file->data, file->uncompressedLength);
 		}
 		_xfree(file->data);
 		file->data = NULL;
 	}
 	else {
-		ret = pal_load(file->data, file->uncompressedLength);
+		ret = pal_loadFromData(file->data, file->uncompressedLength);
 	}
 
 	return(ret);

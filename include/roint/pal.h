@@ -50,11 +50,11 @@ struct ROPal {
 #pragma pack(pop)
 
 
-// Loads the pal from a given memory pointer using up to the given length
-ROINT_DLLAPI struct ROPal *pal_load(const unsigned char *data, unsigned int len);
-// Loads the pal from the ROGrf structure file. -- This is only a wrapper to the pal_load() function
+/// Loads the pal from a data buffer. (NULL on error)
+ROINT_DLLAPI struct ROPal *pal_loadFromData(const unsigned char *data, unsigned int len);
+/// Loads the pal from the ROGrf structure file. (NULL on error)
 ROINT_DLLAPI struct ROPal *pal_loadFromGrf(struct ROGrfFile*);
-// Frees everything inside the ROPal structure allocated by us (including the pal itself!)
+/// Frees everything inside the ROPal structure allocated by us (including the pal itself!)
 ROINT_DLLAPI void pal_unload(struct ROPal*);
 
 
