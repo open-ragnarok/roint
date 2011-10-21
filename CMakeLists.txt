@@ -78,3 +78,7 @@ install( TARGETS roint
 install( DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
 	)
+
+
+# tests
+add_subdirectory( test )

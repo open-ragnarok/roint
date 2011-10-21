@@ -41,25 +41,39 @@ void _zfree_func(voidpf opaque, voidpf address) {
 void _zerror(int err) {
 	switch(err) {
 		case Z_MEM_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_MEM_ERROR");
+			fprintf(stderr, "Error uncompressing data Z_MEM_ERROR\n");
 			break;
 		case Z_BUF_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_BUF_ERROR");
+			fprintf(stderr, "Error uncompressing data Z_BUF_ERROR\n");
 			break;
 		case Z_STREAM_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_STREAM_ERROR");
+			fprintf(stderr, "Error uncompressing data Z_STREAM_ERROR\n");
 			break;
 		case Z_DATA_ERROR:
-			fprintf(stderr, "Error uncompressing data Z_DATA_ERROR");
+			fprintf(stderr, "Error uncompressing data Z_DATA_ERROR\n");
+			break;
+		case Z_STREAM_END:
+			fprintf(stderr, "Error uncompressing data Z_STREAM_END\n");
 			break;
 		default:
-			fprintf(stderr, "Unknown error when uncompressing data: %d", err);
+			fprintf(stderr, "Unknown error when uncompressing data: %d\n", err);
 			break;
 	}
 }
 
 
-struct RORgz *rgz_load(const unsigned char *data, unsigned int length) {
+int _zread(z_stream *s, void *buf, unsigned int len) {
+	int err;
+	s->next_out = (Bytef*)buf;
+	s->avail_out = (uInt)len;
+	err = inflate(s, Z_SYNC_FLUSH);
+	if (err == Z_STREAM_END && s->avail_out == 0)
+		err = Z_OK;// buffer was filled, all ok
+	return(err);
+}
+
+
+struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length) {
 	z_stream stream;
 	int err;
 	struct RORgz *ret;
@@ -76,7 +90,7 @@ struct RORgz *rgz_load(const unsigned char *data, unsigned int length) {
 	stream.zfree = (free_func)&_zfree_func;
 	stream.opaque = Z_NULL;
 
-	err = inflateInit(&stream);
+	err = inflateInit2(&stream, 15 + 16);// gzip format only
 	if (err != Z_OK) {
 		_zerror(err);
 		return(NULL);
@@ -98,50 +112,38 @@ struct RORgz *rgz_load(const unsigned char *data, unsigned int length) {
 		}
 		entry = ret->entries + ret->entrycount;
 		memset(entry, 0, sizeof(struct RORgzEntry));
+		ret->entrycount++;
 
-		stream.next_out = (Bytef*)&entry->type;
-		stream.avail_out = (uInt)1;
-		err = inflate(&stream, Z_SYNC_FLUSH);
+		err = _zread(&stream, &entry->type, 1);
 		if (err != Z_OK)
 			break;
 
-		stream.next_out = (Bytef*)&pathlen;
-		stream.avail_out = 1;
-		err = inflate(&stream, Z_SYNC_FLUSH);
+		err = _zread(&stream, &pathlen, 1);
 		if (err != Z_OK)
 			break;
 
 		if (pathlen > 0) {
-			stream.next_out = (Bytef*)&entry->path;
-			stream.avail_out = (uInt)pathlen;
-			err = inflate(&stream, Z_SYNC_FLUSH);
+			err = _zread(&stream, &entry->path, pathlen);
 			if (err != Z_OK)
 				break;
 			entry->path[pathlen - 1] = 0;
 		}
 
 		if (entry->type == 'f') {
-			stream.next_out = (Bytef*)&entry->datalength;
-			stream.avail_out = (uInt)4;
-			err = inflate(&stream, Z_SYNC_FLUSH);
+			err = _zread(&stream, &entry->datalength, 4);
 			if (err != Z_OK)
 				break;
 
-			entry->data = (unsigned char*)_xalloc(sizeof(unsigned char) * entry->datalength);
-			stream.next_out = entry->data;
-			stream.avail_out = entry->datalength;
-			err = inflate(&stream, Z_SYNC_FLUSH);
-			if (err != Z_OK) {
-				_xfree(entry->data);
-				break;
+			if (entry->datalength > 0) {
+				entry->data = (unsigned char*)_xalloc(sizeof(unsigned char) * entry->datalength);
+				err = _zread(&stream, entry->data, entry->datalength);
+				if (err != Z_OK)
+					break;
 			}
-			ret->entrycount++;
 		}
 		else if (entry->type == 'd') {
-			ret->entrycount++;
 		}
 		else if (entry->type == 'e') {
-			ret->entrycount++;
 			break; // ignore rest of data
 		}
 		else {
@@ -197,7 +199,7 @@ struct RORgz *rgz_loadFromFile(const char *fn) {
 		return(NULL);
 	}
 
-	ret = rgz_load(data, (unsigned int)length);
+	ret = rgz_loadFromData(data, (unsigned int)length);
 	_xfree(data);
 	fclose(fp);
 
