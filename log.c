@@ -21,17 +21,40 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#include "internal.h"
 
-#include "roint/constant.h"
-#include "roint/log.h"
-#include "roint/memory.h"
-#include "roint/text.h"
+#include <stdarg.h>
+#include <stdio.h>
 
-#include "roint/grf.h"
-#include "roint/pal.h"
-#include "roint/rgz.h"
-#include "roint/rsm.h"
 
-#endif /* __ROINT_H */
+void _console_log_func(const char *fmt, ...) {
+	va_list ap;
+	va_start(ap, fmt);
+	vprintf(fmt, ap);
+	va_end(ap);
+}
+
+
+void _null_log_func(const char *fmt, ...) {
+}
+
+
+#ifdef ENABLE_CONSOLE_LOG_FUNC
+#	define DEFAULT_LOG_FUNC &_console_log_func
+#else
+#	define DEFAULT_LOG_FUNC &_null_log_func
+#endif
+roint_log_func _xlog = DEFAULT_LOG_FUNC;
+
+
+void roint_set_log_func(roint_log_func x) {
+	if (x == NULL)
+		_xlog = DEFAULT_LOG_FUNC;
+	else
+		_xlog = x;
+}
+
+
+roint_log_func roint_get_log_func() {
+	return(_xlog);
+}

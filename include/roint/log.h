@@ -21,17 +21,27 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#ifndef __ROINT_LOG_H
+#define __ROINT_LOG_H
 
-#include "roint/constant.h"
-#include "roint/log.h"
-#include "roint/memory.h"
-#include "roint/text.h"
+#ifndef WITHOUT_ROINT_CONFIG
+#	include "roint/config.h"
+#endif
 
-#include "roint/grf.h"
-#include "roint/pal.h"
-#include "roint/rgz.h"
-#include "roint/rsm.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif /* __ROINT_H */
+typedef void (*roint_log_func)(const char *fmt, ...);
+
+/// Set a custom log function to use troughout roint.
+/// Pass NULL to return to the default function.
+ROINT_DLLAPI void roint_set_log_func(roint_log_func);
+/// Get log function.
+ROINT_DLLAPI roint_log_func roint_get_log_func(void);
+
+#ifdef __cplusplus
+}
+#endif 
+
+#endif /* __ROINT_LOG_H */

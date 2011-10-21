@@ -26,6 +26,8 @@
 
 #include "roint.h"
 
+extern roint_log_func _xlog;
+
 extern roint_alloc_func _xalloc;
 extern roint_free_func _xfree;
 
