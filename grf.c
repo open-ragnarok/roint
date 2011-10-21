@@ -25,8 +25,8 @@
 #include "des.h"
 
 // Using this file in something that is NOT Open-Ragnarok?
-// Don't worry. If you don't have OPENRO_INTERNAL defined, this file will automagically use the standard C malloc() and free() functions. You'll only need grf.{c,h} and des.{c.h} files.
-#ifdef OPENRO_INTERNAL
+// Don't worry. If you don't have ROINT_INTERNAL defined, this file will automagically use the standard C malloc() and free() functions. You'll only need grf.{c,h} and des.{c.h} files.
+#ifdef ROINT_INTERNAL
 #	include "internal.h"
 #else
 #	define _xlog printf

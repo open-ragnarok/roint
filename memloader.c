@@ -23,7 +23,7 @@
 */
 #include "memloader.h"
 
-#ifdef OPENRO_INTERNAL
+#ifdef ROINT_INTERNAL
 #	include "internal.h"
 #else
 #	define _xlog printf
