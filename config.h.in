@@ -39,4 +39,8 @@
 #endif
 
 
+// output log messages to the console
+#cmakedefine ROINT_ENABLE_CONSOLE_LOG_FUNC
+
+
 #endif /* __ROINT_CONFIG_H */

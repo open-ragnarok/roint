@@ -10,12 +10,31 @@ if( CYGWIN )
 endif( CYGWIN )
 
 
+# check type sizes (code assumes 1,2,4)
+include( CheckTypeSize REQUIRED )
+CHECK_TYPE_SIZE( "char" SIZEOF_CHAR  BUILTIN_TYPES_ONLY )
+CHECK_TYPE_SIZE( "short" SIZEOF_SHORT  BUILTIN_TYPES_ONLY )
+CHECK_TYPE_SIZE( "int" SIZEOF_INT  BUILTIN_TYPES_ONLY )
+if( NOT (SIZEOF_CHAR EQUAL 1 AND SIZEOF_SHORT EQUAL 2 AND SIZEOF_INT EQUAL 4) )
+	message( FATAL_ERROR "unexpected type sizes: SIZEOF_CHAR=${SIZEOF_CHAR} SIZEOF_SHORT=${SIZEOF_SHORT} SIZEOF_INT=${SIZEOF_INT}" )
+endif()
+
+
+# check endianness (code assumes little endian)
+include( TestBigEndian REQUIRED )
+TEST_BIG_ENDIAN( BIGENDIAN )
+if( BIGENDIAN )
+	message( FATAL_ERROR "incompatible endianess: must be little endian" )
+endif( BIGENDIAN )
+
+
 # variables
 set( ROINT_LIBTYPE "SHARED" CACHE STRING "library type: SHARED (dll/so) or STATIC (lib/a)" )
 set_property( CACHE ROINT_LIBTYPE  PROPERTY STRINGS "SHARED" "STATIC" )
 if( MSVC )
 	option( ROINT_USE_STATIC_RUNTIME_LIBRARY "link to the static runtime library" ON )
 endif( MSVC )
+option( ROINT_ENABLE_CONSOLE_LOG_FUNC "output log messages to the console" OFF )
 file( GLOB ROINT_PUBLIC_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/roint/*.h"
@@ -26,13 +45,6 @@ file( GLOB ROINT_PRIVATE_HEADERS
 file( GLOB ROINT_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.c"
 	)
-include( CheckTypeSize REQUIRED )
-CHECK_TYPE_SIZE( char SIZEOF_CHAR BUILTIN_TYPES_ONLY )
-CHECK_TYPE_SIZE( short SIZEOF_SHORT BUILTIN_TYPES_ONLY )
-CHECK_TYPE_SIZE( int SIZEOF_INT BUILTIN_TYPES_ONLY )
-if( NOT (SIZEOF_CHAR EQUAL 1 AND SIZEOF_SHORT EQUAL 2 AND SIZEOF_INT EQUAL 4) )
-	message( FATAL_ERROR "unexpected type sizes: SIZEOF_CHAR=${SIZEOF_CHAR} SIZEOF_SHORT=${SIZEOF_SHORT} SIZEOF_INT=${SIZEOF_INT}" )
-endif()
 find_package( ZLIB REQUIRED ) # dependency
 if( ROINT_LIBTYPE STREQUAL "SHARED" )
 	set( ROINT_DLL 1 )

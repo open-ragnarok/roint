@@ -39,7 +39,7 @@ void _null_log_func(const char *fmt, ...) {
 }
 
 
-#ifdef ENABLE_CONSOLE_LOG_FUNC
+#ifdef ROINT_ENABLE_CONSOLE_LOG_FUNC
 #	define DEFAULT_LOG_FUNC &_console_log_func
 #else
 #	define DEFAULT_LOG_FUNC &_null_log_func
