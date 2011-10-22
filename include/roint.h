@@ -29,6 +29,7 @@
 #include "roint/memory.h"
 #include "roint/text.h"
 
+#include "roint/act.h"
 #include "roint/grf.h"
 #include "roint/pal.h"
 #include "roint/spr.h"

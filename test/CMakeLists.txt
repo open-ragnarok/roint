@@ -3,6 +3,7 @@ option( ROINT_BUILD_TESTS "build tests" OFF )
 if( ROINT_BUILD_TESTS )
 remove_definitions( -DROINT_INTERNAL )
 set( TESTS
+	test_act
 	test_rgz
 	test_spr
 	test_text
