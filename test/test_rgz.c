@@ -28,21 +28,21 @@
 
 int main(int argc, char **argv)
 {
-	const char *archive;
+	const char *fn;
 	struct RORgz *rgz;
 	unsigned int i;
 	int ret;
 
 	if (argc != 2) {
 		const char *exe = argv[0];
-		printf("Usage:\n  %s archive.rgz\n", exe);
+		printf("Usage:\n  %s file.rgz\n", exe);
 		return(EXIT_FAILURE);
 	}
 
-	archive = argv[1];
-	rgz = rgz_loadFromFile(archive);
+	fn = argv[1];
+	rgz = rgz_loadFromFile(fn);
 	if (rgz == NULL) {
-		printf("error : failed to load file '%s'\n", archive);
+		printf("error : failed to load file '%s'\n", fn);
 		return(EXIT_FAILURE);
 	}
 	ret = EXIT_SUCCESS;

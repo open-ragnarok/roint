@@ -32,14 +32,19 @@
 extern "C" {
 #endif 
 
-
+	
+#pragma pack(push,1)
 /// Rgz entry.
 /// Everything after the end entry is ignored.
 struct RORgzEntry {
-	unsigned char type; //< entry type : 'f' for file, 'd' for directory, 'e' for end entry
+	/// Entry type:
+	///  'f' - file entry
+	///  'd' - directory entry
+	///  'e' - end entry
+	unsigned char type;
 	char path[256]; //< path (NUL-terminated, "end" in end entry, uses '\\' as dir separator)
 
-	// file entries:
+	// file entry data:
 	unsigned int datalength;
 	unsigned char *data;
 };
@@ -50,11 +55,12 @@ struct RORgz {
 	unsigned int entrycount;
 	struct RORgzEntry *entries;
 };
+#pragma pack(pop)
 
 
 /// Loads the rgz from a data buffer. (NULL on error)
 ROINT_DLLAPI struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length);
-/// Loads the rgz from a file. (NULL on error)
+/// Loads the rgz from a system file. (NULL on error)
 ROINT_DLLAPI struct RORgz *rgz_loadFromFile(const char *fn);
 // Frees everything inside the RORgz structure allocated by us (including the rgz itself!)
 ROINT_DLLAPI void rgz_unload(struct RORgz *rgz);
