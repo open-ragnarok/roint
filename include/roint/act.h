@@ -101,7 +101,9 @@ struct ROAct {
 
 /// Loads the act from a data buffer. (NULL on error)
 ROINT_DLLAPI struct ROAct *act_loadFromData(const unsigned char *data, unsigned int len);
-/// Loads the act from the ROGrf structure file. (NULL on error)
+/// Loads the act from a system file. (NULL on error)
+ROINT_DLLAPI struct ROAct *act_loadFromFile(const char *fn);
+/// Loads the act from a ROGrf file. (NULL on error)
 ROINT_DLLAPI struct ROAct *act_loadFromGrf(struct ROGrfFile*);
 /// Frees everything inside the ROAct structure allocated by us (including the act itself!)
 ROINT_DLLAPI void act_unload(struct ROAct*);

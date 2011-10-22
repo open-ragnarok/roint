@@ -180,6 +180,45 @@ struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
 }
 
 
+struct ROAct *act_loadFromFile(const char *fn) {
+	FILE *fp;
+	unsigned char *data;
+	long length;
+	struct ROAct *ret;
+
+	fp = fopen(fn, "rb");
+	if (fp == NULL) {
+		_xlog("Cannot open file %s\n", fn);
+		return(NULL);
+	}
+
+	fseek(fp, 0, SEEK_END);
+	length = ftell(fp);
+	if (length == -1) {
+		_xlog("%s : %s\n", fn, strerror(errno));
+		fclose(fp);
+		return(NULL);
+	}
+
+	data = (unsigned char*)malloc((unsigned int)length);
+	fseek(fp, 0, SEEK_SET);
+	clearerr(fp);
+	fread(data, (unsigned int)length, 1, fp);
+	if (ferror(fp)) {
+		_xlog("%s : %s\n", fn, strerror(errno));
+		free(data);
+		fclose(fp);
+		return(NULL);
+	}
+
+	ret = act_loadFromData(data, (unsigned int)length);
+	free(data);
+	fclose(fp);
+
+	return(ret);
+}
+
+
 struct ROAct *act_loadFromGrf(struct ROGrfFile *file) {
 	struct ROAct *ret = NULL;
 	if (file->data == NULL) {

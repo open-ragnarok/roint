@@ -27,48 +27,9 @@
 #include <roint.h>
 
 
-struct ROAct *loadFromFile(const char *fn) {
-	FILE *fp;
-	unsigned char *data;
-	long length;
-	struct ROAct *ret;
-
-	fp = fopen(fn, "rb");
-	if (fp == NULL) {
-		printf("Cannot open file %s\n", fn);
-		return(NULL);
-	}
-
-	fseek(fp, 0, SEEK_END);
-	length = ftell(fp);
-	if (length == -1) {
-		perror(fn);
-		fclose(fp);
-		return(NULL);
-	}
-
-	data = (unsigned char*)malloc((unsigned int)length);
-	fseek(fp, 0, SEEK_SET);
-	clearerr(fp);
-	fread(data, (unsigned int)length, 1, fp);
-	if (ferror(fp)) {
-		perror(fn);
-		free(data);
-		fclose(fp);
-		return(NULL);
-	}
-
-	ret = act_loadFromData(data, (unsigned int)length);
-	free(data);
-	fclose(fp);
-
-	return(ret);
-}
-
-
 int main(int argc, char **argv)
 {
-	const char *archive;
+	const char *fn;
 	struct ROAct *act;
 	unsigned int actionId, motionId, sprclipId, attachpointId, eventId;
 	int ret;
@@ -79,11 +40,11 @@ int main(int argc, char **argv)
 		return(EXIT_FAILURE);
 	}
 
-	archive = argv[1];
+	fn = argv[1];
 	
-	act = loadFromFile(archive);
+	act = act_loadFromFile(fn);
 	if (act == NULL) {
-		printf("error : failed to load file '%s'\n", archive);
+		printf("error : failed to load file '%s'\n", fn);
 		return(EXIT_FAILURE);
 	}
 	ret = EXIT_SUCCESS;
