@@ -4,6 +4,7 @@ if( ROINT_BUILD_TESTS )
 remove_definitions( -DROINT_INTERNAL )
 set( TESTS
 	test_act
+	test_gat
 	test_rgz
 	test_spr
 	test_text

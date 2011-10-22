@@ -21,20 +21,56 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_H
-#define __ROINT_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <roint.h>
 
-#include "roint/constant.h"
-#include "roint/log.h"
-#include "roint/memory.h"
-#include "roint/text.h"
 
-#include "roint/act.h"
-#include "roint/gat.h"
-#include "roint/grf.h"
-#include "roint/pal.h"
-#include "roint/spr.h"
-#include "roint/rgz.h"
-#include "roint/rsm.h"
+int main(int argc, char **argv)
+{
+	const char *fn;
+	struct ROGat *gat;
+	unsigned int cellcount;
+	unsigned int i;
+	int ret;
 
-#endif /* __ROINT_H */
+	if (argc != 2) {
+		const char *exe = argv[0];
+		printf("Usage:\n  %s file.gat\n", exe);
+		return(EXIT_FAILURE);
+	}
+
+	fn = argv[1];
+
+	gat = gat_loadFromFile(fn);
+	if (gat == NULL) {
+		printf("error : failed to load file '%s'\n", fn);
+		return(EXIT_FAILURE);
+	}
+	ret = EXIT_SUCCESS;
+	printf("Version: v%u.%u\n", gat->vermajor, gat->verminor);
+	if (gat->vermajor == 1 && gat->verminor == 2)
+		;// supported (v1.2)
+	else {
+		printf("error : unknown version\n");
+		ret = EXIT_FAILURE;
+	}
+
+	cellcount = gat->width * gat->height;
+	printf("Cells: %u (%u x %u) (%p)\n", cellcount, gat->width, gat->height, gat->cells);
+	for (i = 0; i < cellcount; i++) {
+		struct ROGatCell *cell = &gat->cells[i];
+		printf("[%u] height={%f,%f,%f,%f} type=%d\n", i,
+			cell->height[0], cell->height[1], cell->height[2], cell->height[3], cell->height[4],
+			cell->type);
+	}
+	if (cellcount == 0 && gat->cells != NULL) {
+		printf("error : should have NULL cells\n");
+		ret = EXIT_FAILURE;
+	}
+
+	if (ret == EXIT_SUCCESS)
+		printf("OK\n");
+	return(ret);
+}
