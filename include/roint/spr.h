@@ -74,7 +74,9 @@ struct ROSpr {
 
 /// Loads the spr from a data buffer. (NULL on error)
 ROINT_DLLAPI struct ROSpr *spr_loadFromData(const unsigned char *data, unsigned int len);
-/// Loads the spr from the ROGrf structure file. (NULL on error)
+/// Loads the spr from a system file. (NULL on error)
+ROINT_DLLAPI struct ROSpr *spr_loadFromFile(const char *fn);
+/// Loads the spr from a ROGrf file. (NULL on error)
 ROINT_DLLAPI struct ROSpr *spr_loadFromGrf(struct ROGrfFile*);
 /// Frees everything inside the ROSpr structure allocated by us (including the spr itself!)
 ROINT_DLLAPI void spr_unload(struct ROSpr*);

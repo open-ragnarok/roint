@@ -147,6 +147,45 @@ struct ROSpr *spr_loadFromData(const unsigned char *data, unsigned int length) {
 }
 
 
+struct ROSpr *spr_loadFromFile(const char *fn) {
+	FILE *fp;
+	unsigned char *data;
+	long length;
+	struct ROSpr *ret;
+
+	fp = fopen(fn, "rb");
+	if (fp == NULL) {
+		_xlog("Cannot open file %s\n", fn);
+		return(NULL);
+	}
+
+	fseek(fp, 0, SEEK_END);
+	length = ftell(fp);
+	if (length == -1) {
+		_xlog("%s : %s\n", fn, strerror(errno));
+		fclose(fp);
+		return(NULL);
+	}
+
+	data = (unsigned char*)_xalloc((unsigned int)length);
+	fseek(fp, 0, SEEK_SET);
+	clearerr(fp);
+	fread(data, (unsigned int)length, 1, fp);
+	if (ferror(fp)) {
+		_xlog("%s : %s\n", fn, strerror(errno));
+		_xfree(data);
+		fclose(fp);
+		return(NULL);
+	}
+
+	ret = spr_loadFromData(data, (unsigned int)length);
+	_xfree(data);
+	fclose(fp);
+
+	return(ret);
+}
+
+
 struct ROSpr *spr_loadFromGrf(struct ROGrfFile *file) {
 	struct ROSpr *ret = NULL;
 	if (file->data == NULL) {
