@@ -21,72 +21,35 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#include "internal.h"
-#include <string.h> // memcpy
+#ifndef __ROINT_INTERNAL_READER_H
+#define __ROINT_INTERNAL_READER_H
 
+// For ROInt internal use only
 
-struct ROPal *pal_load(struct _reader *reader) {
-	struct ROPal *ret;
+struct _reader {
+	/// Destructor.
+	void (*destroy)(struct _reader *reader);
 
-	ret = (struct ROPal*)_xalloc(sizeof(struct ROPal));
-	reader->read(ret, sizeof(struct ROPal), 1, reader);
-	
-	if (reader->error) {
-		// data was missing
-		_xlog("PAL is incomplete or invalid\n");
-		pal_unload(ret);
-		return(NULL);
-	}
+	/// Read 'count' elements of size 'size' into 'dest'. (updates error indicator)
+	/// If not enough data, zero out incomplete elements.
+	/// Returns 0 on success.
+	int (*read)(void *dest, unsigned long size, unsigned int count, struct _reader *reader);
 
-	return(ret);
-}
+	/// Set position indicator. (updates error indicator)
+	/// pos : offset from origin
+	/// origin : SEEK_SET or SEEK_CUR or SEEK_END
+	/// Returns 0 on success.
+	int (*seek)(struct _reader *reader, long pos, int origin);
 
+	/// Get position indicator.
+	unsigned long (*tell)(struct _reader *reader);
 
-struct ROPal *pal_loadFromData(const unsigned char *data, unsigned int length) {
-	struct ROPal *ret;
-	struct _reader *reader;
+	/// Error indicator. (0 for success)
+	int error;
+};
 
-	reader = memreader_init(data, length);
-	ret = pal_load(reader);
-	reader->destroy(reader);
+// Constructors.
+struct _reader *memreader_init(const unsigned char *ptr, unsigned long size);
+struct _reader *filereader_init(const char *fn);
 
-	return(ret);
-}
-
-
-struct ROPal *pal_loadFromFile(const char *fn) {
-	struct ROPal *ret;
-	struct _reader *reader;
-
-	reader = filereader_init(fn);
-	ret = pal_load(reader);
-	reader->destroy(reader);
-
-	return(ret);
-}
-
-
-struct ROPal *pal_loadFromGrf(struct ROGrfFile *file) {
-	struct ROPal *ret = NULL;
-	if (file->data == NULL) {
-		grf_getdata(file);
-		if (file->data != NULL) {
-			ret = pal_loadFromData(file->data, file->uncompressedLength);
-		}
-		_xfree(file->data);
-		file->data = NULL;
-	}
-	else {
-		ret = pal_loadFromData(file->data, file->uncompressedLength);
-	}
-
-	return(ret);
-}
-
-
-void pal_unload(struct ROPal* pal) {
-	if (pal == NULL)
-		return;
-
-	_xfree(pal);
-}
+#endif /* __ROINT_INTERNAL_READER_H */

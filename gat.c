@@ -22,98 +22,76 @@
     ------------------------------------------------------------------------------------
 */
 #include "internal.h"
-#include "memloader.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-struct ROGat *gat_loadFromData(const unsigned char *data, unsigned int length) {
+struct ROGat *gat_load(struct _reader *reader) {
 	struct ROGat *ret;
-	struct _memloader *loader;
 	unsigned int cellcount;
 	char magic[4];
 
 	ret = (struct ROGat*)_xalloc(sizeof(struct ROGat));
 	memset(ret, 0, sizeof(struct ROGat));
-	loader = loader_init(data, length);
 
-	loader_read(&magic, 4, 1, loader);
+	reader->read(&magic, 4, 1, reader);
 	if (strncmp("GRAT", magic, 4) != 0) {
 		_xlog("Invalid GAT header: '%c%c%c%c'\n", magic[0], magic[1], magic[2], magic[3]);
 		gat_unload(ret);
-		loader_free(loader);
 		return(NULL);
 	}
 
-	loader_read(&ret->vermajor, 1, 1, loader);
-	loader_read(&ret->verminor, 1, 1, loader);
-	_xlog("GAT Version: %u.%u\n", ret->vermajor, ret->verminor);
+	reader->read(&ret->vermajor, 1, 1, reader);
+	reader->read(&ret->verminor, 1, 1, reader);
+	//_xlog("GAT Version: %u.%u\n", ret->vermajor, ret->verminor);
 	if (ret->vermajor == 1 && ret->verminor == 2)
 		;// supported
 	else {
 		_xlog("Unsupported GAT version (%u.%u)", ret->vermajor, ret->verminor);
 		gat_unload(ret);
-		loader_free(loader);
 		return(NULL);
 	}
 
-	loader_read(&ret->width, 4, 1, loader);
-	loader_read(&ret->height, 4, 1, loader);
+	reader->read(&ret->width, 4, 1, reader);
+	reader->read(&ret->height, 4, 1, reader);
 	cellcount = ret->width * ret->height;
 	if (cellcount > 0) {
 		ret->cells = (struct ROGatCell*)_xalloc(sizeof(struct ROGatCell) * cellcount);
-		loader_read(ret->cells, sizeof(struct ROGatCell), cellcount, loader);
+		reader->read(ret->cells, sizeof(struct ROGatCell), cellcount, reader);
 	}
 
-	if (loader_error(loader)) {
+	if (reader->error) {
 		// data was missing
 		_xlog("GAT is incomplete or invalid\n");
 		gat_unload(ret);
-		loader_free(loader);
 		return(NULL);
 	}
-	loader_free(loader);
+
+	return(ret);
+}
+
+
+struct ROGat *gat_loadFromData(const unsigned char *data, unsigned int length) {
+	struct ROGat *ret;
+	struct _reader *reader;
+
+	reader = memreader_init(data, length);
+	ret = gat_load(reader);
+	reader->destroy(reader);
 
 	return(ret);
 }
 
 
 struct ROGat *gat_loadFromFile(const char *fn) {
-	FILE *fp;
-	unsigned char *data;
-	long length;
 	struct ROGat *ret;
+	struct _reader *reader;
 
-	fp = fopen(fn, "rb");
-	if (fp == NULL) {
-		_xlog("Cannot open file %s\n", fn);
-		return(NULL);
-	}
-
-	fseek(fp, 0, SEEK_END);
-	length = ftell(fp);
-	if (length == -1) {
-		_xlog("%s : %s\n", fn, strerror(errno));
-		fclose(fp);
-		return(NULL);
-	}
-
-	data = (unsigned char*)malloc((unsigned int)length);
-	fseek(fp, 0, SEEK_SET);
-	clearerr(fp);
-	fread(data, (unsigned int)length, 1, fp);
-	if (ferror(fp)) {
-		_xlog("%s : %s\n", fn, strerror(errno));
-		free(data);
-		fclose(fp);
-		return(NULL);
-	}
-
-	ret = gat_loadFromData(data, (unsigned int)length);
-	free(data);
-	fclose(fp);
+	reader = filereader_init(fn);
+	ret = gat_load(reader);
+	reader->destroy(reader);
 
 	return(ret);
 }

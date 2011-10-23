@@ -25,10 +25,13 @@
 #define __ROINT_INTERNAL_H
 
 #include "roint.h"
+#include "reader.h"
 
 extern roint_log_func _xlog;
 
 extern roint_alloc_func _xalloc;
 extern roint_free_func _xfree;
+
+extern struct ROPal *pal_load(struct _reader *reader);
 
 #endif /* __ROINT_INTERNAL_H */

@@ -22,33 +22,29 @@
     ------------------------------------------------------------------------------------
 */
 #include "internal.h"
-#include "memloader.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
+struct ROAct *act_load(struct _reader *reader) {
 	struct ROAct *ret;
-	struct _memloader *loader;
 	unsigned int actionId, motionId, sprclipId, attachpointId, eventId;
 	char magic[2];
 
 	ret = (struct ROAct*)_xalloc(sizeof(struct ROAct));
 	memset(ret, 0, sizeof(struct ROAct));
-	loader = loader_init(data, length);
 
-	loader_read(&magic, 2, 1, loader);
+	reader->read(&magic, 2, 1, reader);
 	if (strncmp("AC", magic, 2) != 0) {
 		_xlog("Invalid ACT header: '%c%c'\n", magic[0], magic[1]);
 		act_unload(ret);
-		loader_free(loader);
 		return(NULL);
 	}
 
-	loader_read(&ret->version, 2, 1, loader);
-	_xlog("ACT Version: %u.%u\n", (ret->version >> 8) & 0xFF, ret->version & 0xFF);
+	reader->read(&ret->version, 2, 1, reader);
+	//_xlog("ACT Version: %u.%u\n", (ret->version >> 8) & 0xFF, ret->version & 0xFF);
 	switch (ret->version) {
 		default:
 			if (ret->version >= 0x100 && ret->version <= 0x1FF) {
@@ -57,7 +53,6 @@ struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
 			}
 			_xlog("Unsupported ACT version\n");
 			act_unload(ret);
-			loader_free(loader);
 			return(NULL);
 		case 0x200:
 		case 0x201:
@@ -69,54 +64,54 @@ struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
 	}
 
 	// read actions
-	loader_read(&ret->actioncount, 2, 1, loader);
-	loader_read(&ret->reserved, 10, 1, loader);
+	reader->read(&ret->actioncount, 2, 1, reader);
+	reader->read(&ret->reserved, 10, 1, reader);
 	if (ret->actioncount > 0) {
 		ret->actions = (struct ROActAction*)_xalloc(sizeof(struct ROActAction) * ret->actioncount);
 		memset(ret->actions, 0, sizeof(struct ROActAction) * ret->actioncount);
 		for (actionId = 0; actionId < ret->actioncount; actionId++) {
 			struct ROActAction *action = &ret->actions[actionId];
 			// read motions
-			loader_read(&action->motioncount, 4, 1, loader);
+			reader->read(&action->motioncount, 4, 1, reader);
 			if (action->motioncount > 0) {
 				action->motions = (struct ROActMotion*)_xalloc(sizeof(struct ROActMotion) * action->motioncount);
 				memset(action->motions, 0, sizeof(struct ROActMotion) * action->motioncount);
 				for (motionId = 0; motionId < action->motioncount; motionId++) {
 					struct ROActMotion *motion = &action->motions[motionId];
-					loader_read(&motion->range1, 4, 4, loader);
-					loader_read(&motion->range2, 4, 4, loader);
+					reader->read(&motion->range1, 4, 4, reader);
+					reader->read(&motion->range2, 4, 4, reader);
 					// read sprclips
-					loader_read(&motion->sprclipcount, 4, 1, loader);
+					reader->read(&motion->sprclipcount, 4, 1, reader);
 					if (motion->sprclipcount > 0) {
 						motion->sprclips = (struct ROActSprClip*)_xalloc(sizeof(struct ROActSprClip) * motion->sprclipcount);
 						memset(motion->sprclips, 0, sizeof(struct ROActSprClip) * motion->sprclipcount);
 						for (sprclipId = 0; sprclipId < motion->sprclipcount; sprclipId++) {
 							struct ROActSprClip *sprclip = &motion->sprclips[sprclipId];
-							loader_read(&sprclip->x, 4, 1, loader);
-							loader_read(&sprclip->y, 4, 1, loader);
-							loader_read(&sprclip->sprNo, 4, 1, loader);
-							loader_read(&sprclip->mirrorOn, 4, 1, loader);
+							reader->read(&sprclip->x, 4, 1, reader);
+							reader->read(&sprclip->y, 4, 1, reader);
+							reader->read(&sprclip->sprNo, 4, 1, reader);
+							reader->read(&sprclip->mirrorOn, 4, 1, reader);
 							sprclip->color = 0xFFFFFFFF;
 							sprclip->xZoom = sprclip->yZoom = 1.0f;
 							sprclip->angle = 0;
 							sprclip->sprType = 0;
 							sprclip->width = sprclip->height = 0;
 							if (ret->version >= 0x200) {
-								loader_read(&sprclip->color, 4, 1, loader);
+								reader->read(&sprclip->color, 4, 1, reader);
 								if (ret->version >= 0x204) {
-									loader_read(&sprclip->xZoom, 4, 1, loader);
-									loader_read(&sprclip->yZoom, 4, 1, loader);
+									reader->read(&sprclip->xZoom, 4, 1, reader);
+									reader->read(&sprclip->yZoom, 4, 1, reader);
 								}
 								else {
 									float zoom;
-									loader_read(&zoom, 4, 1, loader);
+									reader->read(&zoom, 4, 1, reader);
 									sprclip->xZoom = sprclip->yZoom = zoom;
 								}
-								loader_read(&sprclip->angle, 4, 1, loader);
-								loader_read(&sprclip->sprType, 4, 1, loader);
+								reader->read(&sprclip->angle, 4, 1, reader);
+								reader->read(&sprclip->sprType, 4, 1, reader);
 								if (ret->version >= 0x205) {
-									loader_read(&sprclip->width, 4, 1, loader);
-									loader_read(&sprclip->height, 4, 1, loader);
+									reader->read(&sprclip->width, 4, 1, reader);
+									reader->read(&sprclip->height, 4, 1, reader);
 								}
 							}
 						}
@@ -124,21 +119,21 @@ struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
 					// read eventId
 					motion->eventId = -1;
 					if (ret->version >= 0x200) {
-						loader_read(&motion->eventId, 4, 1, loader);
+						reader->read(&motion->eventId, 4, 1, reader);
 						if (ret->version == 0x200)
 							motion->eventId = -1;// no array of events in this version
 					}
 					// read attach points
 					if (ret->version >= 0x203) {
-						loader_read(&motion->attachpointcount, 4, 1, loader);
+						reader->read(&motion->attachpointcount, 4, 1, reader);
 						if (motion->attachpointcount > 0) {
 							motion->attachpoints = (struct ROActAttachPoint*)_xalloc(sizeof(struct ROActAttachPoint) * motion->attachpointcount);
 							memset(motion->attachpoints, 0, sizeof(struct ROActAttachPoint) * motion->attachpointcount);
 							for (attachpointId = 0; attachpointId < motion->attachpointcount; attachpointId++) {
 								struct ROActAttachPoint *attachpoint = &motion->attachpoints[attachpointId];
 								int ignored;
-								loader_read(&ignored, 4, 1, loader);
-								loader_read(attachpoint, sizeof(struct ROActAttachPoint), 1, loader);
+								reader->read(&ignored, 4, 1, reader);
+								reader->read(attachpoint, sizeof(struct ROActAttachPoint), 1, reader);
 							}
 						}
 					}
@@ -148,13 +143,13 @@ struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
 	}
 	// read events
 	if (ret->version >= 0x201) {
-		loader_read(&ret->eventcount, 4, 1, loader);
+		reader->read(&ret->eventcount, 4, 1, reader);
 		if (ret->eventcount > 0) {
 			ret->events = (struct ROActEvent*)_xalloc(sizeof(struct ROActEvent) * ret->eventcount);
 			memset(ret->events, 0, sizeof(struct ROActEvent) * ret->eventcount);
 			for (eventId = 0; eventId < ret->eventcount; eventId++) {
 				struct ROActEvent *evt = &ret->events[eventId];
-				loader_read(evt, sizeof(struct ROActEvent), 1, loader);
+				reader->read(evt, sizeof(struct ROActEvent), 1, reader);
 				evt->name[39] = 0;
 			}
 		}
@@ -163,57 +158,40 @@ struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
 	if (ret->version >= 0x202) {
 		if (ret->actioncount > 0) {
 			ret->delays = (float*)_xalloc(sizeof(float) * ret->actioncount);
-			loader_read(ret->delays, 4, ret->actioncount, loader);
+			reader->read(ret->delays, 4, ret->actioncount, reader);
 		}
 	}
 
-	if (loader_error(loader)) {
+	if (reader->error) {
 		// data was missing
-		_xlog("SPR is incomplete or invalid\n");
+		_xlog("ACT is incomplete or invalid\n");
 		act_unload(ret);
-		loader_free(loader);
 		return(NULL);
 	}
-	loader_free(loader);
+
+	return(ret);
+}
+
+
+struct ROAct *act_loadFromData(const unsigned char *data, unsigned int length) {
+	struct ROAct *ret;
+	struct _reader *reader;
+
+	reader = memreader_init(data, length);
+	ret = act_load(reader);
+	reader->destroy(reader);
 
 	return(ret);
 }
 
 
 struct ROAct *act_loadFromFile(const char *fn) {
-	FILE *fp;
-	unsigned char *data;
-	long length;
 	struct ROAct *ret;
+	struct _reader *reader;
 
-	fp = fopen(fn, "rb");
-	if (fp == NULL) {
-		_xlog("Cannot open file %s\n", fn);
-		return(NULL);
-	}
-
-	fseek(fp, 0, SEEK_END);
-	length = ftell(fp);
-	if (length == -1) {
-		_xlog("%s : %s\n", fn, strerror(errno));
-		fclose(fp);
-		return(NULL);
-	}
-
-	data = (unsigned char*)malloc((unsigned int)length);
-	fseek(fp, 0, SEEK_SET);
-	clearerr(fp);
-	fread(data, (unsigned int)length, 1, fp);
-	if (ferror(fp)) {
-		_xlog("%s : %s\n", fn, strerror(errno));
-		free(data);
-		fclose(fp);
-		return(NULL);
-	}
-
-	ret = act_loadFromData(data, (unsigned int)length);
-	free(data);
-	fclose(fp);
+	reader = filereader_init(fn);
+	ret = act_load(reader);
+	reader->destroy(reader);
 
 	return(ret);
 }
