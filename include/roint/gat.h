@@ -37,7 +37,11 @@ extern "C" {
 #pragma pack(push,1)
 /// Ground Cell.
 struct ROGatCell {
-	float height[4]; //< west->east, south->north ordering; the lower the number, the higher the ground
+	/// Height of the cell corners.
+	///  ordering : west->east, south->north
+	///  value : lower numbers mean higher ground
+	///  zoom : 5 units is equivalent to the side of the cell
+	float height[4];
 	/// Type of cell.
 	///  0 - walkable block
 	///  1 - non-walkable block
