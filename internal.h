@@ -30,11 +30,17 @@
 #include "reader.h"
 #include "writer.h"
 
+#include <stddef.h> // size_t
+
 extern roint_log_func _xlog;
 
 extern roint_alloc_func _xalloc;
 extern roint_free_func _xfree;
 
 extern struct ROPal *pal_load(struct _reader *reader);
+
+// util
+extern int _add_over_limit(size_t val1, size_t val2, size_t limit);
+extern int _mul_over_limit(size_t val1, size_t val2, size_t limit);
 
 #endif /* __ROINT_INTERNAL_H */
