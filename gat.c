@@ -28,6 +28,10 @@
 #include <string.h>
 
 
+/// Maximum cell count. (original format uses int)
+const unsigned int MAX_GAT_CELL_COUNT = ((unsigned int)0-1) / sizeof(struct ROGatCell);
+
+
 struct ROGat *gat_load(struct _reader *reader) {
 	struct ROGat *ret;
 	unsigned int cellcount;
@@ -56,6 +60,11 @@ struct ROGat *gat_load(struct _reader *reader) {
 
 	reader->read(&ret->width, 4, 1, reader);
 	reader->read(&ret->height, 4, 1, reader);
+	if (_mul_over_limit(ret->width, ret->height, MAX_GAT_CELL_COUNT)) {
+		_xlog("GAT dimensions are too big (%ux%u)\n", ret->width, ret->height);
+		gat_unload(ret);
+		return(NULL);
+	}
 	cellcount = ret->width * ret->height;
 	if (cellcount > 0) {
 		ret->cells = (struct ROGatCell*)_xalloc(sizeof(struct ROGatCell) * cellcount);
