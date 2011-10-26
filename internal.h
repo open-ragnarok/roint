@@ -25,7 +25,10 @@
 #define __ROINT_INTERNAL_H
 
 #include "roint.h"
+
+#include "internal_config.h"
 #include "reader.h"
+#include "writer.h"
 
 extern roint_log_func _xlog;
 
