@@ -30,6 +30,7 @@
 
 /// Maximum cell count. (original format uses int)
 const unsigned int MAX_GAT_CELL_COUNT = ((unsigned int)0-1) / sizeof(struct ROGatCell);
+const char GAT_MAGIC[4] = {'G','R','A','T'};
 
 
 unsigned short gat_inspect(struct ROGat *gat) {
@@ -66,7 +67,7 @@ struct ROGat *gat_load(struct _reader *reader) {
 	memset(ret, 0, sizeof(struct ROGat));
 
 	reader->read(&magic, 4, 1, reader);
-	if (strncmp("GRAT", magic, 4) != 0) {
+	if (strncmp(GAT_MAGIC, magic, 4) != 0) {
 		_xlog("Invalid GAT header: '%c%c%c%c'\n", magic[0], magic[1], magic[2], magic[3]);
 		gat_unload(ret);
 		return(NULL);
@@ -107,7 +108,7 @@ struct ROGat *gat_load(struct _reader *reader) {
 }
 
 
-struct ROGat *gat_loadFromData(const unsigned char *data, unsigned int length) {
+struct ROGat *gat_loadFromData(const unsigned char *data, unsigned long length) {
 	struct ROGat *ret;
 	struct _reader *reader;
 
@@ -149,7 +150,59 @@ struct ROGat *gat_loadFromGrf(struct ROGrfFile *file) {
 }
 
 
-void gat_unload(struct ROGat* gat) {
+int gat_save(struct ROGat *gat, struct _writer *writer) {
+	unsigned int cellcount;
+
+	if (gat == NULL || writer == NULL || writer->error)
+		return(1);
+
+	if (gat_inspect(gat) == 0) {
+		_xlog("GAT is invalid\n");
+		return(1);
+	}
+	if (gat->vermajor != 1 || gat->verminor != 2) {
+		_xlog("unknown GAT version (v%u.%u)\n", gat->vermajor, gat->verminor);
+		return(1);
+	}
+
+	writer->write(GAT_MAGIC, 4, 1, writer);
+	writer->write(&gat->vermajor, 1, 1, writer);
+	writer->write(&gat->verminor, 1, 1, writer);
+	writer->write(&gat->width, 4, 1, writer);
+	writer->write(&gat->height, 4, 1, writer);
+	cellcount = gat->width * gat->height;
+	if (cellcount > 0)
+		writer->write(gat->cells, sizeof(struct ROGatCell), cellcount, writer);
+
+	return(writer->error);
+}
+
+
+int gat_saveToData(struct ROGat *gat, unsigned char **data_out, unsigned long *size_out) {
+	int ret;
+	struct _writer *writer;
+
+	writer = memwriter_init(data_out, size_out);
+	ret = gat_save(gat, writer);
+	writer->destroy(writer);
+
+	return(ret);
+}
+
+
+int gat_saveToFile(struct ROGat *gat, const char *fn) {
+	int ret;
+	struct _writer *writer;
+
+	writer = filewriter_init(fn);
+	ret = gat_save(gat, writer);
+	writer->destroy(writer);
+
+	return(ret);
+}
+
+
+void gat_unload(struct ROGat *gat) {
 	if (gat == NULL)
 		return;
 

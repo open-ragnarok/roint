@@ -110,7 +110,7 @@ void memwriter_free(struct _writer *writer) {
 }
 
 
-int memwriter_write(void *src, unsigned long size, unsigned int count, struct _writer *writer) {
+int memwriter_write(const void *src, unsigned long size, unsigned int count, struct _writer *writer) {
 	struct _memwriter *memwriter = CAST_UP(struct _memwriter,base,writer);
 	unsigned long total = size * count;
 
@@ -211,7 +211,7 @@ void filewriter_free(struct _writer *writer) {
 }
 
 
-int filewriter_write(void *src, unsigned long size, unsigned int count, struct _writer *writer) {
+int filewriter_write(const void *src, unsigned long size, unsigned int count, struct _writer *writer) {
 	struct _filewriter *filewriter = CAST_UP(struct _filewriter,base,writer);
 	size_t donecount;
 

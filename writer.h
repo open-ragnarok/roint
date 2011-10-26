@@ -32,7 +32,7 @@ struct _writer {
 
 	/// Write 'count' elements of size 'size' from 'src'. (updates error indicator)
 	/// Returns 0 on success.
-	int (*write)(void *src, unsigned long size, unsigned int count, struct _writer *writer);
+	int (*write)(const void *src, unsigned long size, unsigned int count, struct _writer *writer);
 
 	/// Resize the data. (updates error indicator)
 	/// The expanded area will be 0-filled.
