@@ -32,6 +32,31 @@
 const unsigned int MAX_GAT_CELL_COUNT = ((unsigned int)0-1) / sizeof(struct ROGatCell);
 
 
+unsigned short gat_inspect(struct ROGat *gat) {
+	unsigned int cellcount;
+
+	if (gat == NULL)
+		return(0);
+
+	if (_mul_over_limit(gat->width, gat->height, MAX_GAT_CELL_COUNT)) {
+		_xlog("GAT dimensions are too big (%ux%u)\n", gat->width, gat->height);
+		return(0);
+	}
+
+	cellcount = gat->width * gat->height;
+	if (cellcount > 0 && gat->cells == NULL) {
+		_xlog("expected NULL cells in GAT\n");
+		return(0);
+	}
+	if (cellcount == 0 && gat->cells != NULL) {
+		_xlog("expected non-NULL cells in GAT\n");
+		return(0);
+	}
+
+	return(0x102); // v1.2
+}
+
+
 struct ROGat *gat_load(struct _reader *reader) {
 	struct ROGat *ret;
 	unsigned int cellcount;

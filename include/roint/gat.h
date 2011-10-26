@@ -66,6 +66,8 @@ struct ROGat {
 #pragma pack(pop)
 
 
+/// Inspects the gat data and returns the first compatible version. (0 if invalid)
+ROINT_DLLAPI unsigned short gat_inspect(struct ROGat *gat);
 /// Loads the gat from a data buffer. (NULL on error)
 ROINT_DLLAPI struct ROGat *gat_loadFromData(const unsigned char *data, unsigned int len);
 /// Loads the gat from a system file. (NULL on error)
