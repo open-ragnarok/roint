@@ -68,18 +68,17 @@ struct _filewriter {
 
 
 /// Initial size of the memwriter buffer.
-const unsigned long MEMWRITER_BUFSIZE = 1024;
+const unsigned long MEMWRITER_BUFSIZE = 1023;
 
 
 /// Ensures the buffer is big enough.
 void _memwriter_reserve(unsigned long size, struct _memwriter *memwriter) {
 	unsigned long bufsize = memwriter->bufsize;
-	while (size < bufsize)
+	while (bufsize < size)
 		bufsize = bufsize * 4 + 3;
 	if (bufsize != memwriter->bufsize) {
 		unsigned char *buf = (unsigned char*)_xalloc(bufsize);
 		memcpy(buf, memwriter->buf, memwriter->bufsize);
-		memset(buf + memwriter->bufsize, 0, bufsize - memwriter->bufsize);
 		_xfree(memwriter->buf);
 		memwriter->buf = buf;
 		memwriter->bufsize = bufsize;
@@ -91,7 +90,10 @@ void _memwriter_reserve(unsigned long size, struct _memwriter *memwriter) {
 void memwriter_free(struct _writer *writer) {
 	struct _memwriter *memwriter = CAST_UP(struct _memwriter,base,writer);
 	if (memwriter->data_out != NULL) {
-		if (memwriter->size == memwriter->bufsize) {
+		if (memwriter->size == 0) {
+			*memwriter->data_out = NULL;
+		}
+		else if (memwriter->size == memwriter->bufsize) {
 			*memwriter->data_out = memwriter->buf;
 			memwriter->buf = NULL;
 		}
@@ -129,6 +131,8 @@ int memwriter_resize(unsigned long size, struct _writer *writer) {
 	struct _memwriter *memwriter = CAST_UP(struct _memwriter,base,writer);
 
 	_memwriter_reserve(size, memwriter);
+	if (size > memwriter->size)
+		memset(memwriter->buf + memwriter->size, 0, size - memwriter->size);
 	memwriter->size = size;
 	writer->error = 0;
 	return(writer->error);
