@@ -51,11 +51,15 @@ struct ROPal {
 
 
 /// Loads the pal from a data buffer. (NULL on error)
-ROINT_DLLAPI struct ROPal *pal_loadFromData(const unsigned char *data, unsigned int len);
+ROINT_DLLAPI struct ROPal *pal_loadFromData(const unsigned char *data, unsigned long len);
 /// Loads the pal from a system file. (NULL on error)
 ROINT_DLLAPI struct ROPal *pal_loadFromFile(const char *fn);
 /// Loads the pal from a ROGrf file. (NULL on error)
 ROINT_DLLAPI struct ROPal *pal_loadFromGrf(struct ROGrfFile*);
+/// Saves the pal to a data buffer. (0 on success)
+ROINT_DLLAPI int pal_saveToData(struct ROPal *pal, unsigned char **data, unsigned long *len);
+/// Saves the pal to a system file. (0 on success)
+ROINT_DLLAPI int pal_saveToFile(struct ROPal *pal, const char *fn);
 /// Frees everything inside the ROPal structure allocated by us (including the pal itself!)
 ROINT_DLLAPI void pal_unload(struct ROPal*);
 

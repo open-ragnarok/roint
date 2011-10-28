@@ -42,7 +42,7 @@ struct ROPal *pal_load(struct _reader *reader) {
 }
 
 
-struct ROPal *pal_loadFromData(const unsigned char *data, unsigned int length) {
+struct ROPal *pal_loadFromData(const unsigned char *data, unsigned long length) {
 	struct ROPal *ret;
 	struct _reader *reader;
 
@@ -79,6 +79,40 @@ struct ROPal *pal_loadFromGrf(struct ROGrfFile *file) {
 	else {
 		ret = pal_loadFromData(file->data, file->uncompressedLength);
 	}
+
+	return(ret);
+}
+
+
+int pal_save(struct ROPal *pal, struct _writer *writer) {
+	if (pal == NULL || writer == NULL || writer->error)
+		return(1);
+
+	writer->write(pal, sizeof(struct ROPal), 1, writer);
+
+	return(writer->error);
+}
+
+
+int pal_saveToData(struct ROPal *pal, unsigned char **data, unsigned long *length) {
+	int ret;
+	struct _writer *writer;
+
+	writer = memwriter_init(data, length);
+	ret = pal_save(pal, writer);
+	writer->destroy(writer);
+
+	return(ret);
+}
+
+
+int pal_saveToFile(struct ROPal *pal, const char *fn) {
+	int ret;
+	struct _writer *writer;
+
+	writer = filewriter_init(fn);
+	ret = pal_save(pal, writer);
+	writer->destroy(writer);
 
 	return(ret);
 }
