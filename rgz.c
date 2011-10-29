@@ -27,6 +27,59 @@
 #include <string.h>
 
 
+unsigned short rgz_inspect(const struct RORgz *rgz) {
+	unsigned int i;
+
+	if (rgz == NULL)
+		return(0);
+
+	if (rgz->entrycount > 0 && rgz->entries == NULL) {
+		_xlog("rgz.inspect : expected NULL entries\n");
+		return(0);
+	}
+	if (rgz->entrycount == 0 && rgz->entries != NULL) {
+		_xlog("rgz.inspect : expected non-NULL entries\n");
+		return(0);
+	}
+
+	for (i = 0; i < rgz->entrycount; i++) {
+		const struct RORgzEntry *entry = &rgz->entries[i];
+		if (entry->type != 'f' && entry->type != 'd' && entry->type != 'e') {
+			_xlog("rgz.inspect : [%u] unknown entry type '%c'\n", i, entry->type);
+			return(0);
+		}
+		if (memchr(entry->path, 0, sizeof(entry->path)) == NULL) {
+			_xlog("rgz.inspect : [%u] path is not NUL terminated\n", i);
+			return(0);
+		}
+		if (strchr(entry->path, '/') != NULL) {
+			_xlog("rgz.inspect : [%u] path must use \\ instead of / as directory separator\n", i);
+			return(0);
+		}
+		if (entry->datalength > 0 && entry->type != 'f' ) {
+			_xlog("rgz.inspect : [%u] expected no data\n", i);
+			return(0);
+		}
+		if (entry->datalength > 0 && entry->data == NULL) {
+			_xlog("rgz.inspect : [%u] expected non-NULL data\n", i);
+			return(0);
+		}
+		if (entry->datalength == 0 && entry->data != NULL) {
+			_xlog("rgz.inspect : [%u] expected NULL data\n", i);
+			return(0);
+		}
+		if (entry->type == 'e')
+			break;
+	}
+	if (i == rgz->entrycount) {
+		_xlog("rgz.inspect : end entry is missing\n", i);
+		return(0);
+	}
+
+	return(1); // valid
+}
+
+
 struct RORgz *rgz_load(struct _reader *reader) {
 	struct RORgz *ret;
 	unsigned int entrylimit;

@@ -58,6 +58,8 @@ struct RORgz {
 #pragma pack(pop)
 
 
+/// Inspects the rgz data and returns 1 if valid. (0 if invalid)
+ROINT_DLLAPI unsigned short rgz_inspect(const struct RORgz *rgz);
 /// Loads the rgz from a data buffer. (NULL on error)
 ROINT_DLLAPI struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length);
 /// Loads the rgz from a system file. (NULL on error)

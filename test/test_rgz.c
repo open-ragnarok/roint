@@ -41,6 +41,7 @@ int main(int argc, char **argv)
 
 	fn = argv[1];
 	rgz = rgz_loadFromFile(fn);
+	printf("Inspect : %u\n", rgz_inspect(rgz));
 	if (rgz == NULL) {
 		printf("error : failed to load file '%s'\n", fn);
 		return(EXIT_FAILURE);
