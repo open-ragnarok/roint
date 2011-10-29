@@ -54,6 +54,7 @@ struct _reader {
 /// type=0 : decode only the zlib format (default)
 /// type=1 : decode only the gzip format
 /// type=2 : zlib and gzip decoding with automatic header detection
+/// type=255 : process raw deflate data
 struct _reader *deflatereader_init(struct _reader *parent, unsigned char type);
 struct _reader *memreader_init(const unsigned char *ptr, unsigned long size);
 struct _reader *filereader_init(const char *fn);

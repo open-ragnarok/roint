@@ -68,6 +68,9 @@ struct _filereader {
 };
 
 
+const int DEFLATEREADER_WINDOW_BITS = MAX_WBITS;
+
+
 //-------------------------------------------------------------------
 
 
@@ -251,6 +254,7 @@ unsigned long deflatereader_tell(struct _reader *reader) {
 
 struct _reader *deflatereader_init(struct _reader *parent, unsigned char type) {
 	struct _deflatereader *ret = (struct _deflatereader*)_xalloc(sizeof(struct _deflatereader));
+	int windowBits;
 	int err;
 
 	ret->base.destroy = &deflatereader_free;
@@ -278,7 +282,11 @@ struct _reader *deflatereader_init(struct _reader *parent, unsigned char type) {
 	ret->in_offset = 0;
 	ret->out_offset = 0;
 
-	err = inflateInit2(&ret->stream, 15 + (int)type * 16);
+	if (type == 255)
+		windowBits = -DEFLATEREADER_WINDOW_BITS;
+	else
+		windowBits = DEFLATEREADER_WINDOW_BITS + (int)type * 16;
+	err = inflateInit2(&ret->stream, windowBits);
 	if (err != Z_OK) {
 		_deflatereader_zerror("init",err);
 		ret->base.error = 1;
