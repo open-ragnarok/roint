@@ -71,7 +71,7 @@ struct _filereader {
 //-------------------------------------------------------------------
 
 
-void _deflatereader_zliberror(const char *funcname, int err) {
+void _deflatereader_zerror(const char *funcname, int err) {
 	switch(err) {
 		case Z_MEM_ERROR:
 			_xlog("deflatereader.%s : Z_MEM_ERROR\n", funcname);
@@ -92,14 +92,14 @@ void _deflatereader_zliberror(const char *funcname, int err) {
 }
 
 
-voidpf _deflatereader_alloc_func(struct _deflatereader *deflatereader, uInt items, uInt size) {
+voidpf _deflatereader_zalloc_func(struct _deflatereader *deflatereader, uInt items, uInt size) {
 	if (_mul_over_limit(items, size, 0xFFFFFFFF))
 		return(Z_NULL);
 	return((voidpf)_xalloc(items * size));
 }
 
 
-void _deflatereader_free_func(struct _deflatereader *deflatereader, voidpf address) {
+void _deflatereader_zfree_func(struct _deflatereader *deflatereader, voidpf address) {
 	_xfree(address);
 }
 
@@ -117,7 +117,7 @@ void _deflatereader_input(struct _deflatereader *deflatereader) {
 		bytes = sizeof(deflatereader->in_buf);
 	parent->read(deflatereader->in_buf, bytes, 1, parent);
 	if (parent->error) {
-		_xlog("deflatereader.input : parent read error\n");
+		_xlog("deflatereader.input : parent.read error\n");
 		return;
 	}
 	deflatereader->stream.next_in = deflatereader->in_buf;
@@ -130,9 +130,13 @@ void deflatereader_free(struct _reader *reader) {
 	struct _deflatereader *deflatereader = CAST_UP(struct _deflatereader,base,reader);
 	int err;
 
+	if (deflatereader->stream.avail_in > 0) {
+		struct _reader *parent = deflatereader->parent;
+		parent->seek(parent, -(long)deflatereader->stream.avail_in, SEEK_CUR);
+	}
 	err = inflateEnd(&deflatereader->stream);
 	if (err != Z_OK)
-		_deflatereader_zliberror("destroy", err);
+		_deflatereader_zerror("destroy", err);
 	_xfree(deflatereader);
 }
 
@@ -165,7 +169,7 @@ int deflatereader_read(void *dest, unsigned long size, unsigned int count, struc
 		else {
 			int err = inflate(&deflatereader->stream, Z_SYNC_FLUSH);
 			if (err != Z_OK && err != Z_STREAM_END) {
-				_deflatereader_zliberror("read",err);
+				_deflatereader_zerror("read",err);
 				reader->error = 1;
 				break;
 			}
@@ -212,7 +216,7 @@ int deflatereader_seek(struct _reader *reader, long pos, int origin) {
 	if (reader->error)
 		return(reader->error);
 	if (parent->seek(parent, deflatereader->in_start, SEEK_SET) != 0) {
-		_xlog("deflatereader.seek : failed to seek parent\n");
+		_xlog("deflatereader.seek : parent.seek error\n");
 		reader->error = 1;
 		return(reader->error);
 	}
@@ -221,7 +225,7 @@ int deflatereader_seek(struct _reader *reader, long pos, int origin) {
 	deflatereader->stream.avail_in = 0;
 	err = inflateReset(&deflatereader->stream);
 	if (err != Z_OK) {
-		_deflatereader_zliberror("seek",err);
+		_deflatereader_zerror("seek",err);
 		reader->error = 1;
 		return(reader->error);
 	}
@@ -255,8 +259,8 @@ struct _reader *deflatereader_init(struct _reader *parent, unsigned char type) {
 	ret->base.tell = &deflatereader_tell;
 	ret->base.error = 0;
 	
-	ret->stream.zalloc = (alloc_func)&_deflatereader_alloc_func;
-	ret->stream.zfree = (free_func)&_deflatereader_free_func;
+	ret->stream.zalloc = (alloc_func)&_deflatereader_zalloc_func;
+	ret->stream.zfree = (free_func)&_deflatereader_zfree_func;
 	ret->stream.opaque = (voidpf)ret;
 	ret->stream.next_in = Z_NULL;
 	ret->stream.avail_in = 0;
@@ -265,13 +269,18 @@ struct _reader *deflatereader_init(struct _reader *parent, unsigned char type) {
 	ret->in_start = parent->tell(parent);
 	parent->seek(parent, 0, SEEK_END);
 	ret->in_size = parent->tell(parent) - ret->in_start;
+	if (parent->error) {
+		ret->in_size = 0;
+		_xlog("deflatereader.init : parent.tell error\n");
+		ret->base.error = 1;
+	}
 	parent->seek(parent, ret->in_start, SEEK_SET);
 	ret->in_offset = 0;
 	ret->out_offset = 0;
 
 	err = inflateInit2(&ret->stream, 15 + (int)type * 16);
 	if (err != Z_OK) {
-		_deflatereader_zliberror("init",err);
+		_deflatereader_zerror("init",err);
 		ret->base.error = 1;
 	}
 
