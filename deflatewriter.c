@@ -44,7 +44,6 @@ struct _deflatewriter {
 	struct _writer base;
 	struct _writer *parent;
 	z_stream stream;
-	unsigned long out_start;
 };
 
 
@@ -95,7 +94,7 @@ void _deflatewriter_zfree_func(voidpf opaque, voidpf address) {
 /// flush=Z_FINISH : terminate the stream, writing all pending data
 void _deflatewriter_output(struct _deflatewriter *deflatewriter, const void *data, unsigned int length, int flush) {
 	struct _writer *parent = deflatewriter->parent;
-	unsigned char buf[256];
+	unsigned char buf[0x8000]; // 32k
 	unsigned int bytes;
 	int err;
 
@@ -168,28 +167,9 @@ int deflatewriter_write(const void *src, unsigned long size, unsigned int count,
 
 int deflatewriter_resize(unsigned long size, struct _writer *writer) {
 	struct _deflatewriter *deflatewriter = CAST_UP(struct _deflatewriter,base,writer);
-	struct _writer *parent = deflatewriter->parent;
-	int err;
 
-	writer->error = 0;
-	if (size == 0) {
-		parent->resize(deflatewriter->out_start, parent);
-		if (parent->error) {
-			_xlog("deflatewriter.resize : parent.resize error\n");
-			writer->error = 1;
-		}
-		else {
-			err = deflateReset(&deflatewriter->stream);
-			if (err != Z_OK) {
-				_deflatewriter_zerror("resize", err);
-				writer->error = 1;
-			}
-		}
-	}
-	else {
-		_xlog("deflatewriter.resize : not supported (size!=0)\n");
-		writer->error = 1;
-	}
+	_xlog("deflatewriter.resize : not supported\n");
+	writer->error = 1;
 	return(writer->error);
 }
 
@@ -205,16 +185,10 @@ int deflatewriter_seek(struct _writer *writer, long pos, int origin) {
 
 unsigned long deflatewriter_tell(struct _writer *writer) {
 	struct _deflatewriter *deflatewriter = CAST_UP(struct _deflatewriter,base,writer);
-	struct _writer *parent = deflatewriter->parent;
-	unsigned long pos;
 
-	pos = parent->tell(parent);
-	if (parent->error) {
-		_xlog("deflatewriter.tell : parent.tell error\n");
-		writer->error = 1;
-		return(0);
-	}
-	return(pos - deflatewriter->out_start);
+	_xlog("deflatewriter.seek : not supported\n");
+	writer->error = 1;
+	return(0);
 }
 
 
@@ -237,12 +211,6 @@ struct _writer *deflatewriter_init(struct _writer *parent, unsigned char type) {
 	ret->stream.avail_in = 0;
 
 	ret->parent = parent;
-	ret->out_start = parent->tell(parent);
-	if (parent->error) {
-		ret->out_start = 0;
-		_xlog("deflatewriter.init : parent.tell error\n");
-		ret->base.error = 1;
-	}
 
 	if (type == 255)
 		windowBits = -DEFLATEWRITER_WINDOW_BITS;

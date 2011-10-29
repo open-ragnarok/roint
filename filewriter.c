@@ -61,6 +61,7 @@ void _filewriter_ferror(const char *funcname) {
 
 void filewriter_destroy(struct _writer *writer) {
 	struct _filewriter *filewriter = CAST_UP(struct _filewriter,base,writer);
+
 	if (filewriter->fp != NULL)
 		fclose(filewriter->fp);
 	_xfree(filewriter);
@@ -115,6 +116,8 @@ int filewriter_resize(unsigned long size, struct _writer *writer) {
 
 int filewriter_seek(struct _writer *writer, long pos, int origin) {
 	struct _filewriter *filewriter = CAST_UP(struct _filewriter,base,writer);
+
+	writer->error = 0;
 	if (fseek(filewriter->fp, pos, origin) != 0) {
 		_filewriter_ferror("seek");
 		writer->error = 1;
@@ -127,6 +130,7 @@ unsigned long filewriter_tell(struct _writer *writer) {
 	struct _filewriter *filewriter = CAST_UP(struct _filewriter,base,writer);
 	long pos;
 
+	writer->error = 0;
 	pos = ftell(filewriter->fp);
 	if (pos == -1) {
 		pos = 0;

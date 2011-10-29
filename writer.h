@@ -46,7 +46,7 @@ struct _writer {
 	/// Returns 0 on success.
 	int (*seek)(struct _writer *writer, long pos, int origin);
 
-	/// Get position indicator.
+	/// Get position indicator. (updates error indicator)
 	unsigned long (*tell)(struct _writer *writer);
 
 	/// Error indicator. (0 for success)
@@ -57,6 +57,7 @@ struct _writer {
 
 /// Writer that compresses data with zlib DEFLATE and writes it to 'parent'.
 /// Writes final data and propagates error to parent when destroyed.
+/// Does not support resize, seek and tell.
 /// type=0 : write zlib wrapper around deflate data (default)
 /// type=1 : write gzip wrapper around deflate data
 /// type=255 : generate raw deflate data

@@ -127,6 +127,7 @@ int memwriter_resize(unsigned long size, struct _writer *writer) {
 
 int memwriter_seek(struct _writer *writer, long pos, int origin) {
 	struct _memwriter *memwriter = CAST_UP(struct _memwriter,base,writer);
+
 	writer->error = 0;
 	switch(origin){
 		case SEEK_SET:
@@ -167,6 +168,8 @@ int memwriter_seek(struct _writer *writer, long pos, int origin) {
 
 unsigned long memwriter_tell(struct _writer *writer) {
 	struct _memwriter *memwriter = CAST_UP(struct _memwriter,base,writer);
+
+	writer->error = 0;
 	return(memwriter->offset);
 }
 

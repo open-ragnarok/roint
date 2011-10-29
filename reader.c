@@ -48,7 +48,7 @@ struct _deflatereader {
 	unsigned long in_start;
 	unsigned long in_size; // relative to in_start
 	unsigned long in_offset; // relative to in_start
-	unsigned char in_buf[256];
+	unsigned char in_buf[0x8000]; // 32k
 };
 
 
@@ -95,14 +95,14 @@ void _deflatereader_zerror(const char *funcname, int err) {
 }
 
 
-voidpf _deflatereader_zalloc_func(struct _deflatereader *deflatereader, uInt items, uInt size) {
+voidpf _deflatereader_zalloc_func(voidpf opaque, uInt items, uInt size) {
 	if (_mul_over_limit(items, size, 0xFFFFFFFF))
 		return(Z_NULL);
 	return((voidpf)_xalloc(items * size));
 }
 
 
-void _deflatereader_zfree_func(struct _deflatereader *deflatereader, voidpf address) {
+void _deflatereader_zfree_func(voidpf opaque, voidpf address) {
 	_xfree(address);
 }
 
@@ -111,7 +111,6 @@ void _deflatereader_input(struct _deflatereader *deflatereader) {
 	struct _reader *parent = deflatereader->parent;
 	unsigned long bytes;
 
-	
 	if (deflatereader->stream.avail_in > 0)
 		return; // already has data
 
@@ -129,7 +128,7 @@ void _deflatereader_input(struct _deflatereader *deflatereader) {
 }
 
 
-void deflatereader_free(struct _reader *reader) {
+void deflatereader_destroy(struct _reader *reader) {
 	struct _deflatereader *deflatereader = CAST_UP(struct _deflatereader,base,reader);
 	int err;
 
@@ -206,6 +205,7 @@ int deflatereader_seek(struct _reader *reader, long pos, int origin) {
 		case SEEK_CUR:
 			if ((pos < 0 && (long)(pos + deflatereader->out_offset) < 0)) {
 				_xlog("deflatereader.seek : invalid position\n");
+				reader->error = 1;
 				break;
 			}
 			out_offset += pos;
@@ -248,6 +248,8 @@ int deflatereader_seek(struct _reader *reader, long pos, int origin) {
 
 unsigned long deflatereader_tell(struct _reader *reader) {
 	struct _deflatereader *deflatereader = CAST_UP(struct _deflatereader,base,reader);
+
+	reader->error = 0;
 	return(deflatereader->out_offset);
 }
 
@@ -257,7 +259,7 @@ struct _reader *deflatereader_init(struct _reader *parent, unsigned char type) {
 	int windowBits;
 	int err;
 
-	ret->base.destroy = &deflatereader_free;
+	ret->base.destroy = &deflatereader_destroy;
 	ret->base.read = &deflatereader_read;
 	ret->base.seek = &deflatereader_seek;
 	ret->base.tell = &deflatereader_tell;
@@ -299,7 +301,7 @@ struct _reader *deflatereader_init(struct _reader *parent, unsigned char type) {
 //-------------------------------------------------------------------
 
 
-void memreader_free(struct _reader *reader) {
+void memreader_destroy(struct _reader *reader) {
 	struct _memreader *memreader = CAST_UP(struct _memreader,base,reader);
 	_xfree(memreader);
 }
@@ -309,6 +311,7 @@ int memreader_read(void *dest, unsigned long size, unsigned int count, struct _r
 	struct _memreader *memreader = CAST_UP(struct _memreader,base,reader);
 	unsigned long remaining = memreader->size - memreader->offset;
 	unsigned long wanted = size * count;
+
 	if (wanted <= remaining) {
 		memcpy(dest, memreader->ptr, wanted);
 		memreader->ptr += wanted;
@@ -322,6 +325,7 @@ int memreader_read(void *dest, unsigned long size, unsigned int count, struct _r
 		memset((unsigned char*)dest + complete, 0, wanted - complete);
 		memreader->ptr = memreader->data + memreader->size;
 		memreader->offset = memreader->size;
+		_xlog("memreader.read : not enough data\n");
 		reader->error = 1;
 	}
 	return(reader->error);
@@ -330,10 +334,12 @@ int memreader_read(void *dest, unsigned long size, unsigned int count, struct _r
 
 int memreader_seek(struct _reader *reader, long pos, int origin) {
 	struct _memreader *memreader = CAST_UP(struct _memreader,base,reader);
+
 	reader->error = 0;
 	switch(origin){
 		case SEEK_SET:
 			if (pos < 0 || (unsigned long)pos >= memreader->size) {
+				_xlog("memreader.seek : invalid position\n");
 				reader->error = 1;
 				break;
 			}
@@ -341,6 +347,7 @@ int memreader_seek(struct _reader *reader, long pos, int origin) {
 			break;
 		case SEEK_CUR:
 			if ((pos >= 0 && pos + memreader->offset >= memreader->size) || (pos < 0 && (long)(pos + memreader->offset) < 0)) {
+				_xlog("memreader.seek : invalid position\n");
 				reader->error = 1;
 				break;
 			}
@@ -348,12 +355,14 @@ int memreader_seek(struct _reader *reader, long pos, int origin) {
 			break;
 		case SEEK_END:
 			if (pos > 0 || (long)(pos + memreader->size) < 0) {
+				_xlog("memreader.seek : invalid position\n");
 				reader->error = 1;
 				break;
 			}
 			memreader->offset = pos + memreader->size;
 			break;
 		default:
+			_xlog("memreader.seek : not supported (origin=%d)\n", origin);
 			reader->error = 1;
 			break;
 	}
@@ -366,6 +375,8 @@ int memreader_seek(struct _reader *reader, long pos, int origin) {
 
 unsigned long memreader_tell(struct _reader *reader) {
 	struct _memreader *memreader = CAST_UP(struct _memreader,base,reader);
+
+	reader->error = 0;
 	return(memreader->offset);
 }
 
@@ -373,7 +384,7 @@ unsigned long memreader_tell(struct _reader *reader) {
 struct _reader *memreader_init(const unsigned char *ptr, unsigned long size) {
 	struct _memreader *ret = (struct _memreader*)_xalloc(sizeof(struct _memreader));
 
-	ret->base.destroy = &memreader_free;
+	ret->base.destroy = &memreader_destroy;
 	ret->base.read = &memreader_read;
 	ret->base.seek = &memreader_seek;
 	ret->base.tell = &memreader_tell;
@@ -392,9 +403,18 @@ struct _reader *memreader_init(const unsigned char *ptr, unsigned long size) {
 //-------------------------------------------------------------------
 
 
-void filereader_free(struct _reader *reader) {
+void _filereader_ferror(const char *funcname) {
+	_xlog("filereader.%s : %s\n", funcname, strerror(errno));
+}
+
+
+void filereader_destroy(struct _reader *reader) {
 	struct _filereader *filereader = CAST_UP(struct _filereader,base,reader);
-	fclose(filereader->fp);
+
+	if (fclose(filereader->fp) != 0) {
+		_filereader_ferror("destroy");
+		reader->error = 1;
+	}
 	_xfree(filereader);
 }
 
@@ -403,14 +423,13 @@ int filereader_read(void *dest, unsigned long size, unsigned int count, struct _
 	struct _filereader *filereader = CAST_UP(struct _filereader,base,reader);
 	size_t donecount;
 
+	reader->error = 0;
 	donecount = fread(dest, size, count, filereader->fp);
-	if (donecount == count) {
-		reader->error = 0;
-	}
-	else {
+	if (donecount != count) {
 		unsigned long wanted = size * count;
 		unsigned long complete = size * donecount;
 		memset((unsigned char*)dest + complete, 0, wanted - complete);
+		_xlog("filereader.read : not enough data\n");
 		reader->error = 1;
 	}
 	return(reader->error);
@@ -419,21 +438,35 @@ int filereader_read(void *dest, unsigned long size, unsigned int count, struct _
 
 int filereader_seek(struct _reader *reader, long pos, int origin) {
 	struct _filereader *filereader = CAST_UP(struct _filereader,base,reader);
-	reader->error = fseek(filereader->fp, pos, origin);
+
+	reader->error = 0;
+	if (fseek(filereader->fp, pos, origin) != 0) {
+		_filereader_ferror("seek");
+		reader->error = 1;
+	}
 	return(reader->error);
 }
 
 
 unsigned long filereader_tell(struct _reader *reader) {
 	struct _filereader *filereader = CAST_UP(struct _filereader,base,reader);
-	return(ftell(filereader->fp));
+	long pos;
+
+	reader->error = 0;
+	pos = ftell(filereader->fp);
+	if (pos == -1) {
+		pos = 0;
+		_filereader_ferror("tell");
+		reader->error = 1;
+	}
+	return((unsigned long)pos);
 }
 
 
 struct _reader *filereader_init(const char *fn) {
 	struct _filereader *ret = (struct _filereader*)_xalloc(sizeof(struct _filereader));
 
-	ret->base.destroy = &filereader_free;
+	ret->base.destroy = &filereader_destroy;
 	ret->base.read = &filereader_read;
 	ret->base.seek = &filereader_seek;
 	ret->base.tell = &filereader_tell;

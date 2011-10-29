@@ -41,7 +41,7 @@ struct _reader {
 	/// Returns 0 on success.
 	int (*seek)(struct _reader *reader, long pos, int origin);
 
-	/// Get position indicator.
+	/// Get position indicator. (updates error indicator)
 	unsigned long (*tell)(struct _reader *reader);
 
 	/// Error indicator. (0 for success)
