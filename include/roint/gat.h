@@ -75,6 +75,7 @@ ROINT_DLLAPI struct ROGat *gat_loadFromFile(const char *fn);
 /// Loads the gat from a ROGrf file. (NULL on error)
 ROINT_DLLAPI struct ROGat *gat_loadFromGrf(struct ROGrfFile*);
 /// Saves the gat to a data buffer. Discards incompatible information. (0 on success)
+/// WARNING : the 'data_out' data has to be released with the roint free function
 ROINT_DLLAPI int gat_saveToData(struct ROGat *gat, unsigned char **data_out, unsigned long *size_out);
 /// Saves the gat to a system file. Discards incompatible information. (0 on success)
 ROINT_DLLAPI int gat_saveToFile(struct ROGat *gat, const char *fn);
