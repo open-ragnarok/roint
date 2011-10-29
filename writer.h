@@ -55,6 +55,12 @@ struct _writer {
 
 // Constructors.
 
+/// Writer that compresses data with zlib DEFLATE and writes it to 'parent'.
+/// Writes final data and propagates error to parent when destroyed.
+/// type=0 : write zlib wrapper around deflate data (default)
+/// type=1 : write gzip wrapper around deflate data
+/// type=255 : generate raw deflate data
+struct _writer *deflatewriter_init(struct _writer *parent, unsigned char type);
 /// Writer that uses an internal memory buffer.
 /// Fills data_out and size_out when destroyed.
 /// WARNING : the 'data_out' data has to be released with the roint free function

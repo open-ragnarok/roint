@@ -26,6 +26,25 @@
 #include <string.h>
 #include <roint.h>
 
+
+int rgz_equal(struct RORgz *rgz, struct RORgz *rgz2) {
+	unsigned int i;
+
+	if (rgz2->entrycount != rgz->entrycount)
+		return(0);
+	for (i = 0; i < rgz->entrycount; i++) {
+		struct RORgzEntry *entry = &rgz->entries[i];
+		struct RORgzEntry *entry2 = &rgz2->entries[i];
+		if (entry2->type != entry->type ||
+			strcmp(entry2->path, entry->path) != 0 ||
+			entry2->datalength != entry->datalength ||
+			memcmp(entry2->data, entry->data, entry->datalength) != 0)
+			return(0);
+	}
+	return(1);
+}
+
+
 int main(int argc, char **argv)
 {
 	const char *fn;
@@ -75,6 +94,34 @@ int main(int argc, char **argv)
 			ret = EXIT_FAILURE;
 		}
 	}
+
+	{// test save to data
+		unsigned char *data = NULL;
+		unsigned long length = 0;
+		struct RORgz *rgz2;
+		printf("Save: %d\n", rgz_saveToData(rgz, &data, &length));
+		printf("Data: %p %u\n", data, length);
+		rgz2 = rgz_loadFromData(data,length);
+		if (data == NULL) {
+			printf("error : saving produced NULL data\n");
+			ret = EXIT_FAILURE;
+		}
+		else if (rgz2 == NULL) {
+			printf("error : saving produced invalid data\n");
+			ret = EXIT_FAILURE;
+		}
+		else {
+			printf("Inspect: 0x%x\n", rgz_inspect(rgz2));
+			if (!rgz_equal(rgz, rgz2)) {
+				printf("error : saving produced different data\n");
+				ret = EXIT_FAILURE;
+			}
+		}
+		if (data != NULL)
+			get_roint_free_func()(data);
+		rgz_unload(rgz2);
+	}
+
 	if (ret == EXIT_SUCCESS)
 		printf("OK\n");
 	return(ret);

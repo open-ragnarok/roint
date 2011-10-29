@@ -100,15 +100,17 @@ struct RORgz *rgz_load(struct _reader *reader) {
 		unsigned char pathlen;
 
 		if (ret->entrycount == entrylimit) {
-			struct RORgzEntry *old = ret->entries;
+			struct RORgzEntry *tmp = ret->entries;
 			entrylimit = entrylimit * 4 + 3;
 			ret->entries = (struct RORgzEntry*)_xalloc(sizeof(struct RORgzEntry) * entrylimit);
-			if (ret->entrycount > 0)
-				memcpy(ret->entries, old, sizeof(struct RORgzEntry) * ret->entrycount);
+			if (tmp != NULL) {
+				memcpy(ret->entries, tmp, sizeof(struct RORgzEntry) * ret->entrycount);
+				_xfree(tmp);
+			}
 		}
-		entry = ret->entries + ret->entrycount;
-		memset(entry, 0, sizeof(struct RORgzEntry));
+		entry = &ret->entries[ret->entrycount];
 		ret->entrycount++;
+		memset(entry, 0, sizeof(struct RORgzEntry));
 
 		gzipreader->read(&entry->type, 1, 1, gzipreader);
 		if (gzipreader->error)
@@ -132,7 +134,7 @@ struct RORgz *rgz_load(struct _reader *reader) {
 
 			if (entry->datalength > 0) {
 				entry->data = (unsigned char*)_xalloc(sizeof(unsigned char) * entry->datalength);
-				gzipreader->read(&entry->data, 1, entry->datalength, gzipreader);
+				gzipreader->read(entry->data, 1, entry->datalength, gzipreader);
 				if (gzipreader->error)
 					break;
 			}
@@ -185,6 +187,70 @@ struct RORgz *rgz_loadFromFile(const char *fn) {
 	reader = filereader_init(fn);
 	ret = rgz_load(reader);
 	reader->destroy(reader);
+
+	return(ret);
+}
+
+
+int rgz_save(const struct RORgz *rgz, struct _writer *writer) {
+	struct _writer *gzipwriter;
+	unsigned int i;
+	unsigned char pathlen;
+
+	if (rgz == NULL || writer == NULL || writer->error)
+		return(1);
+
+	if (rgz_inspect(rgz) == 0) {
+		_xlog("rgz.save : invalid\n");
+		return(1);
+	}
+
+	gzipwriter = deflatewriter_init(writer, 1); // gzip
+	if (gzipwriter->error) {
+		_xlog("rgz.save : gzipwriter init failed\n");
+		gzipwriter->destroy(gzipwriter);
+		return(1);
+	}
+
+	for (i = 0; i < rgz->entrycount; i++) {
+		const struct RORgzEntry *entry = &rgz->entries[i];
+		gzipwriter->write(&entry->type, 1, 1, gzipwriter);
+		pathlen = (unsigned char)strlen(entry->path) + 1;
+		gzipwriter->write(&pathlen, 1, 1, gzipwriter);
+		gzipwriter->write(entry->path, 1, pathlen, gzipwriter);
+		if (entry->type == 'f') {
+			gzipwriter->write(&entry->datalength, 4, 1, gzipwriter);
+			if (entry->datalength > 0)
+				gzipwriter->write(entry->data, 1, entry->datalength, gzipwriter);
+		}
+		else if (entry->type == 'e')
+			break; // ignore the rest
+	}
+	gzipwriter->destroy(gzipwriter);
+
+	return(writer->error);
+}
+
+
+int rgz_saveToData(const struct RORgz *rgz, unsigned char **data_out, unsigned long *size_out) {
+	int ret;
+	struct _writer *writer;
+
+	writer = memwriter_init(data_out, size_out);
+	ret = rgz_save(rgz, writer);
+	writer->destroy(writer);
+
+	return(ret);
+}
+
+
+int rgz_saveToFile(const struct RORgz *rgz, const char *fn) {
+	int ret;
+	struct _writer *writer;
+
+	writer = filewriter_init(fn);
+	ret = rgz_save(rgz, writer);
+	writer->destroy(writer);
 
 	return(ret);
 }
