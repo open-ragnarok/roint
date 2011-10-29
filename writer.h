@@ -54,7 +54,10 @@ struct _writer {
 };
 
 // Constructors.
-/// Writer that uses an internal memory buffer. Fills data_out and size_out when destroyed.
+
+/// Writer that uses an internal memory buffer.
+/// Fills data_out and size_out when destroyed.
+/// WARNING : the 'data_out' data has to be released with the roint free function
 struct _writer *memwriter_init(unsigned char **data_out, unsigned long *size_out);
 struct _writer *filewriter_init(const char *fn);
 
