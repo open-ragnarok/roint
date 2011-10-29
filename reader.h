@@ -49,6 +49,12 @@ struct _reader {
 };
 
 // Constructors.
+
+/// Reader that takes input from 'parent' and inflates it with zlib DEFLATE.
+/// type=0 : decode only the zlib format (default)
+/// type=1 : decode only the gzip format
+/// type=2 : zlib and gzip decoding with automatic header detection
+struct _reader *deflatereader_init(struct _reader *parent, unsigned char type);
 struct _reader *memreader_init(const unsigned char *ptr, unsigned long size);
 struct _reader *filereader_init(const char *fn);
 

@@ -22,78 +22,20 @@
     ------------------------------------------------------------------------------------
 */
 #include "internal.h"
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <zlib.h>
 
 
-voidpf _zalloc_func(voidpf opaque, uInt items, uInt size) {
-	return((voidpf)_xalloc(items * size));
-}
-
-
-void _zfree_func(voidpf opaque, voidpf address) {
-	_xfree(address);
-}
-
-
-void _zerror(int err) {
-	switch(err) {
-		case Z_MEM_ERROR:
-			_xlog("Error uncompressing data Z_MEM_ERROR\n");
-			break;
-		case Z_BUF_ERROR:
-			_xlog("Error uncompressing data Z_BUF_ERROR\n");
-			break;
-		case Z_STREAM_ERROR:
-			_xlog("Error uncompressing data Z_STREAM_ERROR\n");
-			break;
-		case Z_DATA_ERROR:
-			_xlog("Error uncompressing data Z_DATA_ERROR\n");
-			break;
-		case Z_STREAM_END:
-			_xlog("Error uncompressing data Z_STREAM_END\n");
-			break;
-		default:
-			_xlog("Unknown error when uncompressing data: %d\n", err);
-			break;
-	}
-}
-
-
-int _zread(z_stream *s, void *buf, unsigned int len) {
-	int err;
-	s->next_out = (Bytef*)buf;
-	s->avail_out = (uInt)len;
-	err = inflate(s, Z_SYNC_FLUSH);
-	if (err == Z_STREAM_END && s->avail_out == 0)
-		err = Z_OK;// buffer was filled, all ok
-	return(err);
-}
-
-
-struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length) {
-	z_stream stream;
-	int err;
+struct RORgz *rgz_load(struct _reader *reader) {
 	struct RORgz *ret;
 	unsigned int entrylimit;
+	struct _reader *gzipreader;
 
-	if (data == NULL || length == 0) {
-		_xlog("No input data for RGZ\n");
-		return(NULL);
-	}
-
-	stream.next_in = (Bytef*)data;
-	stream.avail_in = (uInt)length;
-	stream.zalloc = (alloc_func)&_zalloc_func;
-	stream.zfree = (free_func)&_zfree_func;
-	stream.opaque = Z_NULL;
-
-	err = inflateInit2(&stream, 15 + 16);// gzip format only
-	if (err != Z_OK) {
-		_zerror(err);
+	gzipreader = deflatereader_init(reader, 1); // gzip only
+	if (gzipreader->error) {
+		_xlog("rgz.load : gzipreader init failed\n");
+		gzipreader->destroy(gzipreader);
 		return(NULL);
 	}
 
@@ -115,30 +57,30 @@ struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length) {
 		memset(entry, 0, sizeof(struct RORgzEntry));
 		ret->entrycount++;
 
-		err = _zread(&stream, &entry->type, 1);
-		if (err != Z_OK)
+		gzipreader->read(&entry->type, 1, 1, gzipreader);
+		if (gzipreader->error)
 			break;
 
-		err = _zread(&stream, &pathlen, 1);
-		if (err != Z_OK)
+		gzipreader->read(&pathlen, 1, 1, gzipreader);
+		if (gzipreader->error)
 			break;
 
 		if (pathlen > 0) {
-			err = _zread(&stream, &entry->path, pathlen);
-			if (err != Z_OK)
+			gzipreader->read(&entry->path, 1, pathlen, gzipreader);
+			if (gzipreader->error)
 				break;
 			entry->path[pathlen - 1] = 0;
 		}
 
 		if (entry->type == 'f') {
-			err = _zread(&stream, &entry->datalength, 4);
-			if (err != Z_OK)
+			gzipreader->read(&entry->datalength, 4, 1, gzipreader);
+			if (gzipreader->error)
 				break;
 
 			if (entry->datalength > 0) {
 				entry->data = (unsigned char*)_xalloc(sizeof(unsigned char) * entry->datalength);
-				err = _zread(&stream, entry->data, entry->datalength);
-				if (err != Z_OK)
+				gzipreader->read(&entry->data, 1, entry->datalength, gzipreader);
+				if (gzipreader->error)
 					break;
 			}
 		}
@@ -154,55 +96,42 @@ struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length) {
 			break;
 		}
 	}
-	if (err != Z_OK) {
-		_zerror(err);
+	if (ret != NULL && gzipreader->error) {
+		_xlog("rgz.load : read error\n");
 		rgz_unload(ret);
 		ret = NULL;
-	} else if (ret != NULL && ret->entrycount != entrylimit) {
-		struct RORgzEntry *old = ret->entries;
-		ret->entries = (struct RORgzEntry*)_xalloc(sizeof(struct RORgzEntry) * ret->entrycount);
-		memcpy(ret->entries, old, sizeof(struct RORgzEntry) * ret->entrycount);
-		_xfree(old);
 	}
-	err = inflateEnd(&stream);
+	if (ret != NULL && ret->entrycount != entrylimit) {
+		struct RORgzEntry *tmp = ret->entries;
+		ret->entries = (struct RORgzEntry*)_xalloc(sizeof(struct RORgzEntry) * ret->entrycount);
+		memcpy(ret->entries, tmp, sizeof(struct RORgzEntry) * ret->entrycount);
+		_xfree(tmp);
+	}
+	gzipreader->destroy(gzipreader);
 
 	return(ret);
 }
 
-struct RORgz *rgz_loadFromFile(const char *fn) {
-	FILE *fp;
-	unsigned char *data;
-	long length;
+
+struct RORgz *rgz_loadFromData(const unsigned char *data, unsigned int length) {
 	struct RORgz *ret;
+	struct _reader *reader;
 
-	fp = fopen(fn, "rb");
-	if (fp == NULL) {
-		_xlog("Cannot open file %s\n", fn);
-		return(NULL);
-	}
+	reader = memreader_init(data, length);
+	ret = rgz_load(reader);
+	reader->destroy(reader);
 
-	fseek(fp, 0, SEEK_END);
-	length = ftell(fp);
-	if (length == -1) {
-		_xlog("%s : %s\n", fn, strerror(errno));
-		fclose(fp);
-		return(NULL);
-	}
+	return(ret);
+}
 
-	data = (unsigned char*)_xalloc((unsigned int)length);
-	fseek(fp, 0, SEEK_SET);
-	clearerr(fp);
-	fread(data, (unsigned int)length, 1, fp);
-	if (ferror(fp)) {
-		_xlog("%s : %s\n", fn, strerror(errno));
-		_xfree(data);
-		fclose(fp);
-		return(NULL);
-	}
 
-	ret = rgz_loadFromData(data, (unsigned int)length);
-	_xfree(data);
-	fclose(fp);
+struct RORgz *rgz_loadFromFile(const char *fn) {
+	struct RORgz *ret;
+	struct _reader *reader;
+
+	reader = filereader_init(fn);
+	ret = rgz_load(reader);
+	reader->destroy(reader);
 
 	return(ret);
 }
