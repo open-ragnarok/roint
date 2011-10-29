@@ -84,7 +84,7 @@ struct ROPal *pal_loadFromGrf(struct ROGrfFile *file) {
 }
 
 
-int pal_save(struct ROPal *pal, struct _writer *writer) {
+int pal_save(const struct ROPal *pal, struct _writer *writer) {
 	if (pal == NULL || writer == NULL || writer->error)
 		return(1);
 
@@ -94,7 +94,7 @@ int pal_save(struct ROPal *pal, struct _writer *writer) {
 }
 
 
-int pal_saveToData(struct ROPal *pal, unsigned char **data, unsigned long *length) {
+int pal_saveToData(const struct ROPal *pal, unsigned char **data, unsigned long *length) {
 	int ret;
 	struct _writer *writer;
 
@@ -106,7 +106,7 @@ int pal_saveToData(struct ROPal *pal, unsigned char **data, unsigned long *lengt
 }
 
 
-int pal_saveToFile(struct ROPal *pal, const char *fn) {
+int pal_saveToFile(const struct ROPal *pal, const char *fn) {
 	int ret;
 	struct _writer *writer;
 

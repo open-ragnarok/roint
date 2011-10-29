@@ -67,7 +67,7 @@ struct ROGat {
 
 
 /// Inspects the gat data and returns the first compatible version. (0 if invalid)
-ROINT_DLLAPI unsigned short gat_inspect(struct ROGat *gat);
+ROINT_DLLAPI unsigned short gat_inspect(const struct ROGat *gat);
 /// Loads the gat from a data buffer. (NULL on error)
 ROINT_DLLAPI struct ROGat *gat_loadFromData(const unsigned char *data, unsigned long len);
 /// Loads the gat from a system file. (NULL on error)
@@ -76,9 +76,9 @@ ROINT_DLLAPI struct ROGat *gat_loadFromFile(const char *fn);
 ROINT_DLLAPI struct ROGat *gat_loadFromGrf(struct ROGrfFile*);
 /// Saves the gat to a data buffer. Discards incompatible information. (0 on success)
 /// WARNING : the 'data_out' data has to be released with the roint free function
-ROINT_DLLAPI int gat_saveToData(struct ROGat *gat, unsigned char **data_out, unsigned long *size_out);
+ROINT_DLLAPI int gat_saveToData(const struct ROGat *gat, unsigned char **data_out, unsigned long *size_out);
 /// Saves the gat to a system file. Discards incompatible information. (0 on success)
-ROINT_DLLAPI int gat_saveToFile(struct ROGat *gat, const char *fn);
+ROINT_DLLAPI int gat_saveToFile(const struct ROGat *gat, const char *fn);
 /// Frees everything inside the ROGat structure allocated by us (including the gat itself!)
 ROINT_DLLAPI void gat_unload(struct ROGat*);
 

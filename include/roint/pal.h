@@ -58,9 +58,9 @@ ROINT_DLLAPI struct ROPal *pal_loadFromFile(const char *fn);
 ROINT_DLLAPI struct ROPal *pal_loadFromGrf(struct ROGrfFile*);
 /// Saves the pal to a data buffer. (0 on success)
 /// WARNING : the 'data_out' data has to be released with the roint free function
-ROINT_DLLAPI int pal_saveToData(struct ROPal *pal, unsigned char **data, unsigned long *len);
+ROINT_DLLAPI int pal_saveToData(const struct ROPal *pal, unsigned char **data, unsigned long *len);
 /// Saves the pal to a system file. (0 on success)
-ROINT_DLLAPI int pal_saveToFile(struct ROPal *pal, const char *fn);
+ROINT_DLLAPI int pal_saveToFile(const struct ROPal *pal, const char *fn);
 /// Frees everything inside the ROPal structure allocated by us (including the pal itself!)
 ROINT_DLLAPI void pal_unload(struct ROPal*);
 

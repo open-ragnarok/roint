@@ -33,7 +33,7 @@ const unsigned int MAX_GAT_CELL_COUNT = ((unsigned int)0-1) / sizeof(struct ROGa
 const char GAT_MAGIC[4] = {'G','R','A','T'};
 
 
-unsigned short gat_inspect(struct ROGat *gat) {
+unsigned short gat_inspect(const struct ROGat *gat) {
 	unsigned int cellcount;
 
 	if (gat == NULL)
@@ -150,7 +150,7 @@ struct ROGat *gat_loadFromGrf(struct ROGrfFile *file) {
 }
 
 
-int gat_save(struct ROGat *gat, struct _writer *writer) {
+int gat_save(const struct ROGat *gat, struct _writer *writer) {
 	unsigned int cellcount;
 
 	if (gat == NULL || writer == NULL || writer->error)
@@ -178,7 +178,7 @@ int gat_save(struct ROGat *gat, struct _writer *writer) {
 }
 
 
-int gat_saveToData(struct ROGat *gat, unsigned char **data_out, unsigned long *size_out) {
+int gat_saveToData(const struct ROGat *gat, unsigned char **data_out, unsigned long *size_out) {
 	int ret;
 	struct _writer *writer;
 
@@ -190,7 +190,7 @@ int gat_saveToData(struct ROGat *gat, unsigned char **data_out, unsigned long *s
 }
 
 
-int gat_saveToFile(struct ROGat *gat, const char *fn) {
+int gat_saveToFile(const struct ROGat *gat, const char *fn) {
 	int ret;
 	struct _writer *writer;
 
