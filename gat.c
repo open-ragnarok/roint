@@ -36,21 +36,23 @@ const char GAT_MAGIC[4] = {'G','R','A','T'};
 unsigned short gat_inspect(const struct ROGat *gat) {
 	unsigned int cellcount;
 
-	if (gat == NULL)
+	if (gat == NULL) {
+		_xlog("gat.inspect : invalid argument (gat=%p)\n", gat);
 		return(0);
+	}
 
 	if (_mul_over_limit(gat->width, gat->height, MAX_GAT_CELL_COUNT)) {
-		_xlog("GAT dimensions are too big (%ux%u)\n", gat->width, gat->height);
+		_xlog("gat.inspect : dimensions are too big (%ux%u)\n", gat->width, gat->height);
 		return(0);
 	}
 
 	cellcount = gat->width * gat->height;
 	if (cellcount > 0 && gat->cells == NULL) {
-		_xlog("expected NULL cells in GAT\n");
+		_xlog("gat.inspect : expected non-NULL cells\n");
 		return(0);
 	}
 	if (cellcount == 0 && gat->cells != NULL) {
-		_xlog("expected non-NULL cells in GAT\n");
+		_xlog("gat.inspect : expected NULL cells\n");
 		return(0);
 	}
 
@@ -63,12 +65,17 @@ struct ROGat *gat_load(struct _reader *reader) {
 	unsigned int cellcount;
 	char magic[4];
 
+	if (reader == NULL || reader->error) {
+		_xlog("gat.load : invalid argument (reader=%p reader.error=%d)\n", reader, reader->error);
+		return(NULL);
+	}
+
 	ret = (struct ROGat*)_xalloc(sizeof(struct ROGat));
 	memset(ret, 0, sizeof(struct ROGat));
 
 	reader->read(&magic, 4, 1, reader);
-	if (strncmp(GAT_MAGIC, magic, 4) != 0) {
-		_xlog("Invalid GAT header: '%c%c%c%c'\n", magic[0], magic[1], magic[2], magic[3]);
+	if (memcmp(GAT_MAGIC, magic, 4) != 0) {
+		_xlog("gat.load : invalid header x%02X%02X%02X%02X (\"%-4s\")\n", magic[0], magic[1], magic[2], magic[3], magic);
 		gat_unload(ret);
 		return(NULL);
 	}
@@ -79,7 +86,7 @@ struct ROGat *gat_load(struct _reader *reader) {
 	if (ret->vermajor == 1 && ret->verminor == 2)
 		;// supported
 	else {
-		_xlog("Unsupported GAT version (%u.%u)", ret->vermajor, ret->verminor);
+		_xlog("gat.load : unknown version v%u.%u\n", ret->vermajor, ret->verminor);
 		gat_unload(ret);
 		return(NULL);
 	}
@@ -87,7 +94,7 @@ struct ROGat *gat_load(struct _reader *reader) {
 	reader->read(&ret->width, 4, 1, reader);
 	reader->read(&ret->height, 4, 1, reader);
 	if (_mul_over_limit(ret->width, ret->height, MAX_GAT_CELL_COUNT)) {
-		_xlog("GAT dimensions are too big (%ux%u)\n", ret->width, ret->height);
+		_xlog("gat.load : dimensions are too big (%ux%u)\n", ret->width, ret->height);
 		gat_unload(ret);
 		return(NULL);
 	}
@@ -98,8 +105,7 @@ struct ROGat *gat_load(struct _reader *reader) {
 	}
 
 	if (reader->error) {
-		// data was missing
-		_xlog("GAT is incomplete or invalid\n");
+		_xlog("gat.load : read error\n");
 		gat_unload(ret);
 		return(NULL);
 	}
@@ -153,15 +159,17 @@ struct ROGat *gat_loadFromGrf(struct ROGrfFile *file) {
 int gat_save(const struct ROGat *gat, struct _writer *writer) {
 	unsigned int cellcount;
 
-	if (gat == NULL || writer == NULL || writer->error)
+	if (gat == NULL || writer == NULL || writer->error) {
+		_xlog("gat.save : invalid argument (gat=%p writer=%p writer.error=%d)\n", gat, writer, writer->error);
 		return(1);
+	}
 
 	if (gat_inspect(gat) == 0) {
-		_xlog("GAT is invalid\n");
+		_xlog("gat.save : invalid\n");
 		return(1);
 	}
 	if (gat->vermajor != 1 || gat->verminor != 2) {
-		_xlog("unknown GAT version (v%u.%u)\n", gat->vermajor, gat->verminor);
+		_xlog("gat.save : unknown version v%u.%u\n", gat->vermajor, gat->verminor);
 		return(1);
 	}
 
@@ -174,7 +182,12 @@ int gat_save(const struct ROGat *gat, struct _writer *writer) {
 	if (cellcount > 0)
 		writer->write(gat->cells, sizeof(struct ROGatCell), cellcount, writer);
 
-	return(writer->error);
+	if (writer->error) {
+		_xlog("gat.save : write error\n");
+		return(1);
+	}
+
+	return(0);
 }
 
 

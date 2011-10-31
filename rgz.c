@@ -30,8 +30,10 @@
 unsigned short rgz_inspect(const struct RORgz *rgz) {
 	unsigned int i;
 
-	if (rgz == NULL)
+	if (rgz == NULL) {
+		_xlog("rgz.inspect : invalid argument (rgz=%p)\n", rgz);
 		return(0);
+	}
 
 	if (rgz->entrycount > 0 && rgz->entries == NULL) {
 		_xlog("rgz.inspect : expected NULL entries\n");
@@ -84,6 +86,11 @@ struct RORgz *rgz_load(struct _reader *reader) {
 	struct RORgz *ret;
 	unsigned int entrylimit;
 	struct _reader *gzipreader;
+
+	if (reader == NULL || reader->error) {
+		_xlog("rgz.load : invalid argument (reader=%p reader.error=%d)\n", reader, reader->error);
+		return(NULL);
+	}
 
 	gzipreader = deflatereader_init(reader, 1); // gzip only
 	if (gzipreader->error) {
@@ -197,8 +204,10 @@ int rgz_save(const struct RORgz *rgz, struct _writer *writer) {
 	unsigned int i;
 	unsigned char pathlen;
 
-	if (rgz == NULL || writer == NULL || writer->error)
+	if (rgz == NULL || writer == NULL || writer->error) {
+		_xlog("rgz.save : invalid argument (rgz=%p writer=%p writer.error=%d)\n", rgz, writer, writer->error);
 		return(1);
+	}
 
 	if (rgz_inspect(rgz) == 0) {
 		_xlog("rgz.save : invalid\n");

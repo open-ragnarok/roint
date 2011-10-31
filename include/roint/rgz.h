@@ -68,9 +68,10 @@ ROINT_DLLAPI struct RORgz *rgz_loadFromFile(const char *fn);
 /// Ignores everything after the end entry.
 /// WARNING : the 'data_out' data has to be released with the roint free function
 ROINT_DLLAPI int rgz_saveToData(const struct RORgz *rgz, unsigned char **data_out, unsigned long *size_out);
-/// Saves the rgz to a system file. Discards incompatible information. (0 on success)
+/// Saves the rgz to a system file. (0 on success)
+/// Ignores everything after the end entry.
 ROINT_DLLAPI int rgz_saveToFile(const struct RORgz *rgz, const char *fn);
-// Frees everything inside the RORgz structure allocated by us (including the rgz itself!)
+/// Frees everything inside the RORgz structure allocated by us (including the rgz itself!)
 ROINT_DLLAPI void rgz_unload(struct RORgz *rgz);
 
 
