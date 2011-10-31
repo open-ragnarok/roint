@@ -38,6 +38,7 @@ extern roint_alloc_func _xalloc;
 extern roint_free_func _xfree;
 
 extern struct ROPal *pal_load(struct _reader *reader);
+extern int pal_save(const struct ROPal *, struct _writer *writer);
 
 // util
 extern int _add_over_limit(size_t val1, size_t val2, size_t limit);

@@ -27,6 +27,39 @@
 #include <roint.h>
 
 
+int spr_equal(struct ROSpr *spr, struct ROSpr *spr2) {
+	unsigned int i;
+
+	if (spr2->version != spr->version ||
+		spr2->palimagecount != spr->palimagecount ||
+		spr2->rgbaimagecount != spr->rgbaimagecount)
+		return(0);
+	for (i = 0; i < spr->palimagecount; i++) {
+		struct ROSprPalImage *image = &spr->palimages[i];
+		struct ROSprPalImage *image2 = &spr->palimages[i];
+		if (image2->width != image->width ||
+			image2->height != image->height ||
+			memcmp(image2->data, image->data, sizeof(unsigned char) * image->width * image->height) != 0)
+			return(0);
+	}
+	for (i = 0; i < spr->rgbaimagecount; i++) {
+		struct ROSprRgbaImage *image = &spr->rgbaimages[i];
+		struct ROSprRgbaImage *image2 = &spr->rgbaimages[i];
+		if (image2->width != image->width ||
+			image2->height != image->height ||
+			memcmp(image2->data, image->data, sizeof(struct ROSprColor) * image->width * image->height) != 0)
+			return(0);
+	}
+	if (spr2->pal == NULL && spr->pal == NULL)
+		return(1);
+	if (spr2->pal == NULL ||
+		spr->pal == NULL ||
+		memcmp(spr2->pal, spr->pal, sizeof(struct ROPal)) != 0)
+		return(0);
+	return(1);
+}
+
+
 int main(int argc, char **argv)
 {
 	const char *fn;
@@ -42,12 +75,13 @@ int main(int argc, char **argv)
 
 	fn = argv[1];
 	
+	ret = EXIT_SUCCESS;
 	spr = spr_loadFromFile(fn);
 	if (spr == NULL) {
 		printf("error : failed to load file '%s'\n", fn);
 		return(EXIT_FAILURE);
 	}
-	ret = EXIT_SUCCESS;
+	printf("Inspect: 0x%x\n", spr_inspect(spr));
 	printf("Version: 0x%x (v%u.%u)\n", spr->version, (spr->version >> 8) & 0xFF, spr->version & 0xFF);
 	if (spr->version != 0x100 && spr->version != 0x101 && spr->version != 0x200 && spr->version != 0x201) {
 		printf("error : unknown version\n");
@@ -93,6 +127,33 @@ int main(int argc, char **argv)
 	if (spr->version < 0x101 && spr->pal != NULL) {
 		printf("error : palette should be NULL\n");
 		ret = EXIT_FAILURE;
+	}
+
+	{// test save to data
+		unsigned char *data = NULL;
+		unsigned long length = 0;
+		struct ROSpr *spr2;
+		printf("Save: %d\n", spr_saveToData(spr, &data, &length));
+		printf("Data: %p %u\n", data, length);
+		spr2 = spr_loadFromData(data,length);
+		if (data == NULL) {
+			printf("error : saving produced NULL data\n");
+			ret = EXIT_FAILURE;
+		}
+		else if (spr2 == NULL) {
+			printf("error : saving produced invalid data\n");
+			ret = EXIT_FAILURE;
+		}
+		else {
+			printf("Inspect: 0x%x\n", spr_inspect(spr2));
+			if (!spr_equal(spr, spr2)) {
+				printf("error : saving produced different data\n");
+				ret = EXIT_FAILURE;
+			}
+		}
+		if (data != NULL)
+			get_roint_free_func()(data);
+		spr_unload(spr2);
 	}
 
 	if (ret == EXIT_SUCCESS)

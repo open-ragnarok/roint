@@ -28,18 +28,81 @@
 #include <string.h>
 
 
+const char SPR_MAGIC[] = {'S','P'};
+
+
+unsigned short spr_inspect(const struct ROSpr *spr) {
+	unsigned int i;
+	unsigned int pixels;
+
+	if (spr == NULL) {
+		_xlog("spr.inspect : invalid argument (spr=%p)\n", spr);
+		return(0);
+	}
+
+	if (spr->pal == NULL) {
+		if (spr->rgbaimages > 0) {
+			_xlog("spr.inspect : rgba images are not supported (no palette, so only v1.0 is valid)");
+			return(0); // invalid, rgba images are not supported
+		}
+		return(0x100); // v1.0
+	}
+	for (i = 0; i < spr->palimagecount; i++) {
+		const struct ROSprPalImage *image = &spr->palimages[i];
+		if (_mul_over_limit(image->width, image->height, 0xFFFFFFFF)) {
+			_xlog("spr.inspect : [%u] pal image dimensions are too big (%ux%u)\n", i, image->width, image->height);
+			return(0); // invalid, image is too big
+		}
+		pixels = image->width * image->height;
+		if (pixels > 0 && image->data == NULL) {
+			_xlog("spr.inspect : [%u] expected non-NULL data in pal image\n", i);
+			return(0);
+		}
+		if (pixels == 0 && image->data != NULL) {
+			_xlog("spr.inspect : [%u] expected NULL data in pal image\n", i);
+			return(0);
+		}
+	}
+	if (spr->rgbaimages > 0) {
+		for (i = 0; i < spr->rgbaimagecount; i++) {
+			const struct ROSprRgbaImage *image = &spr->rgbaimages[i];
+			if (_mul_over_limit(image->width, image->height, 0xFFFFFFFF)) {
+				_xlog("spr.inspect : [%u] rgba image dimensions are too big (%ux%u)\n", i, image->width, image->height);
+				return(0); // invalid, image is too big
+			}
+			pixels = image->width * image->height;
+			if (pixels > 0 && image->data == NULL) {
+				_xlog("spr.inspect : [%u] expected non-NULL data in rgba image\n", i);
+				return(0);
+			}
+			if (pixels == 0 && image->data != NULL) {
+				_xlog("spr.inspect : [%u] expected NULL data in rgba image\n", i);
+				return(0);
+			}
+		}
+		return(0x200); // v2.0 or v2.1
+	}
+	return(0x101); // v1.1 or v2.0 or v2.1
+}
+
+
 struct ROSpr *spr_load(struct _reader *reader) {
 	struct ROSpr *ret;
 	unsigned int i;
 	char magic[2];
 	unsigned int pixels;
 
+	if (reader == NULL || reader->error) {
+		_xlog("spr.load : invalid argument (reader=%p reader.error=%d)\n", reader, reader->error);
+		return(NULL);
+	}
+
 	ret = (struct ROSpr*)_xalloc(sizeof(struct ROSpr));
 	memset(ret, 0, sizeof(struct ROSpr));
 
 	reader->read(&magic, 2, 1, reader);
-	if (strncmp("SP", magic, 2) != 0) {
-		_xlog("Invalid SPR header: '%c%c'\n", magic[0], magic[1]);
+	if (memcmp(SPR_MAGIC, magic, 2) != 0) {
+		_xlog("spr.load : invalid header x%02X%02X (\"%-2s\")\n", magic[0], magic[1], magic);
 		spr_unload(ret);
 		return(NULL);
 	}
@@ -48,7 +111,7 @@ struct ROSpr *spr_load(struct _reader *reader) {
 	//_xlog("SPR Version: %u.%u\n", (ret->version >> 8) & 0xFF, ret->version & 0xFF);
 	switch (ret->version) {
 		default:
-			_xlog("Unsupported SPR version\n");
+			_xlog("spr.load : unknown version 0x%X (v%u.%u)\n", ret->version, (ret->version >> 8) & 0xFF, ret->version & 0xFF);
 			spr_unload(ret);
 			return(NULL);
 		case 0x100:
@@ -69,6 +132,11 @@ struct ROSpr *spr_load(struct _reader *reader) {
 			struct ROSprPalImage *image = &ret->palimages[i];
 			reader->read(&image->width, 2, 1, reader);
 			reader->read(&image->height, 2, 1, reader);
+			if (_mul_over_limit(image->width, image->height, 0xFFFFFFFF)) {
+				_xlog("spr.load : [%u] pal image too big (width=%u height=%u)\n", i, image->width, image->height);
+				spr_unload(ret);
+				return(NULL);
+			}
 			pixels = image->width * image->height;
 			if (pixels > 0) {
 				image->data = (unsigned char*)_xalloc(sizeof(unsigned char) * pixels);
@@ -87,8 +155,9 @@ struct ROSpr *spr_load(struct _reader *reader) {
 							if (len == 0)
 								len = 1;
 							if (next + len > pixels) {
-								_xlog("too much rle-encoded data (next=%u, len=%u, pixels=%u)\n", next, len, pixels);
-								break;// no space
+								_xlog("spr.load : [%u] too much encoded data for pal image (next=%u, len=%u, pixels=%u remaining_data=%u)\n", i, next, len, pixels, encoded);
+								spr_unload(ret);
+								return(NULL);
 							}
 							memset(image->data + next, 0, len);
 							next += len;
@@ -97,7 +166,7 @@ struct ROSpr *spr_load(struct _reader *reader) {
 							image->data[next++] = c;
 					}
 					if (next != pixels || encoded > 0) {
-						_xlog("SPR has bad rle-encoded pal image (index=%u, width=%u, height=%u, pixels left=%u, extra data=%u)\n", i, image->width, image->height, pixels - next, encoded);
+						_xlog("spr.load : [%u] bad encoded pal image (width=%u, height=%u, pixels_left=%u, remaining_data=%u)\n", i, image->width, image->height, pixels - next, encoded);
 						spr_unload(ret);
 						return(NULL);
 					}
@@ -123,14 +192,19 @@ struct ROSpr *spr_load(struct _reader *reader) {
 		}
 	}
 
-	if (ret->version >= 0x101)
-		ret->pal = pal_load(reader);
-
 	if (reader->error) {
-		// data was missing
-		_xlog("SPR is incomplete or invalid\n");
+		_xlog("spr.load : read error\n");
 		spr_unload(ret);
 		return(NULL);
+	}
+
+	if (ret->version >= 0x101) {
+		ret->pal = pal_load(reader);
+		if (ret->pal == NULL) {
+			_xlog("spr.load : failed to read palette\n");
+			spr_unload(ret);
+			return(NULL);
+		}
 	}
 
 	return(ret);
@@ -174,6 +248,126 @@ struct ROSpr *spr_loadFromGrf(struct ROGrfFile *file) {
 	else {
 		ret = spr_loadFromData(file->data, file->uncompressedLength);
 	}
+
+	return(ret);
+}
+
+
+int spr_save(const struct ROSpr *spr, struct _writer *writer) {
+	unsigned int i,j;
+	unsigned int pixels;
+	unsigned short minimumver;
+	unsigned short encodedlen;
+	unsigned char encodeddata[0xFFFF];
+
+	if (spr == NULL || writer == NULL || writer->error) {
+		_xlog("spr.save : invalid argument (spr=%p writer=%p writer.error=%d)\n", spr, writer, writer->error);
+		return(1);
+	}
+
+	minimumver = spr_inspect(spr);
+	if (minimumver == 0) {
+		_xlog("spr.save : invalid\n");
+		return(1);
+	}
+	switch (spr->version) {
+		default:
+			_xlog("spr.save : unknown version 0x%X (v%u.%u)\n", spr->version, (spr->version >> 8) & 0xFF, spr->version & 0xFF);
+			return(1);
+		case 0x100:
+		case 0x101:
+		case 0x200:
+		case 0x201:
+			break;// supported
+	}
+	if (spr->version < minimumver) {
+		_xlog("spr.save : incompatible version (must be at least v%u.%u)\n", (minimumver >> 8) & 0xFF, minimumver & 0xFF);
+		return(1);
+	}
+
+	writer->write(SPR_MAGIC, 2, 1, writer);
+	writer->write(&spr->version, 2, 1, writer);
+	writer->write(&spr->palimagecount, 2, 1, writer);
+	if (spr->version >= 0x200)
+		writer->write(&spr->rgbaimagecount, 2, 1, writer);
+
+	for (i = 0; i < spr->palimagecount; i++) {
+		const struct ROSprPalImage *image = &spr->palimages[i];
+		writer->write(&image->width, 2, 1, writer);
+		writer->write(&image->height, 2, 1, writer);
+		pixels = image->width * image->height;
+		if (spr->version >= 0x201) {
+			encodedlen = 0;
+			j = 0;
+			while (j < pixels) {
+				unsigned char c = image->data[j];
+				j++;
+
+				if (_add_over_limit(encodedlen, (c == 0)? 2: 1, 0xFFFF)) {
+					_xlog("spr.save : [%u] failed to encode pal image data, use version v2.0 instead\n");
+					return(1);
+				}
+				encodeddata[encodedlen] = c;
+				encodedlen++;
+				if (c == 0) {
+					unsigned char len = 1;
+					while (j < pixels && len < 255 && image->data[j] == 0) {
+						j++;
+						len++;
+					}
+					encodeddata[encodedlen] = len;
+					encodedlen++;
+				}
+			}
+			writer->write(&encodedlen, 2, 1, writer);
+			if (encodedlen > 0)
+				writer->write(encodeddata, 1, encodedlen, writer);
+		}
+		else if (pixels > 0)
+			writer->write(image->data, 1, pixels, writer);
+	}
+
+	if (spr->version >= 0x200) {
+		for (i = 0; i < spr->rgbaimagecount; i++) {
+			const struct ROSprRgbaImage *image = &spr->rgbaimages[i];
+			writer->write(&image->width, 2, 1, writer);
+			writer->write(&image->height, 2, 1, writer);
+			pixels = image->width * image->height;
+			if (pixels > 0)
+				writer->write(image->data, sizeof(struct ROSprColor), pixels, writer);
+		}
+	}
+	
+	if (writer->error) {
+		_xlog("spr.save : write error\n");
+		return(1);
+	}
+
+	if (spr->version >= 0x101)
+		return(pal_save(spr->pal, writer));
+	return(0);
+}
+
+
+int spr_saveToData(const struct ROSpr *spr, unsigned char **data_out, unsigned long *size_out) {
+	int ret;
+	struct _writer *writer;
+
+	writer = memwriter_init(data_out, size_out);
+	ret = spr_save(spr, writer);
+	writer->destroy(writer);
+
+	return(ret);
+}
+
+
+int spr_saveToFile(const struct ROSpr *spr, const char *fn) {
+	int ret;
+	struct _writer *writer;
+
+	writer = filewriter_init(fn);
+	ret = spr_save(spr, writer);
+	writer->destroy(writer);
 
 	return(ret);
 }

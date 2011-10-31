@@ -60,7 +60,11 @@ struct ROSprRgbaImage {
 
 /// Sprite.
 /// Contains palette images, RGBA images (v2.0+) and a palette (v1.1+).
-/// Supported versions: v1.0 v1.1 v2.0 v2.1
+/// Supported versions:
+///  v1.0 - base version
+///  v1.1 - palette
+///  v2.0 - rgba images
+///  v2.1 - pal images use RLE for index 0
 struct ROSpr {
 	unsigned short version;//< 0x100 or 0x101 or 0x200 or 0x201
 	unsigned short palimagecount;
@@ -72,14 +76,21 @@ struct ROSpr {
 #pragma pack(pop)
 
 
+/// Inspects the gat data and returns the first compatible version. (0 if invalid)
+ROINT_DLLAPI unsigned short spr_inspect(const struct ROSpr *spr);
 /// Loads the spr from a data buffer. (NULL on error)
 ROINT_DLLAPI struct ROSpr *spr_loadFromData(const unsigned char *data, unsigned int len);
 /// Loads the spr from a system file. (NULL on error)
 ROINT_DLLAPI struct ROSpr *spr_loadFromFile(const char *fn);
 /// Loads the spr from a ROGrf file. (NULL on error)
 ROINT_DLLAPI struct ROSpr *spr_loadFromGrf(struct ROGrfFile*);
+/// Saves the spr to a data buffer. (0 on success)
+/// WARNING : the 'data_out' data has to be released with the roint free function
+ROINT_DLLAPI int spr_saveToData(const struct ROSpr *spr, unsigned char **data_out, unsigned long *size_out);
+/// Saves the spr to a system file. (0 on success)
+ROINT_DLLAPI int spr_saveToFile(const struct ROSpr *spr, const char *fn);
 /// Frees everything inside the ROSpr structure allocated by us (including the spr itself!)
-ROINT_DLLAPI void spr_unload(struct ROSpr*);
+ROINT_DLLAPI void spr_unload(struct ROSpr *spr);
 
 
 #ifdef __cplusplus
