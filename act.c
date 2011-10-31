@@ -28,17 +28,113 @@
 #include <string.h>
 
 
+const char ACT_MAGIC[] = {'A','C'};
+
+
+unsigned short act_inspect(const struct ROAct *act) {
+	unsigned int actionId, motionId, sprclipId, eventId;
+	unsigned short minver = 0x100;
+	unsigned short maxver = 0x205;
+
+	if (act == NULL) {
+		_xlog("act.inspect : invalid argument (act=%p)\n", act);
+		return(0);
+	}
+	
+	if (act->actioncount > 0 && act->actions == NULL) {
+		_xlog("act.inspect : expected non-NULL actions\n");
+		return(0);
+	}
+	if (act->actioncount == 0 && act->actions != NULL) {
+		_xlog("act.inspect : expected NULL actions\n");
+		return(0);
+	}
+	for (actionId = 0; actionId < act->actioncount; actionId++) {
+		const struct ROActAction *action = &act->actions[actionId];
+		if (action->motioncount > 0 && action->motions == NULL) {
+			_xlog("act.inspect : [%u] expected non-NULL motions\n", actionId);
+			return(0);
+		}
+		if (action->motioncount == 0 && action->motions != NULL) {
+			_xlog("act.inspect : [%u] expected NULL motions\n", actionId);
+			return(0);
+		}
+		for (motionId = 0; motionId < action->motioncount; motionId++) {
+			const struct ROActMotion *motion = &action->motions[motionId];
+			if (minver < 0x200 && (motion->eventId != -1))
+				minver = 0x200;
+			if (motion->sprclipcount > 0 && motion->sprclips == NULL) {
+				_xlog("act.inspect : [%u][%u] expected non-NULL sprclips\n", actionId, motionId);
+				return(0);
+			}
+			if (motion->sprclipcount == 0 && motion->sprclips != NULL) {
+				_xlog("act.inspect : [%u][%u] expected NULL sprclips\n", actionId, motionId);
+				return(0);
+			}
+			if (motion->attachpointcount > 0 && motion->attachpoints == NULL) {
+				_xlog("act.inspect : [%u][%u] expected non-NULL attachpoints\n", actionId, motionId);
+				return(0);
+			}
+			if (motion->attachpointcount == 0 && motion->attachpoints != NULL) {
+				_xlog("act.inspect : [%u][%u] expected NULL attachpoints\n", actionId, motionId);
+				return(0);
+			}
+			for (sprclipId = 0; sprclipId < motion->sprclipcount; sprclipId++) {
+				const struct ROActSprClip *sprclip = &motion->sprclips[motionId];
+				if (minver < 0x205 && (sprclip->width != 0 || sprclip->height != 0))
+					minver = 0x205;
+				if (minver < 0x204 && sprclip->xZoom != sprclip->yZoom)
+					minver = 0x204;
+				if (minver < 0x200 && (sprclip->sprType != 0 || sprclip->angle != 0 || sprclip->color != 0xFFFFFFFF || sprclip->xZoom != 1.0f || sprclip->yZoom != 1.0f))
+					minver = 0x200;
+			}
+			if (minver < 0x203 && motion->attachpointcount > 0)
+				minver = 0x203;
+		}
+	}
+	if (act->eventcount > 0 && act->events == NULL) {
+		_xlog("act.inspect : expected non-NULL events\n");
+		return(0);
+	}
+	if (act->eventcount == 0 && act->events != NULL) {
+		_xlog("act.inspect : expected NULL events\n");
+		return(0);
+	}
+	if (minver >= 0x202 && act->delays == NULL) {
+		_xlog("act.inspect : expected non-NULL delays for version 0x%X (v%u.%u)\n", minver, (minver >> 8) & 0xFF, minver & 0xFF);
+		return(0);
+	}
+	for (eventId = 0; eventId < act->eventcount; eventId++) {
+		const struct ROActEvent *evt = &act->events[eventId];
+		if (memchr(evt->name, 0, sizeof(evt->name)) == NULL) {
+			_xlog("act.inspect : [%u] event name is not NUL-terminated\n", eventId);
+			return(0);
+		}
+	}
+	if (minver < 0x202 && act->delays != NULL)
+		minver = 0x202;
+	if (minver < 0x201 && act->eventcount > 0)
+		minver = 0x201;
+	return(minver);
+}
+
+
 struct ROAct *act_load(struct _reader *reader) {
 	struct ROAct *ret;
 	unsigned int actionId, motionId, sprclipId, attachpointId, eventId;
 	char magic[2];
 
+	if (reader == NULL || reader->error) {
+		_xlog("act.load : invalid argument (reader=%p reader.error=%d)\n", reader, reader->error);
+		return(NULL);
+	}
+
 	ret = (struct ROAct*)_xalloc(sizeof(struct ROAct));
 	memset(ret, 0, sizeof(struct ROAct));
 
 	reader->read(&magic, 2, 1, reader);
-	if (strncmp("AC", magic, 2) != 0) {
-		_xlog("Invalid ACT header: '%c%c'\n", magic[0], magic[1]);
+	if (memcmp(ACT_MAGIC, magic, 2) != 0) {
+		_xlog("act.load : invalid header x%02X%02X (\"%-2s\")\n", magic[0], magic[1], magic);
 		act_unload(ret);
 		return(NULL);
 	}
@@ -48,10 +144,10 @@ struct ROAct *act_load(struct _reader *reader) {
 	switch (ret->version) {
 		default:
 			if (ret->version >= 0x100 && ret->version <= 0x1FF) {
-				_xlog("WARNING assuming this is the base version\n");
+				_xlog("act.load : WARNING assuming base version 0x%X (v%u.%u)\n", ret->version, (ret->version >> 8) & 0xFF, ret->version & 0xFF);
 				break;// supported? not sure what's the base version... probably 0x100 or 0x101
 			}
-			_xlog("Unsupported ACT version\n");
+			_xlog("act.load : unknown version 0x%X (v%u.%u)\n", ret->version, (ret->version >> 8) & 0xFF, ret->version & 0xFF);
 			act_unload(ret);
 			return(NULL);
 		case 0x200:
@@ -163,8 +259,7 @@ struct ROAct *act_load(struct _reader *reader) {
 	}
 
 	if (reader->error) {
-		// data was missing
-		_xlog("ACT is incomplete or invalid\n");
+		_xlog("act.load : read error\n");
 		act_unload(ret);
 		return(NULL);
 	}
@@ -210,6 +305,140 @@ struct ROAct *act_loadFromGrf(struct ROGrfFile *file) {
 	else {
 		ret = act_loadFromData(file->data, file->uncompressedLength);
 	}
+
+	return(ret);
+}
+
+
+int act_save(const struct ROAct *act, struct _writer *writer) {
+	unsigned int actionId, motionId, sprclipId, attachpointId, eventId;
+	unsigned short minimumver;
+
+	if (act == NULL || writer == NULL || writer->error) {
+		_xlog("act.save : invalid argument (act=%o writer=%p writer.error=%d)\n", act, writer, writer->error);
+		return(1);
+	}
+	
+	minimumver = act_inspect(act);
+	if (minimumver == 0) {
+		_xlog("act.save : invalid\n");
+		return(1);
+	}
+	switch (act->version) {
+		default:
+			if (act->version >= 0x100 && act->version <= 0x1FF) {
+				_xlog("act.save : WARNING assuming base version 0x%X (v%u.%u)\n", act->version, (act->version >> 8) & 0xFF, act->version & 0xFF);
+				break;// supported? not sure what's the base version... probably 0x100 or 0x101
+			}
+			_xlog("act.save : unknown version 0x%X (v%u.%u)\n", act->version, (act->version >> 8) & 0xFF, act->version & 0xFF);
+			return(1);
+		case 0x200:
+		case 0x201:
+		case 0x202:
+		case 0x203:
+		case 0x204:
+		case 0x205:
+			break;// supported
+	}
+	if (act->version < minimumver) {
+		_xlog("act.save : incompatible version (must be at least v%u.%u)\n", (minimumver >> 8) & 0xFF, minimumver & 0xFF);
+		return(1);
+	}
+
+	writer->write(ACT_MAGIC, 2, 1, writer);
+	writer->write(&act->version, 2, 1, writer);
+	// write actions
+	writer->write(&act->actioncount, 2, 1, writer);
+	writer->write(&act->reserved, 10, 1, writer);
+	for (actionId = 0; actionId < act->actioncount; actionId++) {
+		const struct ROActAction *action = &act->actions[actionId];
+		// write motions
+		writer->write(&action->motioncount, 4, 1, writer);
+		for (motionId = 0; motionId < action->motioncount; motionId++) {
+			struct ROActMotion *motion = &action->motions[motionId];
+			writer->write(&motion->range1, 4, 4, writer);
+			writer->write(&motion->range2, 4, 4, writer);
+			// write sprclips
+			writer->write(&motion->sprclipcount, 4, 1, writer);
+			for (sprclipId = 0; sprclipId < motion->sprclipcount; sprclipId++) {
+				const struct ROActSprClip *sprclip = &motion->sprclips[sprclipId];
+				writer->write(&sprclip->x, 4, 1, writer);
+				writer->write(&sprclip->y, 4, 1, writer);
+				writer->write(&sprclip->sprNo, 4, 1, writer);
+				writer->write(&sprclip->mirrorOn, 4, 1, writer);
+				if (act->version >= 0x200) {
+					writer->write(&sprclip->color, 4, 1, writer);
+					if (act->version >= 0x204) {
+						writer->write(&sprclip->xZoom, 4, 1, writer);
+						writer->write(&sprclip->yZoom, 4, 1, writer);
+					}
+					else
+						writer->write(&sprclip->xZoom, 4, 1, writer);
+					writer->write(&sprclip->angle, 4, 1, writer);
+					writer->write(&sprclip->sprType, 4, 1, writer);
+					if (act->version >= 0x205) {
+						writer->write(&sprclip->width, 4, 1, writer);
+						writer->write(&sprclip->height, 4, 1, writer);
+					}
+				}
+			}
+			// write eventId
+			if (act->version >= 0x200)
+				writer->write(&motion->eventId, 4, 1, writer);
+			// write attach points
+			if (act->version >= 0x203) {
+				writer->write(&motion->attachpointcount, 4, 1, writer);
+				for (attachpointId = 0; attachpointId < motion->attachpointcount; attachpointId++) {
+					const struct ROActAttachPoint *attachpoint = &motion->attachpoints[attachpointId];
+					int ignored = 0;
+					writer->write(&ignored, 4, 1, writer);
+					writer->write(attachpoint, sizeof(struct ROActAttachPoint), 1, writer);
+				}
+			}
+		}
+	}
+	// write events
+	if (act->version >= 0x201) {
+		writer->write(&act->eventcount, 4, 1, writer);
+		for (eventId = 0; eventId < act->eventcount; eventId++) {
+			struct ROActEvent *evt = &act->events[eventId];
+			writer->write(evt, sizeof(struct ROActEvent), 1, writer);
+		}
+	}
+	// write delays
+	if (act->version >= 0x202) {
+		if (act->actioncount > 0)
+			writer->write(act->delays, 4, act->actioncount, writer);
+	}
+
+	if (writer->error) {
+		_xlog("act.save : write error\n");
+		return(1);
+	}
+
+	return(0);
+}
+
+
+int act_saveToData(const struct ROAct *act, unsigned char **data_out, unsigned long *size_out) {
+	int ret;
+	struct _writer *writer;
+
+	writer = memwriter_init(data_out, size_out);
+	ret = act_save(act, writer);
+	writer->destroy(writer);
+
+	return(ret);
+}
+
+
+int act_saveToFile(const struct ROAct *act, const char *fn) {
+	int ret;
+	struct _writer *writer;
+
+	writer = filewriter_init(fn);
+	ret = act_save(act, writer);
+	writer->destroy(writer);
 
 	return(ret);
 }

@@ -41,13 +41,13 @@ struct ROActSprClip {
 	int y; //< offset in frame (center is 0)
 	int sprNo; //< number of the image in the spr file (-1 for none)
 	unsigned int mirrorOn; //< mirror image along the vertical axis if non-zero
-	unsigned int color; //< (uchar r,g,b,a;)
-	float xZoom; //< scale of X axis
-	float yZoom; //< scale of Y axis
-	int angle; //< angle/rotation (degrees)
-	int sprType; //< 0=palette image,1=rgba image
-	int width; //< (v2.5+)
-	int height; //< (v2.5+)
+	unsigned int color; //< (uchar r,g,b,a;) (default 0xFFFFFFFF, v2.0+)
+	float xZoom; //< scale of X axis (default 1.0, v2.0+ zoom, v2.4+ xZoom)
+	float yZoom; //< scale of Y axis (default 1.0, v2.0+ zoom, v2.4+ yZoom)
+	int angle; //< angle/rotation (degrees) (default 0, v2.0+)
+	int sprType; //< 0=palette image,1=rgba image (default 0, v2.0+)
+	int width; //< (default 0, v2.5+)
+	int height; //< (default 0, v2.5+)
 };
 
 struct ROActAttachPoint {
@@ -61,7 +61,7 @@ struct ROActAttachPoint {
 struct ROActMotion {
 	int range1[4]; //< left,top,right,bottom
 	int range2[4]; //< left,top,right,bottom
-	int eventId; //< -1 for none
+	int eventId; //< -1 for none (default -1, v2.0+)
 	unsigned int sprclipcount; //< (max 1000)
 	struct ROActSprClip *sprclips;
 	unsigned int attachpointcount;
@@ -99,12 +99,19 @@ struct ROAct {
 #pragma pack(pop)
 
 
+/// Inspects the act data and returns the first compatible version. (0 if invalid)
+ROINT_DLLAPI unsigned short act_inspect(const struct ROAct *act);
 /// Loads the act from a data buffer. (NULL on error)
 ROINT_DLLAPI struct ROAct *act_loadFromData(const unsigned char *data, unsigned int len);
 /// Loads the act from a system file. (NULL on error)
 ROINT_DLLAPI struct ROAct *act_loadFromFile(const char *fn);
 /// Loads the act from a ROGrf file. (NULL on error)
 ROINT_DLLAPI struct ROAct *act_loadFromGrf(struct ROGrfFile*);
+/// Saves the act to a data buffer. (0 on success)
+/// WARNING : the 'data_out' data has to be released with the roint free function
+ROINT_DLLAPI int act_saveToData(const struct ROAct *act, unsigned char **data_out, unsigned long *size_out);
+/// Saves the act to a system file. (0 on success)
+ROINT_DLLAPI int act_saveToFile(const struct ROAct *act, const char *fn);
 /// Frees everything inside the ROAct structure allocated by us (including the act itself!)
 ROINT_DLLAPI void act_unload(struct ROAct*);
 

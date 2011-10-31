@@ -27,6 +27,68 @@
 #include <roint.h>
 
 
+int act_equal(struct ROAct *act, struct ROAct *act2) {
+	unsigned int actionId, motionId, sprclipId, attachpointId, eventId;
+
+	if (act2->version != act->version ||
+		act2->actioncount != act->actioncount ||
+		act2->eventcount != act->eventcount ||
+		memcmp(act2->reserved, act->reserved, sizeof(act->reserved)) != 0)
+		return(0);
+	for (actionId = 0; actionId < act->actioncount; actionId++) {
+		struct ROActAction *action = &act->actions[actionId];
+		struct ROActAction *action2 = &act->actions[actionId];
+		if (action2->motioncount != action->motioncount)
+			return(0);
+		for (motionId = 0; motionId < action->motioncount; motionId++) {
+			struct ROActMotion *motion = &action->motions[motionId];
+			struct ROActMotion *motion2 = &action2->motions[motionId];
+			if (motion2->sprclipcount != motion->sprclipcount ||
+				motion2->attachpointcount != motion->attachpointcount ||
+				motion2->eventId != motion->eventId ||
+				memcmp(motion2->range1, motion->range1, sizeof(motion->range1)) != 0 ||
+				memcmp(motion2->range2, motion->range2, sizeof(motion->range2)) != 0)
+				return(0);
+			for (sprclipId = 0; sprclipId < motion->sprclipcount; sprclipId++) {
+				struct ROActSprClip *sprclip = &motion->sprclips[sprclipId];
+				struct ROActSprClip *sprclip2 = &motion2->sprclips[sprclipId];
+				if (sprclip2->x != sprclip->x ||
+					sprclip2->y != sprclip->y ||
+					sprclip2->sprNo != sprclip->sprNo ||
+					sprclip2->mirrorOn != sprclip->mirrorOn ||
+					sprclip2->color != sprclip->color ||
+					sprclip2->xZoom != sprclip->xZoom ||
+					sprclip2->yZoom != sprclip->yZoom ||
+					sprclip2->angle != sprclip->angle ||
+					sprclip2->sprType != sprclip->sprType ||
+					sprclip2->width != sprclip->width ||
+					sprclip2->height != sprclip->height)
+					return(0);
+			}
+			for (attachpointId = 0; attachpointId < motion->attachpointcount; attachpointId++) {
+				struct ROActAttachPoint *attachpoint = &motion->attachpoints[attachpointId];
+				struct ROActAttachPoint *attachpoint2 = &motion2->attachpoints[attachpointId];
+				if (attachpoint2->x != attachpoint->x ||
+					attachpoint2->y != attachpoint->y ||
+					attachpoint2->attr != attachpoint->attr)
+					return(0);
+			}
+		}
+	}
+	for (eventId = 0; eventId < act->eventcount; eventId++) {
+		struct ROActEvent *evt = &act->events[eventId];
+		struct ROActEvent *evt2 = &act->events[eventId];
+		if (memcmp(evt2->name, evt->name, sizeof(evt->name)) != 0)
+			return(0);
+	}
+	if (act->version >= 0x202) {
+		if (memcmp(act2->delays, act->delays, 4 * act->actioncount) != 0)
+			return(0);
+	}
+	return(1);
+}
+
+
 int main(int argc, char **argv)
 {
 	const char *fn;
@@ -42,12 +104,13 @@ int main(int argc, char **argv)
 
 	fn = argv[1];
 	
+	ret = EXIT_SUCCESS;
 	act = act_loadFromFile(fn);
 	if (act == NULL) {
 		printf("error : failed to load file '%s'\n", fn);
 		return(EXIT_FAILURE);
 	}
-	ret = EXIT_SUCCESS;
+	printf("Inspect: 0x%x\n", act_inspect(act));
 	printf("Version: 0x%x (v%u.%u)\n", act->version, (act->version >> 8) & 0xFF, act->version & 0xFF);
 	switch (act->version) {
 		default:
@@ -156,6 +219,33 @@ int main(int argc, char **argv)
 			printf("error : should have NULL delays\n");
 			ret = EXIT_FAILURE;
 		}
+	}
+
+	{// test save to data
+		unsigned char *data = NULL;
+		unsigned long length = 0;
+		struct ROAct *act2;
+		printf("Save: %d\n", act_saveToData(act, &data, &length));
+		printf("Data: %p %u\n", data, length);
+		act2 = act_loadFromData(data,length);
+		if (data == NULL) {
+			printf("error : saving produced NULL data\n");
+			ret = EXIT_FAILURE;
+		}
+		else if (act2 == NULL) {
+			printf("error : saving produced invalid data\n");
+			ret = EXIT_FAILURE;
+		}
+		else {
+			printf("Inspect: 0x%x\n", act_inspect(act2));
+			if (!act_equal(act, act2)) {
+				printf("error : saving produced different data\n");
+				ret = EXIT_FAILURE;
+			}
+		}
+		if (data != NULL)
+			get_roint_free_func()(data);
+		act_unload(act2);
 	}
 
 	if (ret == EXIT_SUCCESS)
