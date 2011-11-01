@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		return(EXIT_FAILURE);
 	}
 	ret = EXIT_SUCCESS;
-	printf("Inspect: 0x%u\n", gat_inspect(gat));
+	printf("Inspect: 0x%x\n", gat_inspect(gat));
 	printf("Version: v%u.%u\n", gat->vermajor, gat->verminor);
 	if (gat->vermajor == 1 && gat->verminor == 2)
 		;// supported (v1.2)

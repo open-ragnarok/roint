@@ -34,7 +34,6 @@ const char ACT_MAGIC[] = {'A','C'};
 unsigned short act_inspect(const struct ROAct *act) {
 	unsigned int actionId, motionId, sprclipId, eventId;
 	unsigned short minver = 0x100;
-	unsigned short maxver = 0x205;
 
 	if (act == NULL) {
 		_xlog("act.inspect : invalid argument (act=%p)\n", act);
