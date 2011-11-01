@@ -31,6 +31,7 @@
 
 #include "roint/act.h"
 #include "roint/gat.h"
+#include "roint/gnd.h"
 #include "roint/grf.h"
 #include "roint/pal.h"
 #include "roint/spr.h"

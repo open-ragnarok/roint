@@ -5,6 +5,7 @@ remove_definitions( -DROINT_INTERNAL )
 set( TESTS
 	test_act
 	test_gat
+	test_gnd
 	test_rgz
 	test_spr
 	test_text
