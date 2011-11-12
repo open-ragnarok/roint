@@ -29,14 +29,14 @@
 #include "roint/memory.h"
 #include "roint/text.h"
 
-#include "roint/act.h"
-#include "roint/gat.h"
-#include "roint/gnd.h"
-#include "roint/grf.h"
-#include "roint/pal.h"
-#include "roint/spr.h"
-#include "roint/str.h"
-#include "roint/rgz.h"
-#include "roint/rsm.h"
+#include "roint/act.h" // collection of animations/actions
+#include "roint/gat.h" // ground info
+#include "roint/gnd.h" // 3d ground model
+#include "roint/grf.h" // archive
+#include "roint/pal.h" // palette
+#include "roint/spr.h" // collection of images
+#include "roint/str.h" // effect animation
+#include "roint/rgz.h" // archive
+#include "roint/rsm.h" // 3d model
 
 #endif /* __ROINT_H */
