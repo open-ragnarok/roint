@@ -8,6 +8,7 @@ set( TESTS
 	test_gnd
 	test_rgz
 	test_spr
+	test_str
 	test_text
 	)
 set( AUX_FILES
