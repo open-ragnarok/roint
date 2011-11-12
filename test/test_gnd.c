@@ -27,9 +27,9 @@
 #include <roint.h>
 
 
-#define SKIP_PRINT_LIGHTMAP
-#define SKIP_PRINT_SURFACE
-#define SKIP_PRINT_CELL
+//#define SKIP_PRINT_LIGHTMAP
+//#define SKIP_PRINT_SURFACE
+//#define SKIP_PRINT_CELL
 
 
 int gnd_equal(struct ROGnd *gnd, struct ROGnd *gnd2) {

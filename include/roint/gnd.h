@@ -40,7 +40,7 @@ struct ROGndCell {
 	/// Height of the cell corners.
 	///  ordering : west->east, south->north
 	///  value : lower numbers mean higher ground
-	///  zoom : 5 units is equivalent to the side of the cell
+	///  zoom : ROGnd.zoom units is equivalent to the side of the cell
 	float height[4];
 	int topSurfaceId; //< -1 for none
 	int frontSurfaceId; //< -1 for none
@@ -54,12 +54,22 @@ struct ROGndColor {
 	unsigned char a; //< ignored?
 };
 
-/// Ground Surface.
+/// Ground Surface, represents the visual aspect of a quad.
+/// The texture coordinate vertices depend on where it's applied.
+/// top = T0->T1->T2->T3 (T)
+/// front = T2->T3->F0->F1 (between T and F)
+/// right = T3->T1->R2->R0 (between T and R)
+/// 2---3
+/// | F | (cell y+1)
+/// 0---1
+/// 2---3 2---3
+/// | T | | R | (cell x+1)
+/// 0---1 0---1
 struct ROGndSurface {
-	float u[4]; //< west->east, south->north
-	float v[4]; //< west->east, south->north
-	short textureId; //< -1 for none
-	short lightmapId; //< -1 for none
+	float u[4]; //< Texture coordinate; west->east, south->north; 0=left 1=right
+	float v[4]; //< Texture coordinate; west->east, south->north; 0=up 1=down
+	unsigned short textureId; //< official client assumes valid index
+	unsigned short lightmapId; //< official client assumes valid index
 	struct ROGndColor color;
 };
 
