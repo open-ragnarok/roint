@@ -36,13 +36,30 @@ extern "C" {
 
 #pragma pack(push,1)
 /// Animation Key Frame.
-/// There can be multiple keyframes with the same framenum.
+///
+/// Vertices:
+///   (u,v),(u2,v2)
+///  /
+/// 0---1 - (u+us,v),(u2+us2,v2)
+/// |   |
+/// 3---2 - (u+us,v+vs),(u2+us2,v2+vs2)
+///  \
+///   (u,v+vs),(u2,v2+vs2)
+///
+/// Coordinates:
+///  __x   __u
+/// |     |
+/// y     v
+///
+/// A normal keyframe provides raw data of a frame.
+/// A morph keyframe:
+/// - only appears next to a normal keyframe with the same framenum
+/// - affects frames after framenum and before the next keyframe
+/// - adds x,y,u,v,us,vs,u2,v2,us2,vs2,ax,ay,rz,crR,crG,crB,crA per frame
+/// - modifies aniframe according to anitype
 struct ROStrKeyFrame {
-	unsigned int framenum;
-	/// Keyframe type.
-	///  0 - set data
-	///  1/other - add to previous data (x,y,u,v,us,vs,u2,v2,us2,vs2,ax,ay,rz,crR,crG,crB,crA,aniframe depends on anitype)
-	unsigned int type;
+	unsigned int framenum; //< Frame number.
+	unsigned int type; //< Frame type. 0 - normal keyframe; 1 - morpth keyframe
 	float x;
 	float y;
 	float u;
@@ -57,13 +74,33 @@ struct ROStrKeyFrame {
 	float ay[4]; //< vertice coordinates
 	float aniframe; //< textureId
 	/// Texture animation type.
-	/// Determines how aniframe changes for type != 0.
-	///  1 - aniframe += keyframe.aniframe;  //  ]-inf,inf[
-	///  2 - aniframe += keyframe.anidelta; if (aniframe >= ROStrLayer.texturecount) aniframe = ROStrLayer.texturecount - 1.0f;  //  ]-inf,ROStrLayer.texturecount[
-	///  3 - aniframe += keyframe.anidelta; if (aniframe >= ROStrLayer.texturecount) aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;  //  [0.0,ROStrLayer.texturecount[
-	///  4 - aniframe -= keyframe.anidelta; if (aniframe < 0.0f) {aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;  //  [0.0,ROStrLayer.texturecount[  WARNING broken on some clients
-	///  5 - TODO
-	///  other - aniframe;  //  no change
+	/// Determines how aniframe morphs per frame.
+	///  0 - no change
+	///  1 - ]-inf,inf[
+	///    aniframe += keyframe.aniframe; // add aniframe
+	///  2 - ]-inf,ROStrLayer.texturecount[
+	///    aniframe += keyframe.anidelta; // add anidelta
+	///    if (aniframe >= ROStrLayer.texturecount) // stop on limit
+	///      aniframe = ROStrLayer.texturecount - 1.0f;
+	///  3 - [0.0,ROStrLayer.texturecount[
+	///    aniframe += keyframe.anidelta; // add anidelta
+	///    if (aniframe >= ROStrLayer.texturecount) // loop when over
+	///      aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;
+	///  4 - [0.0,ROStrLayer.texturecount[  WARNING broken on 2004 client
+	///    aniframe -= keyframe.anidelta; // subtract anidelta
+	///    if (aniframe < 0.0f) { // loop when under
+	///      aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;
+	///      if (aniframe < 0.0f)
+	///        aniframe += ROStrLayer.texturecount;
+	///    }
+	///  5 - [0,ROStrLayer.texturecount - 1]  randomize with anidelta seed???
+	///    int value = (int)((curframe - keyframe.framenum) * keyframe.anidelta + aniframe);
+	///    int lasttex = ROStrLayer.texturecount - 1;
+	///    int n = value / lasttex;
+	///    if (n & 1)
+	///      aniframe = lasttex * (n + 1) - value;
+	///    else
+	///      aniframe = value - lasttex * n;
 	unsigned int anitype;
 	float anidelta;
 	float rz; //< Rotation [0,1024[ is equivalent to [0,360[ degrees
