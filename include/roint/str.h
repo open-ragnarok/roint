@@ -53,10 +53,12 @@ extern "C" {
 ///
 /// A normal keyframe provides raw data of a frame.
 /// A morph keyframe:
-/// - only appears next to a normal keyframe with the same framenum
+/// - appears next to a normal keyframe with the same framenum
+/// - can appear after another morph keyframe? (TODO confirm)
 /// - affects frames after framenum and before the next keyframe
 /// - adds x,y,u,v,us,vs,u2,v2,us2,vs2,ax,ay,rz,crR,crG,crB,crA per frame
 /// - modifies aniframe according to anitype
+/// Official client ignores the second vertice coordiantes.
 struct ROStrKeyFrame {
 	unsigned int framenum; //< Frame number.
 	unsigned int type; //< Frame type. 0 - normal keyframe; 1 - morpth keyframe
@@ -134,7 +136,8 @@ struct ROStrTexture {
 	char name[128]; //< NUL-terminated string
 };
 
-/// Animation layer/track. Contains a sequence keyframes and a list of textures being used.
+/// Animation layer.
+/// Contains keyframes and textures.
 struct ROStrLayer {
 	unsigned int texturecount;
 	struct ROStrTexture *textures;
@@ -146,8 +149,8 @@ struct ROStrLayer {
 /// Official client supports 60 tracks, 110 textures per track.
 struct ROStr {
 	unsigned int version;
-	unsigned int framecount; //< number of frames
-	unsigned int fps; //< frames per second
+	unsigned int framecount; //< number of frames; Official client ignores and uses hardcoded values.
+	unsigned int fps; //< frames per second; Official client ignores and advances a frame per processing cycle.
 	unsigned int layercount;
 	unsigned char reserved[16];
 	struct ROStrLayer *layers; //< animation layers/tracks
