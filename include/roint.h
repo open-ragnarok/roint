@@ -23,20 +23,31 @@
 */
 #ifndef __ROINT_H
 #define __ROINT_H
+/// \file roint.h
+///
+/// Entry point for the roint library.\n
+/// Includes all utility headers and file format headers.\n
+/// ROINT = Ragnarok Online INTerface.
 
+
+/// \defgroup UtilityHeaders  Utility Headers
 #include "roint/constant.h"
 #include "roint/log.h"
 #include "roint/memory.h"
 #include "roint/text.h"
 
-#include "roint/act.h" // collection of animations/actions
+
+/// \defgroup FileFormatHeaders  File Format Headers
+/// \warning The original client uses <code>int</code> for most count fields,
+///          so never go over <code>INT_MAX</code> if you want to be compatible.
+#include "roint/act.h" // sprite animations
 #include "roint/gat.h" // ground info
 #include "roint/gnd.h" // 3d ground model
 #include "roint/grf.h" // archive
 #include "roint/pal.h" // palette
-#include "roint/spr.h" // collection of images
-#include "roint/str.h" // effect animation
 #include "roint/rgz.h" // archive
 #include "roint/rsm.h" // 3d model
+#include "roint/spr.h" // sprite images
+#include "roint/str.h" // effect animation
 
 #endif /* __ROINT_H */
