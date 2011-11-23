@@ -6,6 +6,7 @@ set( TESTS
 	test_act
 	test_gat
 	test_gnd
+	test_imf
 	test_rgz
 	test_spr
 	test_str

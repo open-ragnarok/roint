@@ -28,6 +28,8 @@
 /// Entry point for the roint library.\n
 /// Includes all utility headers and file format headers.\n
 /// ROINT = Ragnarok Online INTerface.
+/// \sa UtilityHeaders
+/// \sa FileFormatHeaders
 
 
 /// \defgroup UtilityHeaders  Utility Headers
@@ -44,6 +46,7 @@
 #include "roint/gat.h" // ground info
 #include "roint/gnd.h" // 3d ground model
 #include "roint/grf.h" // archive
+#include "roint/imf.h" // sprite interaction
 #include "roint/pal.h" // palette
 #include "roint/rgz.h" // archive
 #include "roint/rsm.h" // 3d model
