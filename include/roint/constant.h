@@ -23,27 +23,35 @@
 */
 #ifndef __ROINT_CONSTANT_H
 #define __ROINT_CONSTANT_H
+/// \file roint/constant.h
+/// \ingroup UtilityHeaders
+/// RO related constants.
 
 #ifndef WITHOUT_ROINT_CONFIG
 #	include "roint/config.h"
 #endif
-#include <stddef.h> // size_t
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// number of constants
-ROINT_DLLAPI size_t roint_constant_count(void);
+/// Get number of constants.
+ROINT_DLLAPI unsigned int roint_constant_count(void);
 
-/// get constant name by index (NULL on error)
-ROINT_DLLAPI const char *roint_constant_name(size_t idx);
+/// Get constant name by index. (NULL on error)
+ROINT_DLLAPI const char *roint_constant_name(unsigned int idx);
 
-/// get constant value by index (NULL on error)
-ROINT_DLLAPI const char *roint_constant_value(size_t idx);
+/// Get constant value by index. (NULL on error)
+ROINT_DLLAPI const char *roint_constant_value(unsigned int idx);
 
-/// get constant value by name (NULL on error)
+/// Get constant description by index. (NULL on error)
+ROINT_DLLAPI const char *roint_constant_description(unsigned int idx);
+
+/// Get constant value by name. (NULL on error)
 ROINT_DLLAPI const char *roint_constant_name2value(const char *name);
+
+/// Get constant description by name. (NULL on error)
+ROINT_DLLAPI const char *roint_constant_name2description(const char *name);
 
 #ifdef __cplusplus
 }
