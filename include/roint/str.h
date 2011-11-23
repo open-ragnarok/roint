@@ -23,6 +23,9 @@
 */
 #ifndef __ROINT_STR_H
 #define __ROINT_STR_H
+/// \file roint/str.h
+/// \ingroup FileFormatHeaders
+/// STR file format. Effect animation.
 
 #ifndef WITHOUT_ROINT_CONFIG
 #	include "roint/config.h"
@@ -38,6 +41,7 @@ extern "C" {
 /// Animation Key Frame.
 ///
 /// Vertices:
+/// <pre>
 ///   (u,v),(u2,v2)
 ///  /
 /// 0---1 - (u+us,v),(u2+us2,v2)
@@ -45,12 +49,13 @@ extern "C" {
 /// 3---2 - (u+us,v+vs),(u2+us2,v2+vs2)
 ///  \
 ///   (u,v+vs),(u2,v2+vs2)
-///
+/// </pre>
 /// Coordinates:
+/// <pre>
 ///  __x   __u
 /// |     |
 /// y     v
-///
+/// </pre>
 /// A normal keyframe provides raw data of a frame.
 /// A morph keyframe:
 /// - appears next to a normal keyframe with the same framenum
@@ -58,7 +63,7 @@ extern "C" {
 /// - affects frames after framenum and before the next keyframe
 /// - adds x,y,u,v,us,vs,u2,v2,us2,vs2,ax,ay,rz,crR,crG,crB,crA per frame
 /// - modifies aniframe according to anitype
-/// Official client ignores the second vertice coordiantes.
+/// \note official client ignores the second texture coordiantes, so only mtpreset 1 to 4 is supported.
 struct ROStrKeyFrame {
 	unsigned int framenum; //< Frame number.
 	unsigned int type; //< Frame type. 0 - normal keyframe; 1 - morpth keyframe
@@ -77,34 +82,34 @@ struct ROStrKeyFrame {
 	float aniframe; //< textureId
 	/// Texture animation type.
 	/// Determines how aniframe morphs per frame.
-	///  0 - no change
-	///  1 - ]-inf,inf[
-	///    aniframe += keyframe.aniframe; // add aniframe
-	///  2 - ]-inf,ROStrLayer.texturecount[
-	///    aniframe += keyframe.anidelta; // add anidelta
-	///    if (aniframe >= ROStrLayer.texturecount) // stop on limit
-	///      aniframe = ROStrLayer.texturecount - 1.0f;
-	///  3 - [0.0,ROStrLayer.texturecount[
-	///    aniframe += keyframe.anidelta; // add anidelta
-	///    if (aniframe >= ROStrLayer.texturecount) // loop when over
-	///      aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;
-	///  4 - [0.0,ROStrLayer.texturecount[  WARNING broken on 2004 client
-	///    aniframe -= keyframe.anidelta; // subtract anidelta
-	///    if (aniframe < 0.0f) { // loop when under
-	///      aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;
-	///      if (aniframe < 0.0f)
-	///        aniframe += ROStrLayer.texturecount;
-	///    }
-	///  5 - [0,ROStrLayer.texturecount - 1]  randomize with anidelta seed???
-	///    int value = (int)((curframe - keyframe.framenum) * keyframe.anidelta + aniframe);
-	///    int lasttex = ROStrLayer.texturecount - 1;
-	///    int n = value / lasttex;
-	///    if (n & 1)
-	///      aniframe = lasttex * (n + 1) - value;
-	///    else
-	///      aniframe = value - lasttex * n;
+	/// - 0 - no change
+	/// - 1 - ]-inf,inf[ <pre>
+	///   aniframe += keyframe.aniframe; // add aniframe</pre>
+	/// - 2 - ]-inf,ROStrLayer.texturecount[ <pre>
+	///   aniframe += keyframe.anidelta; // add anidelta
+	///   if (aniframe >= ROStrLayer.texturecount) // stop on limit
+	///     aniframe = ROStrLayer.texturecount - 1.0f;</pre>
+	/// - 3 - [0.0,ROStrLayer.texturecount[ <pre>
+	///   aniframe += keyframe.anidelta; // add anidelta
+	///   if (aniframe >= ROStrLayer.texturecount) // loop when over
+	///     aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;</pre>
+	/// - 4 - [0.0,ROStrLayer.texturecount[  WARNING broken on 2004 client <pre>
+	///   aniframe -= keyframe.anidelta; // subtract anidelta
+	///   if (aniframe < 0.0f) { // loop when under
+	///     aniframe -= (float)(int)(aniframe / ROStrLayer.texturecount) * ROStrLayer.texturecount;
+	///     if (aniframe < 0.0f)
+	///       aniframe += ROStrLayer.texturecount;
+	///   }</pre>
+	/// - 5 - [0,ROStrLayer.texturecount - 1]  randomize with anidelta seed??? (TODO interpret) <pre>
+	///   int value = (int)((curframe - keyframe.framenum) * keyframe.anidelta + aniframe);
+	///   int lasttex = ROStrLayer.texturecount - 1;
+	///   int n = value / lasttex;
+	///   if (n & 1)
+	///     aniframe = lasttex * (n + 1) - value;
+	///   else
+	///     aniframe = value - lasttex * n;</pre>
 	unsigned int anitype;
-	float anidelta;
+	float anidelta; ///< Texture animation delta.
 	float rz; //< Rotation [0,1024[ is equivalent to [0,360[ degrees
 	float crR; //< Red color component of vertices [0,255]
 	float crG; //< Green color component of vertices [0,255]
@@ -113,47 +118,97 @@ struct ROStrKeyFrame {
 	unsigned int srcalpha; //< Source blend mode (D3DBLEND_*)
 	unsigned int destalpha; //< Destination blend mode (D3DBLEND_*)
 	/// Multi-texture mode.
-	///  1 - TODO
-	///  2 - TODO
-	///  3 - TODO
-	///  4 - TODO
-	///  5 - TODO
-	///  6 - TODO
-	///  7 - TODO
-	///  8 - TODO
-	///  9 - TODO
-	///  10 - TODO
-	///  11 - TODO
-	///  12 - TODO
-	///  13 - TODO
-	///  14 - TODO
-	///  15 - TODO
+	/// - 1 - modulate texture <pre>
+	///   color = texture.color * color
+	///   alpha = texture.alpha * alpha</pre>
+	/// - 2 - same as 1
+	/// - 3 - add texture color, replace alpha <pre>
+	///   color = texture.color + color
+	///   alpha = texture.alpha</pre>
+	/// - 4 - blend texture color according to texture alpha, keep alpha <pre>
+	///   color = texture.color * texture.alpha + color * (1 - texture.alpha)</pre>
+	/// - 5 - modulate texture colors, replace alpha <pre>
+	///   color0 = color0 = texture0.color * color
+	///   color = texture1.color * color0
+	///   alpha = texture1.alpha</pre>
+	/// - 6 - modulate inverse texture colors, replace alpha <pre>
+	///   color0 = (1 - texture0.color) * color
+	///   color = (1 - texture1.color) * color0
+	///   alpha = texture1.alpha</pre>
+	/// - 7 - replace color with modulate of texture alpha and texture color, replace alpha <pre>
+	///   color0 = texture0.color
+	///   color = texture1.alpha * color0
+	///   alpha = texture1.alpha</pre>
+	/// - 8 - add texture color with modulate of texture color, replace alpha (same as 11?) <pre>
+	///   color0 = texture0.color * color
+	///   (alpha0 = texture0.alpha)
+	///   color = texture1.color + color0
+	///   alpha = texture1.alpha</pre>
+	/// - 9 - blend texture color with modulate of texture color according to texture alpha, replace alpha <pre>
+	///   color0 = texture0.color * color
+	///   color = texture1.color * texture1.alpha + color0 * (1 - texture1.alpha)
+	///   alpha = texture1.alpha</pre>
+	/// - 10 - blend texture color with modulate of color according to alpha, replace alpha <pre>
+	///   color0 = texture0.color * color
+	///   color = texture1.color * alpha + color0 * (1 - alpha)
+	///   alpha = texture1.alpha</pre>
+	/// - 11 - add texture color with modulate of texture color, replace alpha (same as 8?) <pre>
+	///   color0 = texture0.color * color
+	///   (alpha0 = alpha)
+	///   color = texture1.color + color0
+	///   alpha = texture1.alpha</pre>
+	/// - 12 - add inverse texture color with modulate of texture color, replace alpha <pre>
+	///   color0 = texture0.color * color
+	///   color = (1 - texture1.color) + color0
+	///   alpha = texture1.alpha</pre>
+	/// - 13 - modulate texture color with add of texture color, replace alpha <pre>
+	///   color0 = texture0.color + color
+	///   color = texture1.color * color0
+	///   alpha = texture1.alpha</pre>
+	/// - 14 - bright(x2) modulate of texture colors, replace alpha <pre>
+	///   color0 = texture0.color * color
+	///   color = texture1.color * color0 * 2
+	///   alpha = texture1.alpha</pre>
+	/// - 15 - signed add texture color with modulate of texture color, replace alpha <pre>
+	///   color0 = texture0.color * color
+	///   color = texture1.color + color0 - 0.5
+	///   alpha = texture1.alpha</pre>
 	unsigned int mtpreset;
 };
 
-/// Texture pathname. (defaults to "1.bmp")
+/// Texture.
+/// \note default pathname is "1.bmp"
 struct ROStrTexture {
-	char name[128]; //< NUL-terminated string
+	char name[128]; //< Texture pathname. (NUL-terminated string)
 };
 
 /// Animation layer.
 /// Contains keyframes and textures.
 struct ROStrLayer {
-	unsigned int texturecount;
+	unsigned int texturecount; ///< Number of textures.
+	/// Textures.
+	/// \note original client supports 110 textures
 	struct ROStrTexture *textures;
-	unsigned int keyframecount;
-	struct ROStrKeyFrame *keyframes;
+	unsigned int keyframecount; ///< Number of keyframes.
+	struct ROStrKeyFrame *keyframes; ///< Keyframes.
 };
 
 /// Effect Animation.
-/// Official client supports 60 tracks, 110 textures per track.
 struct ROStr {
+	/// Supported versions:
+	/// - 148 - base version
 	unsigned int version;
-	unsigned int framecount; //< number of frames; Official client ignores and uses hardcoded values.
-	unsigned int fps; //< frames per second; Official client ignores and advances a frame per processing cycle.
-	unsigned int layercount;
-	unsigned char reserved[16];
-	struct ROStrLayer *layers; //< animation layers/tracks
+	/// NUmber of frames.
+	/// \note original client ignores and uses hardcoded values
+	unsigned int framecount;
+	/// Frames per second.
+	/// \note original client ignores and advances a frame per processing cycle
+	unsigned int fps;
+	unsigned int layercount; ///< Number of layers.
+	unsigned char reserved[16]; ///< Reserved.
+	/// Animation layers.
+	/// \note original client supports 60 layers
+	struct ROStrLayer *layers;
 };
 #pragma pack(pop)
 

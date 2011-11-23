@@ -43,11 +43,11 @@ unsigned int str_inspect(const struct ROStr *str) {
 	}
 
 	if (str->layercount > 0 && str->layers == NULL) {
-		_xlog("str.inspect : expected non-NULL textures\n");
+		_xlog("str.inspect : expected non-NULL layers\n");
 		return(0);
 	}
 	if (str->layercount == 0 && str->layers != NULL) {
-		_xlog("str.inspect : expected NULL textures\n");
+		_xlog("str.inspect : expected NULL layers\n");
 		return(0);
 	}
 	if (str->layercount > STR_MAX_LAYER_COUNT) {
