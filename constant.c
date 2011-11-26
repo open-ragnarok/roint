@@ -55,11 +55,23 @@ const struct _roint_constant constants[] = {
 	{"path.file.str", "data\\texture\\effect\\", "path to str files"},
 	{"path.file.str.texture", "effect\\", "subpath of the str textures"},
 	{"path.file.wav", "data\\wav\\", "path to wav files"},
+	// korean
+	{"korean.user_interface.utf8", "유저인터페이스", "korean for user interface"},
+	{"korean.user_interface.cp949", "\xC0\xAF\xC0\xFA\xC0\xCE\xC5\xCD\xC6\xE4\xC0\xCC\xBD\xBA", "korean for user interface"},
+	{"korean.effects.utf8", "이팩트", "korean for effects"},
+	{"korean.effects.cp949", "\xC0\xCC\xC6\xD1\xC6\xAE", "korean for effects"},
+	{"korean.items.utf8", "아이템", "korean for items"},
+	{"korean.items.cp949", "\xBE\xC6\xC0\xCC\xC5\xDB", "korean for items"},
+	// sex
+	{"korean.female.utf8", "여", "korean for female"},
+	{"korean.female.cp949", "\xBF\xA9", "korean for female"},
+	{"korean.male.utf8", "남", "korean for female"},
+	{"korean.male.cp949", "\xB3\xB2", "korean for male"},
 
 //---------------//
 // old constants //
 //---------------//
-	{"user_interface", "\xc0\xaf\xc0\xfa\xc0\xce\xc5\xcd\xc6\xe4\xc0\xcc\xbd\xba", "TODO old constant"},
+//	{"user_interface", "\xc0\xaf\xc0\xfa\xc0\xce\xc5\xcd\xc6\xe4\xc0\xcc\xbd\xba", "TODO old constant"},
 
 // BODY PARTS
 	{"body", "\xb8\xf6\xc5\xeb", "TODO old constant"},
@@ -73,15 +85,15 @@ const struct _roint_constant constants[] = {
 
 //
 	{"shields", "\xb9\xe6\xc6\xd0", "TODO old constant"},
-	{"items", "\xbe\xc6\xc0\xcc\xc5\xdb", "TODO old constant"},
+//	{"items", "\xbe\xc6\xc0\xcc\xc5\xdb", "TODO old constant"},
 	{"accessories", "\xbe\xc7\xbc\xbc\xbb\xe7\xb8\xae", "TODO old constant"}, // Head accessories (Helm)
-	{"effects", "\xc0\xcc\xc6\xd1\xc6\xae", "TODO old constant"},
+//	{"effects", "\xc0\xcc\xc6\xd1\xc6\xae", "TODO old constant"},
 
 	{"water", "\xbf\xf6\xc5\xcd", "TODO old constant"},
 
 // === SEX
-	{"female", "\xbf\xa9", "TODO old constant"},
-	{"male", "\xb3\xb2", "TODO old constant"},
+//	{"female", "\xbf\xa9", "TODO old constant"},
+//	{"male", "\xb3\xb2", "TODO old constant"},
 
 // Weapons
 	{"sword", "\xb0\xcb", "TODO old constant"},
