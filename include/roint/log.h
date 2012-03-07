@@ -24,8 +24,14 @@
 #ifndef __ROINT_LOG_H
 #define __ROINT_LOG_H
 
-#ifndef WITHOUT_ROINT_CONFIG
+#ifdef ROINT_INTERNAL
+#	include "config.h"
+#elif !defined(WITHOUT_ROINT_CONFIG)
 #	include "roint/config.h"
+#endif
+
+#ifndef ROINT_DLLAPI
+#	define ROINT_DLLAPI
 #endif
 
 #ifdef __cplusplus

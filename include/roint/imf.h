@@ -27,8 +27,14 @@
 /// \ingroup FileFormatHeaders
 /// IMF file format. Player sprite interaction.
 
-#ifndef WITHOUT_ROINT_CONFIG
+#ifdef ROINT_INTERNAL
+#	include "config.h"
+#elif !defined(WITHOUT_ROINT_CONFIG)
 #	include "roint/config.h"
+#endif
+
+#ifndef ROINT_DLLAPI
+#	define ROINT_DLLAPI
 #endif
 struct ROGrfFile; // forward declaration
 

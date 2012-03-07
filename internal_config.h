@@ -21,37 +21,23 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
-#ifndef __ROINT_MEMORY_H
-#define __ROINT_MEMORY_H
+#ifndef __ROINT_INTERNAL_CONFIG_H
+#define __ROINT_INTERNAL_CONFIG_H
 
-#ifdef ROINT_INTERNAL
-#	include "config.h"
-#elif !defined(WITHOUT_ROINT_CONFIG)
-#	include "roint/config.h"
+//#define HAVE_UNISTD_H
+#define HAVE_IO_H
+
+#define HAVE_FTRUNCATE
+//#define HAVE_FTRUNCATE64
+#define HAVE_CHSIZE
+#define HAVE__CHSIZE_S
+
+#ifdef _MSC_VER
+#	ifdef ROINT_DLL
+#		pragma comment(lib, "libz.dll.a")
+#	else
+#		pragma comment(lib, "libz.a")
+#	endif
 #endif
 
-#ifndef ROINT_DLLAPI
-#	define ROINT_DLLAPI
-#endif
-#include <stddef.h> // size_t
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
-
-typedef void* (*roint_alloc_func)(size_t);
-typedef void (*roint_free_func)(void*);
-
-// Set a custom malloc function to use troughout ROInt engine.
-// Pass NULL to return to the default function.
-ROINT_DLLAPI void set_roint_malloc_func(roint_alloc_func);
-ROINT_DLLAPI void set_roint_free_func(roint_free_func);
-    
-ROINT_DLLAPI roint_alloc_func get_roint_malloc_func();
-ROINT_DLLAPI roint_free_func get_roint_free_func();
-
-#ifdef __cplusplus
-}
-#endif 
-
-#endif /* __ROINT_MEMORY_H */
+#endif /* __ROINT_CONFIG_H */
