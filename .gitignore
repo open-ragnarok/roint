@@ -1,0 +1,5 @@
+# MSVC
+*.vcxproj.user
+
+Debug/
+Release/
