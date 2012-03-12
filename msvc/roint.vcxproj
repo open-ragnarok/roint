@@ -18,6 +18,57 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\des.h" />
+    <ClInclude Include="..\grf.h" />
+    <ClInclude Include="..\include\roint.h" />
+    <ClInclude Include="..\include\roint\act.h" />
+    <ClInclude Include="..\include\roint\constant.h" />
+    <ClInclude Include="..\include\roint\gat.h" />
+    <ClInclude Include="..\include\roint\gnd.h" />
+    <ClInclude Include="..\include\roint\grf.h" />
+    <ClInclude Include="..\include\roint\imf.h" />
+    <ClInclude Include="..\include\roint\log.h" />
+    <ClInclude Include="..\include\roint\memory.h" />
+    <ClInclude Include="..\include\roint\pal.h" />
+    <ClInclude Include="..\include\roint\rgz.h" />
+    <ClInclude Include="..\include\roint\rsm.h" />
+    <ClInclude Include="..\include\roint\spr.h" />
+    <ClInclude Include="..\include\roint\str.h" />
+    <ClInclude Include="..\include\roint\text.h" />
+    <ClInclude Include="..\internal.h" />
+    <ClInclude Include="..\memory.h" />
+    <ClInclude Include="..\reader.h" />
+    <ClInclude Include="..\rsm.h" />
+    <ClInclude Include="..\writer.h" />
+    <ClInclude Include="..\_cp949.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="internal_config.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\act.c" />
+    <ClCompile Include="..\constant.c" />
+    <ClCompile Include="..\deflatereader.c" />
+    <ClCompile Include="..\deflatewriter.c" />
+    <ClCompile Include="..\des.c" />
+    <ClCompile Include="..\filereader.c" />
+    <ClCompile Include="..\filewriter.c" />
+    <ClCompile Include="..\gat.c" />
+    <ClCompile Include="..\gnd.c" />
+    <ClCompile Include="..\grf.c" />
+    <ClCompile Include="..\imf.c" />
+    <ClCompile Include="..\log.c" />
+    <ClCompile Include="..\memory.c" />
+    <ClCompile Include="..\memreader.c" />
+    <ClCompile Include="..\memwriter.c" />
+    <ClCompile Include="..\pal.c" />
+    <ClCompile Include="..\rgz.c" />
+    <ClCompile Include="..\rsm.c" />
+    <ClCompile Include="..\spr.c" />
+    <ClCompile Include="..\str.c" />
+    <ClCompile Include="..\text.c" />
+    <ClCompile Include="..\util.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{ADD5819E-9925-43E9-AEDA-D1853B9B1E3D}</ProjectGuid>
     <RootNamespace>roint</RootNamespace>
@@ -67,7 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);ROINT_INTERNAL;ROINT_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(ProjectDir)\zlib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\include\;$(ProjectDir)\zlib\include;$(ProjectDir)\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -79,7 +130,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);ROINT_INTERNAL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(ProjectDir)\zlib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\include\;$(ProjectDir)\zlib\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -93,7 +144,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);ROINT_INTERNAL;ROINT_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(ProjectDir)\zlib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\include\;$(ProjectDir)\zlib\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -109,7 +160,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);ROINT_INTERNAL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(ProjectDir)\zlib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\include\;$(ProjectDir)\zlib\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -118,60 +169,6 @@
       <AdditionalLibraryDirectories>$(ProjectDir)\zlib\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="config.h" />
-    <ClInclude Include="des.h" />
-    <ClInclude Include="grf.h" />
-    <ClInclude Include="include\roint.h" />
-    <ClInclude Include="include\roint\act.h" />
-    <ClInclude Include="include\roint\constant.h" />
-    <ClInclude Include="include\roint\gat.h" />
-    <ClInclude Include="include\roint\gnd.h" />
-    <ClInclude Include="include\roint\grf.h" />
-    <ClInclude Include="include\roint\imf.h" />
-    <ClInclude Include="include\roint\log.h" />
-    <ClInclude Include="include\roint\memory.h" />
-    <ClInclude Include="include\roint\pal.h" />
-    <ClInclude Include="include\roint\rgz.h" />
-    <ClInclude Include="include\roint\rsm.h" />
-    <ClInclude Include="include\roint\spr.h" />
-    <ClInclude Include="include\roint\str.h" />
-    <ClInclude Include="include\roint\text.h" />
-    <ClInclude Include="internal.h" />
-    <ClInclude Include="internal_config.h" />
-    <ClInclude Include="memory.h" />
-    <ClInclude Include="reader.h" />
-    <ClInclude Include="rsm.h" />
-    <ClInclude Include="writer.h" />
-    <ClInclude Include="_cp949.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="act.c" />
-    <ClCompile Include="constant.c" />
-    <ClCompile Include="deflatereader.c" />
-    <ClCompile Include="deflatewriter.c" />
-    <ClCompile Include="des.c" />
-    <ClCompile Include="filereader.c" />
-    <ClCompile Include="filewriter.c" />
-    <ClCompile Include="gat.c" />
-    <ClCompile Include="gnd.c" />
-    <ClCompile Include="grf.c" />
-    <ClCompile Include="imf.c" />
-    <ClCompile Include="log.c" />
-    <ClCompile Include="memory.c" />
-    <ClCompile Include="memreader.c" />
-    <ClCompile Include="memwriter.c" />
-    <ClCompile Include="pal.c" />
-    <ClCompile Include="rgz.c" />
-    <ClCompile Include="rsm.c" />
-    <ClCompile Include="spr.c" />
-    <ClCompile Include="str.c" />
-    <ClCompile Include="text.c" />
-    <ClCompile Include="util.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
