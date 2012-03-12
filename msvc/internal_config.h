@@ -21,6 +21,12 @@
     http://www.gnu.org/copyleft/lesser.txt.
     ------------------------------------------------------------------------------------
 */
+
+/* 
+  WARNING:THIS FILE SHOULD NOT BE UPDATED INDEPENDENTLY.
+  It is a "port" of the autoconf header for Visual Studio.
+  Please, make the proper changed on the autoconf file if needed.
+*/
 #ifndef __ROINT_INTERNAL_CONFIG_H
 #define __ROINT_INTERNAL_CONFIG_H
 
