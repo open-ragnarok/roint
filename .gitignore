@@ -1,5 +1,16 @@
-# Mac
-.DS_Store
+# Mac OS X
+*.DS_Store
+._*
+
+# XCode
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
+build/
 
 # MSVC
 *.vcxproj.user
