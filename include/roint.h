@@ -52,5 +52,6 @@
 #include "roint/rsm.h" // 3d model
 #include "roint/spr.h" // sprite images
 #include "roint/str.h" // effect animation
+#include "roint/rsw.h" // resource world
 
 #endif /* __ROINT_H */
