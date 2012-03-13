@@ -241,3 +241,11 @@ void grf_freedata(struct ROGrfFile *file) {
 
 	file->data = NULL;
 }
+
+struct ROGrfFile *grf_getfileinfo(const struct ROGrf* grf, unsigned int idx) {
+	if (idx >= grf_filecount(grf)) {
+		return(NULL);
+	}
+
+	return(&(grf->files[idx]));
+}
