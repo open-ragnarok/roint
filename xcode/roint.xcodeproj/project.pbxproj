@@ -1,0 +1,546 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4948FF8A150A2AEE00C743DF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4948FF89150A2AEE00C743DF /* libz.dylib */; };
+		4948FF8B150A2AFA00C743DF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4948FF89150A2AEE00C743DF /* libz.dylib */; };
+		49CDF2AC137C32AF0070EC95 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49CDF2AB137C32AF0070EC95 /* Cocoa.framework */; };
+		49CDF2C9137C32CB0070EC95 /* des.c in Sources */ = {isa = PBXBuildFile; fileRef = 49CDF2BB137C32CB0070EC95 /* des.c */; };
+		49CDF2CA137C32CB0070EC95 /* des.h in Headers */ = {isa = PBXBuildFile; fileRef = 49CDF2BC137C32CB0070EC95 /* des.h */; };
+		49CDF2CB137C32CB0070EC95 /* grf.c in Sources */ = {isa = PBXBuildFile; fileRef = 49CDF2BD137C32CB0070EC95 /* grf.c */; };
+		49CDF2CC137C32CB0070EC95 /* grf.h in Headers */ = {isa = PBXBuildFile; fileRef = 49CDF2BE137C32CB0070EC95 /* grf.h */; };
+		49CDF2CD137C32CB0070EC95 /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 49CDF2BF137C32CB0070EC95 /* internal.h */; };
+		49CDF2D4137C32CB0070EC95 /* rsm.c in Sources */ = {isa = PBXBuildFile; fileRef = 49CDF2C6137C32CB0070EC95 /* rsm.c */; };
+		49CDF2D5137C32CB0070EC95 /* rsm.h in Headers */ = {isa = PBXBuildFile; fileRef = 49CDF2C7137C32CB0070EC95 /* rsm.h */; };
+		49CDF2DD137C33180070EC95 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49CDF2AB137C32AF0070EC95 /* Cocoa.framework */; };
+		49CDF2EB137C33560070EC95 /* des.c in Sources */ = {isa = PBXBuildFile; fileRef = 49CDF2BB137C32CB0070EC95 /* des.c */; };
+		49CDF2EC137C33560070EC95 /* grf.c in Sources */ = {isa = PBXBuildFile; fileRef = 49CDF2BD137C32CB0070EC95 /* grf.c */; };
+		49CDF2F0137C33560070EC95 /* rsm.c in Sources */ = {isa = PBXBuildFile; fileRef = 49CDF2C6137C32CB0070EC95 /* rsm.c */; };
+		49EEB699150F8BCD00F21662 /* _cp949.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB698150F8BCD00F21662 /* _cp949.h */; };
+		49EEB6B1150F8BFC00F21662 /* act.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69B150F8BFC00F21662 /* act.c */; };
+		49EEB6B2150F8BFC00F21662 /* constant.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69C150F8BFC00F21662 /* constant.c */; };
+		49EEB6B3150F8BFC00F21662 /* deflatereader.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69D150F8BFC00F21662 /* deflatereader.c */; };
+		49EEB6B4150F8BFC00F21662 /* deflatewriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69E150F8BFC00F21662 /* deflatewriter.c */; };
+		49EEB6B5150F8BFC00F21662 /* filereader.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69F150F8BFC00F21662 /* filereader.c */; };
+		49EEB6B6150F8BFC00F21662 /* filewriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A0150F8BFC00F21662 /* filewriter.c */; };
+		49EEB6B7150F8BFC00F21662 /* gat.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A1150F8BFC00F21662 /* gat.c */; };
+		49EEB6B8150F8BFC00F21662 /* gnd.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A2150F8BFC00F21662 /* gnd.c */; };
+		49EEB6B9150F8BFC00F21662 /* imf.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A3150F8BFC00F21662 /* imf.c */; };
+		49EEB6BA150F8BFC00F21662 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A4150F8BFC00F21662 /* log.c */; };
+		49EEB6BB150F8BFC00F21662 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A5150F8BFC00F21662 /* memory.c */; };
+		49EEB6BC150F8BFC00F21662 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6A6150F8BFC00F21662 /* memory.h */; };
+		49EEB6BD150F8BFC00F21662 /* memreader.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A7150F8BFC00F21662 /* memreader.c */; };
+		49EEB6BE150F8BFC00F21662 /* memwriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A8150F8BFC00F21662 /* memwriter.c */; };
+		49EEB6BF150F8BFC00F21662 /* pal.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A9150F8BFC00F21662 /* pal.c */; };
+		49EEB6C0150F8BFC00F21662 /* reader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6AA150F8BFC00F21662 /* reader.h */; };
+		49EEB6C1150F8BFC00F21662 /* rgz.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AB150F8BFC00F21662 /* rgz.c */; };
+		49EEB6C2150F8BFC00F21662 /* spr.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AC150F8BFC00F21662 /* spr.c */; };
+		49EEB6C3150F8BFC00F21662 /* str.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AD150F8BFC00F21662 /* str.c */; };
+		49EEB6C4150F8BFC00F21662 /* text.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AE150F8BFC00F21662 /* text.c */; };
+		49EEB6C5150F8BFC00F21662 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AF150F8BFC00F21662 /* util.c */; };
+		49EEB6C6150F8BFC00F21662 /* writer.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6B0150F8BFC00F21662 /* writer.h */; };
+		49EEB6C9150F8EEB00F21662 /* roint.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6C8150F8EEB00F21662 /* roint.h */; };
+		49EEB6D8150F8EF800F21662 /* act.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6CA150F8EF800F21662 /* act.h */; };
+		49EEB6D9150F8EF800F21662 /* constant.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6CB150F8EF800F21662 /* constant.h */; };
+		49EEB6DA150F8EF800F21662 /* gat.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6CC150F8EF800F21662 /* gat.h */; };
+		49EEB6DB150F8EF800F21662 /* gnd.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6CD150F8EF800F21662 /* gnd.h */; };
+		49EEB6DC150F8EF800F21662 /* grf.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6CE150F8EF800F21662 /* grf.h */; };
+		49EEB6DD150F8EF800F21662 /* imf.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6CF150F8EF800F21662 /* imf.h */; };
+		49EEB6DE150F8EF800F21662 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D0150F8EF800F21662 /* log.h */; };
+		49EEB6DF150F8EF800F21662 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D1150F8EF800F21662 /* memory.h */; };
+		49EEB6E0150F8EF800F21662 /* pal.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D2150F8EF800F21662 /* pal.h */; };
+		49EEB6E1150F8EF800F21662 /* rgz.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D3150F8EF800F21662 /* rgz.h */; };
+		49EEB6E2150F8EF800F21662 /* rsm.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D4150F8EF800F21662 /* rsm.h */; };
+		49EEB6E3150F8EF800F21662 /* spr.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D5150F8EF800F21662 /* spr.h */; };
+		49EEB6E4150F8EF800F21662 /* str.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D6150F8EF800F21662 /* str.h */; };
+		49EEB6E5150F8EF800F21662 /* text.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D7150F8EF800F21662 /* text.h */; };
+		49EEB6E9150F909C00F21662 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6E7150F909C00F21662 /* config.h */; };
+		49EEB6EA150F909C00F21662 /* internal_config.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6E8150F909C00F21662 /* internal_config.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4948FF89150A2AEE00C743DF /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/usr/lib/libz.dylib; sourceTree = DEVELOPER_DIR; };
+		49CDF2A8137C32AF0070EC95 /* roint.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = roint.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		49CDF2AB137C32AF0070EC95 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		49CDF2BB137C32CB0070EC95 /* des.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = des.c; path = ../des.c; sourceTree = "<group>"; };
+		49CDF2BC137C32CB0070EC95 /* des.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = des.h; path = ../des.h; sourceTree = "<group>"; };
+		49CDF2BD137C32CB0070EC95 /* grf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = grf.c; path = ../grf.c; sourceTree = "<group>"; };
+		49CDF2BE137C32CB0070EC95 /* grf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = grf.h; path = ../grf.h; sourceTree = "<group>"; };
+		49CDF2BF137C32CB0070EC95 /* internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = internal.h; path = ../internal.h; sourceTree = "<group>"; };
+		49CDF2C6137C32CB0070EC95 /* rsm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rsm.c; path = ../rsm.c; sourceTree = "<group>"; };
+		49CDF2C7137C32CB0070EC95 /* rsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rsm.h; path = ../rsm.h; sourceTree = "<group>"; };
+		49CDF2DC137C33180070EC95 /* libroint.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libroint.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		49EEB698150F8BCD00F21662 /* _cp949.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _cp949.h; path = ../_cp949.h; sourceTree = "<group>"; };
+		49EEB69B150F8BFC00F21662 /* act.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = act.c; path = ../act.c; sourceTree = "<group>"; };
+		49EEB69C150F8BFC00F21662 /* constant.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = constant.c; path = ../constant.c; sourceTree = "<group>"; };
+		49EEB69D150F8BFC00F21662 /* deflatereader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = deflatereader.c; path = ../deflatereader.c; sourceTree = "<group>"; };
+		49EEB69E150F8BFC00F21662 /* deflatewriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = deflatewriter.c; path = ../deflatewriter.c; sourceTree = "<group>"; };
+		49EEB69F150F8BFC00F21662 /* filereader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filereader.c; path = ../filereader.c; sourceTree = "<group>"; };
+		49EEB6A0150F8BFC00F21662 /* filewriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filewriter.c; path = ../filewriter.c; sourceTree = "<group>"; };
+		49EEB6A1150F8BFC00F21662 /* gat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gat.c; path = ../gat.c; sourceTree = "<group>"; };
+		49EEB6A2150F8BFC00F21662 /* gnd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gnd.c; path = ../gnd.c; sourceTree = "<group>"; };
+		49EEB6A3150F8BFC00F21662 /* imf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = imf.c; path = ../imf.c; sourceTree = "<group>"; };
+		49EEB6A4150F8BFC00F21662 /* log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = log.c; path = ../log.c; sourceTree = "<group>"; };
+		49EEB6A5150F8BFC00F21662 /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memory.c; path = ../memory.c; sourceTree = "<group>"; };
+		49EEB6A6150F8BFC00F21662 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory.h; path = ../memory.h; sourceTree = "<group>"; };
+		49EEB6A7150F8BFC00F21662 /* memreader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memreader.c; path = ../memreader.c; sourceTree = "<group>"; };
+		49EEB6A8150F8BFC00F21662 /* memwriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memwriter.c; path = ../memwriter.c; sourceTree = "<group>"; };
+		49EEB6A9150F8BFC00F21662 /* pal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pal.c; path = ../pal.c; sourceTree = "<group>"; };
+		49EEB6AA150F8BFC00F21662 /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = reader.h; path = ../reader.h; sourceTree = "<group>"; };
+		49EEB6AB150F8BFC00F21662 /* rgz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rgz.c; path = ../rgz.c; sourceTree = "<group>"; };
+		49EEB6AC150F8BFC00F21662 /* spr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = spr.c; path = ../spr.c; sourceTree = "<group>"; };
+		49EEB6AD150F8BFC00F21662 /* str.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = str.c; path = ../str.c; sourceTree = "<group>"; };
+		49EEB6AE150F8BFC00F21662 /* text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = text.c; path = ../text.c; sourceTree = "<group>"; };
+		49EEB6AF150F8BFC00F21662 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../util.c; sourceTree = "<group>"; };
+		49EEB6B0150F8BFC00F21662 /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = writer.h; path = ../writer.h; sourceTree = "<group>"; };
+		49EEB6C8150F8EEB00F21662 /* roint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = roint.h; path = ../include/roint.h; sourceTree = "<group>"; };
+		49EEB6CA150F8EF800F21662 /* act.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = act.h; path = ../include/roint/act.h; sourceTree = "<group>"; };
+		49EEB6CB150F8EF800F21662 /* constant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constant.h; path = ../include/roint/constant.h; sourceTree = "<group>"; };
+		49EEB6CC150F8EF800F21662 /* gat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gat.h; path = ../include/roint/gat.h; sourceTree = "<group>"; };
+		49EEB6CD150F8EF800F21662 /* gnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gnd.h; path = ../include/roint/gnd.h; sourceTree = "<group>"; };
+		49EEB6CE150F8EF800F21662 /* grf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = grf.h; path = ../include/roint/grf.h; sourceTree = "<group>"; };
+		49EEB6CF150F8EF800F21662 /* imf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = imf.h; path = ../include/roint/imf.h; sourceTree = "<group>"; };
+		49EEB6D0150F8EF800F21662 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = ../include/roint/log.h; sourceTree = "<group>"; };
+		49EEB6D1150F8EF800F21662 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory.h; path = ../include/roint/memory.h; sourceTree = "<group>"; };
+		49EEB6D2150F8EF800F21662 /* pal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pal.h; path = ../include/roint/pal.h; sourceTree = "<group>"; };
+		49EEB6D3150F8EF800F21662 /* rgz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rgz.h; path = ../include/roint/rgz.h; sourceTree = "<group>"; };
+		49EEB6D4150F8EF800F21662 /* rsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rsm.h; path = ../include/roint/rsm.h; sourceTree = "<group>"; };
+		49EEB6D5150F8EF800F21662 /* spr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = spr.h; path = ../include/roint/spr.h; sourceTree = "<group>"; };
+		49EEB6D6150F8EF800F21662 /* str.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = str.h; path = ../include/roint/str.h; sourceTree = "<group>"; };
+		49EEB6D7150F8EF800F21662 /* text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = text.h; path = ../include/roint/text.h; sourceTree = "<group>"; };
+		49EEB6E7150F909C00F21662 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		49EEB6E8150F909C00F21662 /* internal_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal_config.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49CDF2A5137C32AF0070EC95 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4948FF8A150A2AEE00C743DF /* libz.dylib in Frameworks */,
+				49CDF2AC137C32AF0070EC95 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49CDF2D9137C33180070EC95 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4948FF8B150A2AFA00C743DF /* libz.dylib in Frameworks */,
+				49CDF2DD137C33180070EC95 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49CDF298137C328E0070EC95 = {
+			isa = PBXGroup;
+			children = (
+				49EEB6E6150F908B00F21662 /* XCode Only */,
+				49EEB6C7150F8EAF00F21662 /* Project */,
+				49CDF2B8137C32B40070EC95 /* ROInt */,
+				49CDF2AA137C32AF0070EC95 /* Frameworks */,
+				49CDF2A9137C32AF0070EC95 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49CDF2A9137C32AF0070EC95 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49CDF2A8137C32AF0070EC95 /* roint.dylib */,
+				49CDF2DC137C33180070EC95 /* libroint.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49CDF2AA137C32AF0070EC95 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4948FF89150A2AEE00C743DF /* libz.dylib */,
+				49CDF2AB137C32AF0070EC95 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		49CDF2B8137C32B40070EC95 /* ROInt */ = {
+			isa = PBXGroup;
+			children = (
+				49EEB6CA150F8EF800F21662 /* act.h */,
+				49EEB6CB150F8EF800F21662 /* constant.h */,
+				49EEB6CC150F8EF800F21662 /* gat.h */,
+				49EEB6CD150F8EF800F21662 /* gnd.h */,
+				49EEB6CE150F8EF800F21662 /* grf.h */,
+				49EEB6CF150F8EF800F21662 /* imf.h */,
+				49EEB6D0150F8EF800F21662 /* log.h */,
+				49EEB6D1150F8EF800F21662 /* memory.h */,
+				49EEB6D2150F8EF800F21662 /* pal.h */,
+				49EEB6D3150F8EF800F21662 /* rgz.h */,
+				49EEB6D4150F8EF800F21662 /* rsm.h */,
+				49EEB6D5150F8EF800F21662 /* spr.h */,
+				49EEB6D6150F8EF800F21662 /* str.h */,
+				49EEB6D7150F8EF800F21662 /* text.h */,
+				49EEB6C8150F8EEB00F21662 /* roint.h */,
+			);
+			name = ROInt;
+			sourceTree = "<group>";
+		};
+		49CDF2B9137C32BD0070EC95 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				49EEB6A6150F8BFC00F21662 /* memory.h */,
+				49EEB6AA150F8BFC00F21662 /* reader.h */,
+				49EEB6B0150F8BFC00F21662 /* writer.h */,
+				49EEB698150F8BCD00F21662 /* _cp949.h */,
+				49CDF2BC137C32CB0070EC95 /* des.h */,
+				49CDF2BE137C32CB0070EC95 /* grf.h */,
+				49CDF2BF137C32CB0070EC95 /* internal.h */,
+				49CDF2C7137C32CB0070EC95 /* rsm.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		49EEB6C7150F8EAF00F21662 /* Project */ = {
+			isa = PBXGroup;
+			children = (
+				49EEB6AB150F8BFC00F21662 /* rgz.c */,
+				49EEB6AC150F8BFC00F21662 /* spr.c */,
+				49EEB6AD150F8BFC00F21662 /* str.c */,
+				49EEB6AE150F8BFC00F21662 /* text.c */,
+				49EEB6AF150F8BFC00F21662 /* util.c */,
+				49EEB6A7150F8BFC00F21662 /* memreader.c */,
+				49EEB6A8150F8BFC00F21662 /* memwriter.c */,
+				49EEB6A9150F8BFC00F21662 /* pal.c */,
+				49EEB69B150F8BFC00F21662 /* act.c */,
+				49EEB69C150F8BFC00F21662 /* constant.c */,
+				49EEB69D150F8BFC00F21662 /* deflatereader.c */,
+				49EEB69E150F8BFC00F21662 /* deflatewriter.c */,
+				49EEB69F150F8BFC00F21662 /* filereader.c */,
+				49EEB6A0150F8BFC00F21662 /* filewriter.c */,
+				49EEB6A1150F8BFC00F21662 /* gat.c */,
+				49EEB6A2150F8BFC00F21662 /* gnd.c */,
+				49EEB6A3150F8BFC00F21662 /* imf.c */,
+				49EEB6A4150F8BFC00F21662 /* log.c */,
+				49EEB6A5150F8BFC00F21662 /* memory.c */,
+				49CDF2BB137C32CB0070EC95 /* des.c */,
+				49CDF2BD137C32CB0070EC95 /* grf.c */,
+				49CDF2C6137C32CB0070EC95 /* rsm.c */,
+				49CDF2B9137C32BD0070EC95 /* Headers */,
+			);
+			name = Project;
+			sourceTree = "<group>";
+		};
+		49EEB6E6150F908B00F21662 /* XCode Only */ = {
+			isa = PBXGroup;
+			children = (
+				49EEB6E7150F909C00F21662 /* config.h */,
+				49EEB6E8150F909C00F21662 /* internal_config.h */,
+			);
+			name = "XCode Only";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		49CDF2A6137C32AF0070EC95 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49CDF2CA137C32CB0070EC95 /* des.h in Headers */,
+				49CDF2CC137C32CB0070EC95 /* grf.h in Headers */,
+				49CDF2CD137C32CB0070EC95 /* internal.h in Headers */,
+				49CDF2D5137C32CB0070EC95 /* rsm.h in Headers */,
+				49EEB699150F8BCD00F21662 /* _cp949.h in Headers */,
+				49EEB6BC150F8BFC00F21662 /* memory.h in Headers */,
+				49EEB6C0150F8BFC00F21662 /* reader.h in Headers */,
+				49EEB6C6150F8BFC00F21662 /* writer.h in Headers */,
+				49EEB6C9150F8EEB00F21662 /* roint.h in Headers */,
+				49EEB6D8150F8EF800F21662 /* act.h in Headers */,
+				49EEB6D9150F8EF800F21662 /* constant.h in Headers */,
+				49EEB6DA150F8EF800F21662 /* gat.h in Headers */,
+				49EEB6DB150F8EF800F21662 /* gnd.h in Headers */,
+				49EEB6DC150F8EF800F21662 /* grf.h in Headers */,
+				49EEB6DD150F8EF800F21662 /* imf.h in Headers */,
+				49EEB6DE150F8EF800F21662 /* log.h in Headers */,
+				49EEB6DF150F8EF800F21662 /* memory.h in Headers */,
+				49EEB6E0150F8EF800F21662 /* pal.h in Headers */,
+				49EEB6E1150F8EF800F21662 /* rgz.h in Headers */,
+				49EEB6E2150F8EF800F21662 /* rsm.h in Headers */,
+				49EEB6E3150F8EF800F21662 /* spr.h in Headers */,
+				49EEB6E4150F8EF800F21662 /* str.h in Headers */,
+				49EEB6E5150F8EF800F21662 /* text.h in Headers */,
+				49EEB6E9150F909C00F21662 /* config.h in Headers */,
+				49EEB6EA150F909C00F21662 /* internal_config.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49CDF2DA137C33180070EC95 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		49CDF2A7137C32AF0070EC95 /* roint */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49CDF2B6137C32AF0070EC95 /* Build configuration list for PBXNativeTarget "roint" */;
+			buildPhases = (
+				49CDF2A4137C32AF0070EC95 /* Sources */,
+				49CDF2A5137C32AF0070EC95 /* Frameworks */,
+				49CDF2A6137C32AF0070EC95 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = roint;
+			productName = roint;
+			productReference = 49CDF2A8137C32AF0070EC95 /* roint.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		49CDF2DB137C33180070EC95 /* libroint */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49CDF2E5137C33180070EC95 /* Build configuration list for PBXNativeTarget "libroint" */;
+			buildPhases = (
+				49CDF2D8137C33180070EC95 /* Sources */,
+				49CDF2D9137C33180070EC95 /* Frameworks */,
+				49CDF2DA137C33180070EC95 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libroint;
+			productName = libroint;
+			productReference = 49CDF2DC137C33180070EC95 /* libroint.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49CDF29A137C328E0070EC95 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = 49CDF29D137C328E0070EC95 /* Build configuration list for PBXProject "roint" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 49CDF298137C328E0070EC95;
+			productRefGroup = 49CDF2A9137C32AF0070EC95 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				49CDF2A7137C32AF0070EC95 /* roint */,
+				49CDF2DB137C33180070EC95 /* libroint */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49CDF2A4137C32AF0070EC95 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49CDF2C9137C32CB0070EC95 /* des.c in Sources */,
+				49CDF2CB137C32CB0070EC95 /* grf.c in Sources */,
+				49CDF2D4137C32CB0070EC95 /* rsm.c in Sources */,
+				49EEB6B1150F8BFC00F21662 /* act.c in Sources */,
+				49EEB6B2150F8BFC00F21662 /* constant.c in Sources */,
+				49EEB6B3150F8BFC00F21662 /* deflatereader.c in Sources */,
+				49EEB6B4150F8BFC00F21662 /* deflatewriter.c in Sources */,
+				49EEB6B5150F8BFC00F21662 /* filereader.c in Sources */,
+				49EEB6B6150F8BFC00F21662 /* filewriter.c in Sources */,
+				49EEB6B7150F8BFC00F21662 /* gat.c in Sources */,
+				49EEB6B8150F8BFC00F21662 /* gnd.c in Sources */,
+				49EEB6B9150F8BFC00F21662 /* imf.c in Sources */,
+				49EEB6BA150F8BFC00F21662 /* log.c in Sources */,
+				49EEB6BB150F8BFC00F21662 /* memory.c in Sources */,
+				49EEB6BD150F8BFC00F21662 /* memreader.c in Sources */,
+				49EEB6BE150F8BFC00F21662 /* memwriter.c in Sources */,
+				49EEB6BF150F8BFC00F21662 /* pal.c in Sources */,
+				49EEB6C1150F8BFC00F21662 /* rgz.c in Sources */,
+				49EEB6C2150F8BFC00F21662 /* spr.c in Sources */,
+				49EEB6C3150F8BFC00F21662 /* str.c in Sources */,
+				49EEB6C4150F8BFC00F21662 /* text.c in Sources */,
+				49EEB6C5150F8BFC00F21662 /* util.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49CDF2D8137C33180070EC95 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49CDF2EB137C33560070EC95 /* des.c in Sources */,
+				49CDF2EC137C33560070EC95 /* grf.c in Sources */,
+				49CDF2F0137C33560070EC95 /* rsm.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		49CDF29F137C328E0070EC95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		49CDF2A0137C328E0070EC95 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		49CDF2B4137C32AF0070EC95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG,
+					ROINT_INTERNAL,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../include/**";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		49CDF2B5137C32AF0070EC95 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = ROINT_INTERNAL;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../include/**";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		49CDF2E6137C33180070EC95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG,
+					ROINT_INTERNAL,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../include",
+					"$(PROJECT_DIR)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = roint;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		49CDF2E7137C33180070EC95 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = ROINT_INTERNAL;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../include",
+					"$(PROJECT_DIR)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_NAME = roint;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49CDF29D137C328E0070EC95 /* Build configuration list for PBXProject "roint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49CDF29F137C328E0070EC95 /* Debug */,
+				49CDF2A0137C328E0070EC95 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49CDF2B6137C32AF0070EC95 /* Build configuration list for PBXNativeTarget "roint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49CDF2B4137C32AF0070EC95 /* Debug */,
+				49CDF2B5137C32AF0070EC95 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49CDF2E5137C33180070EC95 /* Build configuration list for PBXNativeTarget "libroint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49CDF2E6137C33180070EC95 /* Debug */,
+				49CDF2E7137C33180070EC95 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49CDF29A137C328E0070EC95 /* Project object */;
+}
