@@ -143,7 +143,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 		reader->read(&rswobj->type, sizeof(int), 1, reader);
 		switch(rswobj->type) {
 		case 1:	// Model
-			if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 3)) { // v > 1.3
+			if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 3)) { // v > 1.3
 				reader->read(rswobj->model.name, 40, 1, reader);
 				reader->read(&rswobj->model.animType, sizeof(int), 1, reader);
 				reader->read(&rswobj->model.animSpeed, sizeof(float), 1, reader);
@@ -176,6 +176,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 			break;
 		case 3:	// Sound
 			reader->read(rswobj->sound.name, 80, 1, reader);
+			reader->read(rswobj->sound.waveName, 80, 1, reader);
 			reader->read(rswobj->sound.pos, sizeof(float), 3, reader);
 			reader->read(&rswobj->sound.vol, sizeof(float), 1, reader);
 			reader->read(&rswobj->sound.width, sizeof(int), 1, reader);
@@ -190,6 +191,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 
 			// Sanity
 			rswobj->sound.name[39] = 0;
+			rswobj->sound.waveName[39] = 0;
 			break;
 		case 4:	// Effect
 			reader->read(rswobj->effect.name, 80, 1, reader);
