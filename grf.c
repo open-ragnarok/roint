@@ -192,8 +192,8 @@ int grf_getdata(struct ROGrfFile *file) {
 		file->data = NULL;
 	}
 
-	body = _xalloc(file->compressedLength);
-	uncompressed = _xalloc(file->uncompressedLength);
+	body = (unsigned char*)_xalloc(file->compressedLengthAligned);
+	uncompressed = (unsigned char*)_xalloc(file->uncompressedLength);
 
 	fseek(file->grf->fp, 46 + file->offset, SEEK_SET);
 	fread(body, file->compressedLengthAligned, 1, file->grf->fp);
