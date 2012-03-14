@@ -64,12 +64,12 @@ struct RORsw *rsw_load(struct _reader *reader) {
 		// supported [2.0 2.1]
 	}
 	else {
-		_xlog("I don't know how to properly read rsm version %d.%d, but i'm gonna try...\n", ret->vermajor, ret->verminor);
+		_xlog("I don't know how to properly read rsw version %d.%d, but i'm gonna try...\n", ret->vermajor, ret->verminor);
 	}
 
 	reader->read(ret->m_iniFile, 40, 1, reader);
 	reader->read(ret->m_gndFile, 40, 1, reader);
-	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 4)) { // v > 1.4
+	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 4)) { // v > 1.4
 		reader->read(ret->m_gatFile, 40, 1, reader);
 	}
 	else {
@@ -82,14 +82,14 @@ struct RORsw *rsw_load(struct _reader *reader) {
 	ret->m_iniFile[39] = ret->m_gndFile[39] = ret->m_gatFile[39] = ret->m_scrFile[39] = 0;
 
 	// == == == WATER == == ==
-	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 3)) { // v > 1.3
+	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 3)) { // v > 1.3
 		reader->read(&(ret->water), sizeof(float), 1, reader);
 	}
 	else {
 		ret->water.level = 0.0f;
 	}
 
-	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 8)) { // v > 1.8
+	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 8)) { // v > 1.8
 		reader->read(&ret->water.type, sizeof(int), 1, reader);
 		reader->read(&ret->water.waveHeight, sizeof(float), 3, reader); // reads waveHeight, waveSpeed and wavePitch
 	}
@@ -100,7 +100,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 		ret->water.wavePitch = 50.0f;
 	}
 	
-	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 9)) { // v > 1.9
+	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 9)) { // v > 1.9
 		reader->read(&ret->water.animSpeed, sizeof(int), 1, reader);
 	}
 	else {
@@ -109,7 +109,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 
 
 	// == == == LIGHT == == ==
-	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 5)) { // v > 1.5
+	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 5)) { // v > 1.5
 		reader->read(&ret->light.longitude, sizeof(int), 2, reader); // longitude & latitude
 		reader->read(&ret->light.diffuse, sizeof(float), 6, reader); // diffuse[3] & ambient[3]
 	}
@@ -120,12 +120,12 @@ struct RORsw *rsw_load(struct _reader *reader) {
 		ret->light.ambient[0] = ret->light.ambient[1] = ret->light.ambient[2] = 0.3f;
 	}
 
-	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 7)) { // v > 1.7
+	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 7)) { // v > 1.7
 		reader->read(&ret->light.ignored, sizeof(float), 1, reader);
 	}
 
 	// == == == GROUND == == ==
-	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->vermajor >= 6)) { // v > 1.6
+	if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 6)) { // v > 1.6
 		reader->read(ret->ground.gnd, sizeof(int), 4, reader);
 	}
 	else {
@@ -207,7 +207,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 	}
 
 	// == == == QUADTREE == == ==
-	if (ret->vermajor >= 3 || (ret->vermajor == 2 && ret->vermajor >= 1)) { // v > 2.1
+	if (ret->vermajor >= 3 || (ret->vermajor == 2 && ret->verminor >= 1)) { // v > 2.1
 		unsigned int i = 0;
 
 		ret->quadtree = (struct RORswQuadTreeNode*)_xalloc(sizeof(struct RORswQuadTreeNode) * 1365);
@@ -228,7 +228,7 @@ void RswReadQuadtree(struct RORswQuadTreeNode* quadtree, struct _reader *reader,
 	reader->read(node->halfSize, sizeof(float), 3, reader);
 	reader->read(node->center, sizeof(float), 3, reader);
 
-	i++;
+	*i = *i + 1;
 
 	if (level < 5) {
 		for (k = 0; k < 4; k++) {
