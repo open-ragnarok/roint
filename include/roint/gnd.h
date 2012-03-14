@@ -96,10 +96,25 @@ struct ROGndLightmap {
 ///  v1.6 - base version (no save, load-only)
 ///  v1.7 - lightmap data, 4-byte surfaceIds
 struct ROGnd {
-	unsigned char vermajor; //< major version
-	unsigned char verminor; //< minor version
-	unsigned int width;
-	unsigned int height;
+	/*
+		Unnamed union to represent the file version. Note that the BYTE order on the file is MAJOR.MINOR.
+		Here is represented in reverse so that the unsigned short variable "version" is represented
+		correcly on little-endian representation.
+	*/
+	union {
+		struct {
+			unsigned char verminor; //< minor version
+			unsigned char vermajor; //< major version
+		};
+		unsigned short version;
+	};
+	union {
+		struct {
+			unsigned int width;
+			unsigned int height;
+		};
+		unsigned int dimension[2];
+	};
 	float zoom; //< size of the cell side
 	unsigned int texturecount;
 	char **textures; //< NUL-terminated strings

@@ -111,7 +111,6 @@ struct ROGnd *gnd_load(struct _reader *reader) {
 	unsigned int i;
 	unsigned int texturenamelen;
 	unsigned int cellcount;
-	unsigned short version;
 	char magic[4];
 
 	if (reader == NULL || reader->error) {
@@ -131,10 +130,10 @@ struct ROGnd *gnd_load(struct _reader *reader) {
 
 	reader->read(&ret->vermajor, 1, 1, reader);
 	reader->read(&ret->verminor, 1, 1, reader);
-	version = ((unsigned short)ret->vermajor << 8) + ret->verminor;
-	if (version == 0x107)
-		;// supported
-	else if (version == 0x106) {
+	if (ret->version == 0x107) {
+		// supported
+	}
+	else if (ret->version == 0x106) {
 		_xlog("gnd.load : v1.6 not supported\n");
 		gnd_unload(ret);
 	}
@@ -174,7 +173,7 @@ struct ROGnd *gnd_load(struct _reader *reader) {
 	}
 	// read lightmaps
 	reader->read(&ret->lightmapcount, 4, 1, reader);
-	if (version >= 0x107) {
+	if (ret->version >= 0x107) {
 		unsigned int lightmapWidth; // width, must be 8
 		unsigned int lightmapHeight; // height, must be 8
 		unsigned int lightmapCells; // cells, must be 1
@@ -274,7 +273,7 @@ struct ROGnd *gnd_load(struct _reader *reader) {
 	cellcount = ret->width * ret->height;
 	if (cellcount > 0) {
 		ret->cells = (struct ROGndCell*)_xalloc(sizeof(struct ROGndCell) * cellcount);
-		if (version >= 0x107)
+		if (ret->version >= 0x107)
 			reader->read(ret->cells, sizeof(struct ROGndCell), cellcount, reader);
 		else {
 			for (i = 0; i < cellcount; i++) {
