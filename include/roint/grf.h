@@ -23,6 +23,7 @@ ROINT_DLLAPI void grf_close(struct ROGrf *grf);
 ROINT_DLLAPI unsigned int grf_filecount(const struct ROGrf* grf);
 
 ROINT_DLLAPI struct ROGrfFile *grf_getfileinfo(const struct ROGrf* grf, unsigned int idx);
+ROINT_DLLAPI struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn);
     
 /**
   * Retrieves data from the GRF file and stores in the data pointer.
@@ -68,6 +69,7 @@ struct ROGrf {
 
 	FILE *fp;
 	struct ROGrfFile *files;
+    struct BTree *btree;
 };
 
 #ifdef __cplusplus

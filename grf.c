@@ -38,6 +38,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct BTree {
+    int idx;
+    int left, right;
+};
+
 unsigned int grf_filecount(const struct ROGrf* grf) {
 	unsigned int ret;
 
@@ -57,6 +62,7 @@ struct ROGrf *grf_open(const char *fn) {
 	unsigned int i, offset;
 	unsigned long ul;
 	unsigned int filecount;
+    int k;
 
 	fp = fopen(fn, "rb");
 	if (fp == NULL) {
@@ -65,6 +71,7 @@ struct ROGrf *grf_open(const char *fn) {
 	}
 
 	ret = (struct ROGrf*)_xalloc(sizeof(struct ROGrf));
+    ret->btree = NULL;
 
 	ret->fp = fp;
 
@@ -149,6 +156,34 @@ struct ROGrf *grf_open(const char *fn) {
 	}
 
 	_xfree(headerBody);
+    
+    // Setup Binary Tree
+    ret->btree = (struct BTree*)_xalloc(sizeof(struct BTree) * filecount);
+    
+    // TODO: Auto balance
+    ret->btree[0].idx = 0;
+    ret->btree[0].left = -1;
+    ret->btree[0].right = -1;
+    for (i = 1; i < filecount; i++) {
+        k = 0;
+        ret->btree[i].idx = -1;
+        ret->btree[i].left = -1;
+        ret->btree[i].right = -1;
+        while (ret->btree[k].idx != -1) {
+            if (strcmp(ret->files[k].fileName, ret->files[i].fileName) > 0) {
+                if (ret->btree[k].left == -1)
+                    ret->btree[k].left = i;
+                
+                k = ret->btree[k].left;
+            }
+            else {
+                if (ret->btree[k].right == -1)
+                    ret->btree[k].right = i;
+                
+                k = ret->btree[k].right;
+            }
+        }
+    }
 
 	return(ret);
 }
@@ -171,6 +206,9 @@ void grf_close(struct ROGrf *grf) {
 
 	if (grf->fp != NULL)
 		fclose(grf->fp);
+    
+    if (grf->btree != NULL)
+        _xfree(grf->btree);
 
 	_xfree(grf);
 }
@@ -248,4 +286,27 @@ struct ROGrfFile *grf_getfileinfo(const struct ROGrf* grf, unsigned int idx) {
 	}
 
 	return(&(grf->files[idx]));
+}
+
+struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn) {
+    struct ROGrfFile *fp;
+    int k = 0;
+    int r;
+    
+    fp = &grf->files[grf->btree[k].idx];
+    
+    while (k != -1) {
+        r = strcmp(fp->fileName, fn);
+        if (r == 0) {
+            return(fp);
+        }
+        else if (r > 0) {
+            k = grf->btree[k].left;
+        }
+        else {
+            k = grf->btree[k].right;
+        }
+    }
+    
+    return(NULL);
 }
