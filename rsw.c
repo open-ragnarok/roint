@@ -30,6 +30,7 @@
 const char RSW_MAGIC[4] = {'G','R','S','W'};
 
 void RswReadQuadtree(struct RORswQuadTreeNode* quadtree, struct _reader *reader, unsigned int level, unsigned int *i);
+struct RORsw *rsw_load(struct _reader *reader);
 
 struct RORsw *rsw_load(struct _reader *reader) {
 	int i;

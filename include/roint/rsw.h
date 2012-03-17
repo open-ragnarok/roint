@@ -124,7 +124,6 @@ struct RORsw {
 	struct RORswQuadTreeNode *quadtree;
 };
 
-ROINT_DLLAPI struct RORsw *rsw_load(struct _reader *reader);
 ROINT_DLLAPI struct RORsw *rsw_loadFromData(const unsigned char *data, unsigned long length);
 ROINT_DLLAPI struct RORsw *rsw_loadFromFile(const char *fn);
 ROINT_DLLAPI struct RORsw *rsw_loadFromGrf(struct ROGrfFile *file);

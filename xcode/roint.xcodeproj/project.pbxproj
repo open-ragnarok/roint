@@ -61,6 +61,8 @@
 		49EEB6E5150F8EF800F21662 /* text.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6D7150F8EF800F21662 /* text.h */; };
 		49EEB6E9150F909C00F21662 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6E7150F909C00F21662 /* config.h */; };
 		49EEB6EA150F909C00F21662 /* internal_config.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEB6E8150F909C00F21662 /* internal_config.h */; };
+		49F93457151479AF00E00EDD /* rsw.h in Headers */ = {isa = PBXBuildFile; fileRef = 49F93456151479AF00E00EDD /* rsw.h */; };
+		49F9345A151479BA00E00EDD /* rsw.c in Sources */ = {isa = PBXBuildFile; fileRef = 49F93459151479BA00E00EDD /* rsw.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -115,6 +117,8 @@
 		49EEB6D7150F8EF800F21662 /* text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = text.h; path = ../include/roint/text.h; sourceTree = "<group>"; };
 		49EEB6E7150F909C00F21662 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		49EEB6E8150F909C00F21662 /* internal_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal_config.h; sourceTree = "<group>"; };
+		49F93456151479AF00E00EDD /* rsw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rsw.h; path = ../include/roint/rsw.h; sourceTree = "<group>"; };
+		49F93459151479BA00E00EDD /* rsw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rsw.c; path = ../rsw.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +175,7 @@
 		49CDF2B8137C32B40070EC95 /* ROInt */ = {
 			isa = PBXGroup;
 			children = (
+				49F93456151479AF00E00EDD /* rsw.h */,
 				49EEB6CA150F8EF800F21662 /* act.h */,
 				49EEB6CB150F8EF800F21662 /* constant.h */,
 				49EEB6CC150F8EF800F21662 /* gat.h */,
@@ -208,6 +213,7 @@
 		49EEB6C7150F8EAF00F21662 /* Project */ = {
 			isa = PBXGroup;
 			children = (
+				49F93459151479BA00E00EDD /* rsw.c */,
 				49EEB6AB150F8BFC00F21662 /* rgz.c */,
 				49EEB6AC150F8BFC00F21662 /* spr.c */,
 				49EEB6AD150F8BFC00F21662 /* str.c */,
@@ -276,6 +282,7 @@
 				49EEB6E5150F8EF800F21662 /* text.h in Headers */,
 				49EEB6E9150F909C00F21662 /* config.h in Headers */,
 				49EEB6EA150F909C00F21662 /* internal_config.h in Headers */,
+				49F93457151479AF00E00EDD /* rsw.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,6 +383,7 @@
 				49EEB6C3150F8BFC00F21662 /* str.c in Sources */,
 				49EEB6C4150F8BFC00F21662 /* text.c in Sources */,
 				49EEB6C5150F8BFC00F21662 /* util.c in Sources */,
+				49F9345A151479BA00E00EDD /* rsw.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
