@@ -39,7 +39,6 @@
 #include <string.h>
 
 struct BTree {
-    int idx;
     int left, right;
 };
 
@@ -161,24 +160,26 @@ struct ROGrf *grf_open(const char *fn) {
     ret->btree = (struct BTree*)_xalloc(sizeof(struct BTree) * filecount);
     
     // TODO: Auto balance
-    ret->btree[0].idx = 0;
     ret->btree[0].left = -1;
     ret->btree[0].right = -1;
     for (i = 1; i < filecount; i++) {
-        k = 0;
-        ret->btree[i].idx = -1;
+        k = 0;  // Starts with ROOT
         ret->btree[i].left = -1;
         ret->btree[i].right = -1;
-        while (ret->btree[k].idx != -1) {
+        while (1) {
             if (strcmp(ret->files[k].fileName, ret->files[i].fileName) > 0) {
-                if (ret->btree[k].left == -1)
+                if (ret->btree[k].left == -1) {
                     ret->btree[k].left = i;
+                    break;
+                }
                 
                 k = ret->btree[k].left;
             }
             else {
-                if (ret->btree[k].right == -1)
+                if (ret->btree[k].right == -1) {
                     ret->btree[k].right = i;
+                    break;
+                }
                 
                 k = ret->btree[k].right;
             }
@@ -293,10 +294,12 @@ struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn)
     int k = 0;
     int r;
     
-    fp = &grf->files[grf->btree[k].idx];
-    
     while (k != -1) {
+        fp = &grf->files[k];
         r = strcmp(fp->fileName, fn);
+        
+        printf("comparing with %s: %d\n", fp->fileName, r);
+        
         if (r == 0) {
             return(fp);
         }
