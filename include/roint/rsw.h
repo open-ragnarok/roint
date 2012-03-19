@@ -23,51 +23,59 @@ struct RORswQuadTreeNode {
 	float center[3];
 	int child[4]; //< index of child node (generated), 0 for no child
 };
+    
+struct s_RORswObjModel {
+    char name[40];
+    int animType;
+    float animSpeed;
+    int blockType;
+    char modelName[80]; //< RSM filename
+    char nodeName[80];
+    float pos[3];
+    float rot[3];
+    float scale[3];
+};
+
+struct s_RORswObjLight {
+    char name[80];
+    float pos[3];
+    union {
+        struct {
+            int red;
+            int green;
+            int blue;
+        };
+        int color[3];
+    };
+    float range;
+};
+    
+struct s_RORswObjSound {
+    char name[80];
+    char waveName[80];
+    float pos[3];
+    float vol;
+    int width;
+    int height;
+    float range;
+    float cycle;		
+};
+    
+struct s_RORswObjEffect {
+   char name[80];
+   float pos[3];
+   int type;
+   float emitSpeed;
+   float param[4];
+};
 
 struct RORswObject {
 	int type;
 	union {
-		struct s_objmodel {
-			char name[40];
-			int animType;
-			float animSpeed;
-			int blockType;
-			char modelName[80]; //< RSM filename
-			char nodeName[80];
-			float pos[3];
-			float rot[3];
-			float scale[3];
-		} model;
-		struct s_objlight {
-			char name[80];
-			float pos[3];
-			union {
-				struct {
-					int red;
-					int green;
-					int blue;
-				};
-				int color[3];
-			};
-			float range;
-		} light;
-		struct s_objsound {
-			char name[80];
-			char waveName[80];
-			float pos[3];
-			float vol;
-			int width;
-			int height;
-			float range;
-			float cycle;		
-		} sound;
-		struct s_objeffect {
-			char name[80];
-			float pos[3];
-			int type;
-			float emitSpeed;
-			float param[4];
-		} effect;
+		struct s_RORswObjModel model;
+        struct s_RORswObjLight light;
+        struct s_RORswObjSound sound;
+		struct s_RORswObjEffect effect;
 	};
 };
 
