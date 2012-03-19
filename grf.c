@@ -298,8 +298,6 @@ struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn)
         fp = &grf->files[k];
         r = strcmp(fp->fileName, fn);
         
-        printf("comparing with %s: %d\n", fp->fileName, r);
-        
         if (r == 0) {
             return(fp);
         }
