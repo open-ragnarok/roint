@@ -9,6 +9,26 @@
 /* Begin PBXBuildFile section */
 		4948FF8A150A2AEE00C743DF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4948FF89150A2AEE00C743DF /* libz.dylib */; };
 		4948FF8B150A2AFA00C743DF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4948FF89150A2AEE00C743DF /* libz.dylib */; };
+		49752A671517840900011072 /* rsw.c in Sources */ = {isa = PBXBuildFile; fileRef = 49F93459151479BA00E00EDD /* rsw.c */; };
+		49752A681517840900011072 /* rgz.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AB150F8BFC00F21662 /* rgz.c */; };
+		49752A691517840900011072 /* spr.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AC150F8BFC00F21662 /* spr.c */; };
+		49752A6A1517840900011072 /* str.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AD150F8BFC00F21662 /* str.c */; };
+		49752A6B1517840900011072 /* text.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AE150F8BFC00F21662 /* text.c */; };
+		49752A6C1517840900011072 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6AF150F8BFC00F21662 /* util.c */; };
+		49752A6D1517840900011072 /* memreader.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A7150F8BFC00F21662 /* memreader.c */; };
+		49752A6E1517840900011072 /* memwriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A8150F8BFC00F21662 /* memwriter.c */; };
+		49752A6F1517840900011072 /* pal.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A9150F8BFC00F21662 /* pal.c */; };
+		49752A701517840900011072 /* act.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69B150F8BFC00F21662 /* act.c */; };
+		49752A711517840900011072 /* constant.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69C150F8BFC00F21662 /* constant.c */; };
+		49752A721517840900011072 /* deflatereader.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69D150F8BFC00F21662 /* deflatereader.c */; };
+		49752A731517840900011072 /* deflatewriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69E150F8BFC00F21662 /* deflatewriter.c */; };
+		49752A741517840900011072 /* filereader.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB69F150F8BFC00F21662 /* filereader.c */; };
+		49752A751517840900011072 /* filewriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A0150F8BFC00F21662 /* filewriter.c */; };
+		49752A761517840900011072 /* gat.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A1150F8BFC00F21662 /* gat.c */; };
+		49752A771517840900011072 /* gnd.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A2150F8BFC00F21662 /* gnd.c */; };
+		49752A781517840900011072 /* imf.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A3150F8BFC00F21662 /* imf.c */; };
+		49752A791517840900011072 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A4150F8BFC00F21662 /* log.c */; };
+		49752A7A1517840900011072 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB6A5150F8BFC00F21662 /* memory.c */; };
 		49CDF2AC137C32AF0070EC95 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49CDF2AB137C32AF0070EC95 /* Cocoa.framework */; };
 		49CDF2C9137C32CB0070EC95 /* des.c in Sources */ = {isa = PBXBuildFile; fileRef = 49CDF2BB137C32CB0070EC95 /* des.c */; };
 		49CDF2CA137C32CB0070EC95 /* des.h in Headers */ = {isa = PBXBuildFile; fileRef = 49CDF2BC137C32CB0070EC95 /* des.h */; };
@@ -391,6 +411,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49752A671517840900011072 /* rsw.c in Sources */,
+				49752A681517840900011072 /* rgz.c in Sources */,
+				49752A691517840900011072 /* spr.c in Sources */,
+				49752A6A1517840900011072 /* str.c in Sources */,
+				49752A6B1517840900011072 /* text.c in Sources */,
+				49752A6C1517840900011072 /* util.c in Sources */,
+				49752A6D1517840900011072 /* memreader.c in Sources */,
+				49752A6E1517840900011072 /* memwriter.c in Sources */,
+				49752A6F1517840900011072 /* pal.c in Sources */,
+				49752A701517840900011072 /* act.c in Sources */,
+				49752A711517840900011072 /* constant.c in Sources */,
+				49752A721517840900011072 /* deflatereader.c in Sources */,
+				49752A731517840900011072 /* deflatewriter.c in Sources */,
+				49752A741517840900011072 /* filereader.c in Sources */,
+				49752A751517840900011072 /* filewriter.c in Sources */,
+				49752A761517840900011072 /* gat.c in Sources */,
+				49752A771517840900011072 /* gnd.c in Sources */,
+				49752A781517840900011072 /* imf.c in Sources */,
+				49752A791517840900011072 /* log.c in Sources */,
+				49752A7A1517840900011072 /* memory.c in Sources */,
 				49CDF2EB137C33560070EC95 /* des.c in Sources */,
 				49CDF2EC137C33560070EC95 /* grf.c in Sources */,
 				49CDF2F0137C33560070EC95 /* rsm.c in Sources */,
@@ -433,7 +473,10 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../include/**";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../include/**",
+					"$(PROJECT_DIR)/**",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -457,7 +500,10 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../include/**";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../include/**",
+					"$(PROJECT_DIR)/**",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -475,7 +521,8 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					DEBUG,
+					ROINT_ENABLE_CONSOLE_LOG_FUNC,
+					"DEBUG=1",
 					ROINT_INTERNAL,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -484,8 +531,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../include",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../include/**",
+					"$(PROJECT_DIR)/**",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
@@ -509,8 +556,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../include",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../include/**",
+					"$(PROJECT_DIR)/**",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = roint;
