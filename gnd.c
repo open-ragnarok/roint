@@ -195,7 +195,7 @@ struct ROGnd *gnd_load(struct _reader *reader) {
 		struct ROGndLightmapIndex *lightmapIndexes = NULL;
 		struct ROGndColorChannel *colorchannels = NULL;
 		unsigned int colorchannelcount;
-		unsigned char error = 0;
+		//unsigned char error = 0; // unused
 
 		if (ret->lightmapcount > 0) {
 			lightmapIndexes = (struct ROGndLightmapIndex*)_xalloc(sizeof(struct ROGndLightmapIndex) * ret->lightmapcount);
@@ -328,6 +328,10 @@ struct ROGnd *gnd_loadFromFile(const char *fn) {
 
 struct ROGnd *gnd_loadFromGrf(struct ROGrfFile *file) {
 	struct ROGnd *ret = NULL;
+
+    if (file == NULL)
+        return(NULL);
+    
 	if (file->data == NULL) {
 		grf_getdata(file);
 		if (file->data != NULL) {
