@@ -3,7 +3,7 @@
     LICENSE:
     ------------------------------------------------------------------------------------
     This file is part of The Open Ragnarok Project
-    Copyright 2007 - 2011 The Open Ragnarok Team
+    Copyright 2007 - 2012 The Open Ragnarok Team
     For the latest information visit http://www.open-ragnarok.org
     ------------------------------------------------------------------------------------
     This program is free software; you can redistribute it and/or modify it under
@@ -23,6 +23,7 @@
 */
 #include "grf.h"
 #include "des.h"
+#include "avl.h"
 
 // Using this file in something that is NOT Open-Ragnarok?
 // Don't worry. If you don't have ROINT_INTERNAL defined, this file will automagically use the standard C malloc() and free() functions. You'll only need grf.{c,h} and des.{c.h} files.
@@ -38,9 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct BTree {
-    int left, right;
-};
+void grf_btreesetup(struct ROGrf* grf);
 
 unsigned int grf_filecount(const struct ROGrf* grf) {
 	unsigned int ret;
@@ -61,7 +60,6 @@ struct ROGrf *grf_open(const char *fn) {
 	unsigned int i, offset;
 	unsigned long ul;
 	unsigned int filecount;
-    int k;
 
 	fp = fopen(fn, "rb");
 	if (fp == NULL) {
@@ -157,61 +155,9 @@ struct ROGrf *grf_open(const char *fn) {
 	_xfree(headerBody);
     
     // Setup Binary Tree
-    ret->btree = (struct BTree*)_xalloc(sizeof(struct BTree) * filecount);
-    
-    // TODO: Auto balance
-    ret->btree[0].left = -1;
-    ret->btree[0].right = -1;
-    for (i = 1; i < filecount; i++) {
-        k = 0;  // Starts with ROOT
-        ret->btree[i].left = -1;
-        ret->btree[i].right = -1;
-        while (1) {
-            if (strcmp(ret->files[k].fileName, ret->files[i].fileName) > 0) {
-                if (ret->btree[k].left == -1) {
-                    ret->btree[k].left = i;
-                    break;
-                }
-                
-                k = ret->btree[k].left;
-            }
-            else {
-                if (ret->btree[k].right == -1) {
-                    ret->btree[k].right = i;
-                    break;
-                }
-                
-                k = ret->btree[k].right;
-            }
-        }
-    }
+	grf_btreesetup(ret);
 
 	return(ret);
-}
-
-void grf_close(struct ROGrf *grf) {
-	unsigned int i;
-
-	if (grf == NULL)
-		return;
-
-	if (grf->files != NULL) {
-		for (i = 0; i < grf_filecount(grf); i++) {
-			if (grf->files[i].fileName != NULL)
-				_xfree(grf->files[i].fileName);
-			if (grf->files[i].data != NULL)
-				_xfree(grf->files[i].data);
-		}
-		_xfree(grf->files);
-	}
-
-	if (grf->fp != NULL)
-		fclose(grf->fp);
-    
-    if (grf->btree != NULL)
-        _xfree(grf->btree);
-
-	_xfree(grf);
 }
 
 int grf_getdata(struct ROGrfFile *file) {
@@ -289,6 +235,74 @@ struct ROGrfFile *grf_getfileinfo(const struct ROGrf* grf, unsigned int idx) {
 	return(&(grf->files[idx]));
 }
 
+int grf__btree_compare(const void* _grf, unsigned int a, unsigned int b) {
+	const struct ROGrf *grf = (const struct ROGrf*)_grf;
+	return(strcmp(grf->files[a].fileName, grf->files[b].fileName));
+}
+
+void grf_btreesetup(struct ROGrf* grf) {
+	unsigned int *path;
+	unsigned int i;
+	struct BTreeNode *nodes;
+	unsigned int filecount;
+
+	if (grf->btree != NULL) {
+		_xlog("Error trying to setup btree twice.");
+		return;
+	}
+
+	filecount = grf_filecount(grf);
+	path = (unsigned int*)malloc(sizeof(unsigned int) * (filecount/2) + 2);
+
+	grf->btree = (struct BTree*)_xalloc(sizeof(struct BTree));
+	grf->btree->nodes = (struct BTreeNode*)_xalloc(sizeof(struct BTreeNode) * filecount);
+	nodes = grf->btree->nodes;
+	grf->btree->root = 0;
+	grf->btree->_internalData = grf;
+	grf->btree->compareFunc = &grf__btree_compare;
+    
+    nodes[0].left = -1;
+    nodes[0].right = -1;
+    for (i = 1; i < filecount; i++) {
+        nodes[i].left = -1;
+        nodes[i].right = -1;
+		__btree_add(grf->btree, i, path);
+
+    }
+
+	free(path);
+}
+
+// Releases grf an all data allocated by it.
+void grf_close(struct ROGrf *grf) {
+	unsigned int i;
+
+	if (grf == NULL)
+		return;
+
+	if (grf->files != NULL) {
+		for (i = 0; i < grf_filecount(grf); i++) {
+			if (grf->files[i].fileName != NULL)
+				_xfree(grf->files[i].fileName);
+			if (grf->files[i].data != NULL)
+				_xfree(grf->files[i].data);
+		}
+		_xfree(grf->files);
+	}
+
+	if (grf->fp != NULL)
+		fclose(grf->fp);
+    
+    if (grf->btree != NULL) {
+		if (grf->btree->nodes != NULL)
+			_xfree(grf->btree->nodes);
+        _xfree(grf->btree);
+	}
+
+	_xfree(grf);
+}
+
+// Searches the binary tree and retrieves the file information required (or NULL if not found)
 struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn) {
     struct ROGrfFile *fp;
     int k = 0;
@@ -302,10 +316,10 @@ struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn)
             return(fp);
         }
         else if (r > 0) {
-            k = grf->btree[k].left;
+            k = grf->btree->nodes[k].left;
         }
         else {
-            k = grf->btree[k].right;
+            k = grf->btree->nodes[k].right;
         }
     }
     
