@@ -34,6 +34,7 @@
     <ClInclude Include="..\include\roint\pal.h" />
     <ClInclude Include="..\include\roint\rgz.h" />
     <ClInclude Include="..\include\roint\rsm.h" />
+    <ClInclude Include="..\include\roint\rsw.h" />
     <ClInclude Include="..\include\roint\spr.h" />
     <ClInclude Include="..\include\roint\str.h" />
     <ClInclude Include="..\include\roint\text.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="..\pal.c" />
     <ClCompile Include="..\rgz.c" />
     <ClCompile Include="..\rsm.c" />
+    <ClCompile Include="..\rsw.c" />
     <ClCompile Include="..\spr.c" />
     <ClCompile Include="..\str.c" />
     <ClCompile Include="..\text.c" />

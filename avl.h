@@ -28,6 +28,7 @@
 
 // Function prototype to compare object at index A with index B, using data from BTree->_internalData
 typedef int (*t__btree_compare)(const void*, unsigned int, unsigned int);
+typedef int (*t__btree_find)(const void*, unsigned int, const void*);
 
 struct BTreeNode {
     int left, right;
@@ -36,6 +37,7 @@ struct BTree {
 	int root;
 	const void* _internalData;
 	t__btree_compare compareFunc;
+	t__btree_find findFunc;
 
 	struct BTreeNode *nodes;
 };
@@ -54,6 +56,9 @@ void __btree_rotate_left(struct BTree* tree, unsigned int* path, unsigned int de
 
 // Adds a value on the given tree. The "tree->_internalData" value will be used with the "tree->CompareFunc" to compare the file at "node" index with the elements of the tree. The "path" variable should contains enough free elements based on the number of files included inside the array of filenames.
 void __btree_add(struct BTree* tree, unsigned int node, unsigned int *path);
+
+// Finds a value inside the tree. Return the index or "-1" if not found.
+int __btree_find(struct BTree* tree, const void *what);
 
 
 #endif /* __AVL_H */

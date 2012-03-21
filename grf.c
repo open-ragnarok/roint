@@ -240,6 +240,12 @@ int grf__btree_compare(const void* _grf, unsigned int a, unsigned int b) {
 	return(strcmp(grf->files[a].fileName, grf->files[b].fileName));
 }
 
+int grf__btree_find(const void* _grf, unsigned int a, const void *f) {
+	const char *fn = (const char*)f;
+	const struct ROGrf *grf = (const struct ROGrf*)_grf;
+	return(strcmp(grf->files[a].fileName, fn));
+}
+
 void grf_btreesetup(struct ROGrf* grf) {
 	unsigned int *path;
 	unsigned int i;
@@ -260,6 +266,7 @@ void grf_btreesetup(struct ROGrf* grf) {
 	grf->btree->root = 0;
 	grf->btree->_internalData = grf;
 	grf->btree->compareFunc = &grf__btree_compare;
+	grf->btree->findFunc = &grf__btree_find;
     
     nodes[0].left = -1;
     nodes[0].right = -1;
@@ -304,24 +311,10 @@ void grf_close(struct ROGrf *grf) {
 
 // Searches the binary tree and retrieves the file information required (or NULL if not found)
 struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn) {
-    struct ROGrfFile *fp;
-    int k = 0;
-    int r;
+	int idx = __btree_find(grf->btree, fn);
+
+	if (idx == -1)
+		return(NULL);
     
-    while (k != -1) {
-        fp = &grf->files[k];
-        r = strcmp(fp->fileName, fn);
-        
-        if (r == 0) {
-            return(fp);
-        }
-        else if (r > 0) {
-            k = grf->btree->nodes[k].left;
-        }
-        else {
-            k = grf->btree->nodes[k].right;
-        }
-    }
-    
-    return(NULL);
+    return(&grf->files[idx]);
 }

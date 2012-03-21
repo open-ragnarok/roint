@@ -205,3 +205,24 @@ void __btree_add(struct BTree* tree, unsigned int node, unsigned int *path) {
 
 	//print_tree(tree, nodes);
 }
+
+int __btree_find(struct BTree* tree, const void *what) {
+    int k = tree->root;
+    int r;
+    
+    while (k != -1) {
+		r = tree->findFunc(tree->_internalData, k, what);
+        
+        if (r == 0) {
+            return(k);
+        }
+        else if (r > 0) {
+            k = tree->nodes[k].left;
+        }
+        else {
+            k = tree->nodes[k].right;
+        }
+    }
+    
+    return(-1);
+}
