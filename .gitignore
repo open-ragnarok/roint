@@ -15,5 +15,9 @@ build/
 # MSVC
 *.vcxproj.user
 
+# Eclipse
+.settings/
+
+# General
 Debug/
 Release/
