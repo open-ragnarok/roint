@@ -192,6 +192,7 @@ void __btree_add(struct BTree* tree, unsigned int node, unsigned int *path) {
 				__btree_rotate_right(tree, path, i+1);
 			}
 			__btree_rotate_left(tree, path, i);
+			break;
 		}
 		else if (balance == -2) {			// Left-Left or Left Right
 			childbalance = __btree_node_balance(tree, tree->nodes[path[i]].left);
@@ -200,6 +201,7 @@ void __btree_add(struct BTree* tree, unsigned int node, unsigned int *path) {
 				__btree_rotate_left(tree, path, i+1);
 			}
 			__btree_rotate_right(tree, path, i);
+			break;
 		}
 	}
 
