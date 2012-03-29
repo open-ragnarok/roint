@@ -17,14 +17,18 @@ extern "C" {
 
 struct ROGrf;
 struct ROGrfFile;
-    
+
+typedef void (*t_grf_walk_function_ptr)(const struct ROGrfFile*, void* aux);
+
 ROINT_DLLAPI struct ROGrf *grf_open(const char *fn);
 ROINT_DLLAPI void grf_close(struct ROGrf *grf);
 ROINT_DLLAPI unsigned int grf_filecount(const struct ROGrf* grf);
 
 ROINT_DLLAPI struct ROGrfFile *grf_getfileinfo(const struct ROGrf* grf, unsigned int idx);
 ROINT_DLLAPI struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn);
-    
+
+ROINT_DLLAPI void grf_walk(const struct ROGrf* grf, t_grf_walk_function_ptr fptr, void *aux);
+
 /**
   * Retrieves data from the GRF file and stores in the data pointer.
   * Returns 0 on success.

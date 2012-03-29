@@ -210,6 +210,7 @@ int grf_getdata(struct ROGrfFile *file) {
 				break;
 			default:
 				_xlog("Unknown error when uncompressing data: %d\n", r);
+				break;
 		}
 		return(1);
 	}
@@ -317,4 +318,27 @@ struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn)
 		return(NULL);
     
     return(&grf->files[idx]);
+}
+
+void grf_walk_node(const struct ROGrf* grf, t_grf_walk_function_ptr fptr, int node, void* aux) {
+	if (node == -1)
+		return;
+
+	if (grf->btree->nodes[node].left != -1)
+		grf_walk_node(grf, fptr, grf->btree->nodes[node].left, aux);
+
+	fptr(&grf->files[node], aux);
+
+	if (grf->btree->nodes[node].right != -1)
+		grf_walk_node(grf, fptr, grf->btree->nodes[node].right, aux);
+}
+
+void grf_walk(const struct ROGrf* grf, t_grf_walk_function_ptr fptr, void* aux) {
+	if (NULL == grf)
+		return;
+
+	if (NULL == fptr)
+		return;
+
+	grf_walk_node(grf, fptr, grf->btree->root, aux);
 }
