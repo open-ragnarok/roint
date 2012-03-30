@@ -311,6 +311,9 @@ void grf_close(struct ROGrf *grf) {
 
 // Searches the binary tree and retrieves the file information required (or NULL if not found)
 struct ROGrfFile *grf_getfileinfobyname(const struct ROGrf* grf, const char* fn) {
+    if (NULL == grf)
+        return(NULL);
+
 	int idx = __btree_find(grf->btree, fn);
 
 	if (idx == -1)
