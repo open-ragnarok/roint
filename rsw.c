@@ -143,7 +143,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 		rswobj = &ret->objects[i];
 		reader->read(&rswobj->type, sizeof(int), 1, reader);
 		switch(rswobj->type) {
-		case 1:	// Model
+		case RORSW_OBJECT_MODEL:	// Model
 			if (ret->vermajor >= 2 || (ret->vermajor == 1 && ret->verminor >= 3)) { // v > 1.3
 				reader->read(rswobj->model.name, 40, 1, reader);
 				reader->read(&rswobj->model.animType, sizeof(int), 1, reader);
@@ -166,7 +166,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 			reader->read(&rswobj->model.rot, sizeof(float), 3, reader);
 			reader->read(&rswobj->model.scale, sizeof(float), 3, reader);
 			break;
-		case 2:	// Light
+		case RORSW_OBJECT_LIGHT:	// Light
 			reader->read(rswobj->light.name, 80, 1, reader);
 			reader->read(rswobj->light.pos, sizeof(float), 3, reader);
 			reader->read(rswobj->light.color, sizeof(int), 3, reader);
@@ -175,7 +175,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 			// Sanity
 			rswobj->light.name[39] = 0;
 			break;
-		case 3:	// Sound
+		case RORSW_OBJECT_SOUND:	// Sound
 			reader->read(rswobj->sound.name, 80, 1, reader);
 			reader->read(rswobj->sound.waveName, 80, 1, reader);
 			reader->read(rswobj->sound.pos, sizeof(float), 3, reader);
@@ -194,7 +194,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 			rswobj->sound.name[39] = 0;
 			rswobj->sound.waveName[39] = 0;
 			break;
-		case 4:	// Effect
+		case RORSW_OBJECT_EFFECT:	// Effect
 			reader->read(rswobj->effect.name, 80, 1, reader);
 			reader->read(rswobj->effect.pos, sizeof(float), 3, reader);
 			reader->read(&rswobj->effect.type, sizeof(int), 1, reader);
@@ -206,6 +206,7 @@ struct RORsw *rsw_load(struct _reader *reader) {
 			break;
 		default:
 			_xlog("I don't understand rsw object type %d", rswobj->type);
+			break;
 		}
 	}
 

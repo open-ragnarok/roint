@@ -16,6 +16,11 @@ struct ROGrfFile; // forward declaration
 extern "C" {
 #endif
 
+#define RORSW_OBJECT_MODEL 1
+#define RORSW_OBJECT_LIGHT 2
+#define RORSW_OBJECT_SOUND 3
+#define RORSW_OBJECT_EFFECT 4
+
 struct RORswQuadTreeNode {
 	float max[3];
 	float min[3];
